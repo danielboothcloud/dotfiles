@@ -37,20 +37,20 @@ fi
 # Retrieve credentials from 1Password
 echo "Retrieving atuin credentials from 1Password..."
 
-ATUIN_USERNAME=$(op item get Atuin --fields label=username 2>&1)
+ATUIN_USERNAME=$(op item get awqmcs3hbdgbsrn2o7oijtd7j4 --fields label=username 2>&1)
 if [[ $? -ne 0 ]] || [[ -z "$ATUIN_USERNAME" ]]; then
     echo "Error: Failed to retrieve atuin username from 1Password"
     echo "Please ensure you're signed into 1Password CLI with: op signin"
     exit 1
 fi
 
-ATUIN_PASSWORD=$(op item get Atuin --fields label=password --reveal 2>&1)
+ATUIN_PASSWORD=$(op item get awqmcs3hbdgbsrn2o7oijtd7j4 --fields label=password --reveal 2>&1)
 if [[ $? -ne 0 ]] || [[ -z "$ATUIN_PASSWORD" ]]; then
     echo "Error: Failed to retrieve atuin password from 1Password"
     exit 1
 fi
 
-ATUIN_KEY=$(op item get Atuin --fields label=Key --reveal 2>&1)
+ATUIN_KEY=$(op item get awqmcs3hbdgbsrn2o7oijtd7j4 --fields label=Key --reveal 2>&1)
 if [[ $? -ne 0 ]] || [[ -z "$ATUIN_KEY" ]]; then
     echo "Error: Failed to retrieve atuin encryption key from 1Password"
     exit 1
