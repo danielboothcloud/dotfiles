@@ -1,0 +1,100 @@
+#!/bin/bash
+# Bootstrap script for setting up dotfiles on a new machine
+# Run with: bash <(curl -fsSL https://raw.githubusercontent.com/danielboothcloud/dotfiles/main/init)
+
+set -e
+
+echo "================================"
+echo "  Dotfiles Bootstrap"
+echo "================================"
+echo ""
+
+# Install Homebrew if not present
+if ! command -v brew &> /dev/null; then
+    echo "Installing Homebrew..."
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+    # Add Homebrew to PATH for this session
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+else
+    echo "✓ Homebrew already installed"
+fi
+
+# Install 1Password CLI if not present
+if ! command -v op &> /dev/null; then
+    echo "Installing 1Password CLI..."
+    brew install --cask 1password-cli
+else
+    echo "✓ 1Password CLI already installed"
+fi
+
+# Check if 1Password CLI is configured
+echo ""
+echo "Checking 1Password CLI configuration..."
+if ! op account list &> /dev/null; then
+    echo ""
+    echo "⚠️  1Password CLI is not configured!"
+    echo ""
+    echo "Please sign in to 1Password CLI before continuing:"
+    echo "  1. Open 1Password app"
+    echo "  2. Enable CLI integration in Settings > Developer"
+    echo "  3. Run: op account list (to verify)"
+    echo ""
+    read -p "Press Enter when 1Password CLI is configured, or Ctrl+C to exit..."
+
+    # Verify again
+    if ! op account list &> /dev/null; then
+        echo "Error: 1Password CLI still not configured. Exiting."
+        exit 1
+    fi
+fi
+
+echo "✓ 1Password CLI is configured"
+echo ""
+
+# Install chezmoi
+if ! command -v chezmoi &> /dev/null; then
+    echo "Installing chezmoi..."
+    brew install chezmoi
+else
+    echo "✓ chezmoi already installed"
+fi
+
+echo ""
+echo "Initializing dotfiles repository..."
+chezmoi init danielboothcloud/dotfiles
+
+# Install atuin if not present (needed for environment variable sync)
+if ! command -v atuin &> /dev/null; then
+    echo "Installing atuin..."
+    brew install atuin
+else
+    echo "✓ atuin already installed"
+fi
+
+echo ""
+echo "Setting up atuin..."
+# Run the atuin setup script directly
+"$(chezmoi source-path)/.chezmoiscripts/run_once_after_setup-atuin.sh"
+
+echo ""
+echo "Syncing 1Password secrets to atuin..."
+# Apply just the .env file first
+chezmoi apply ~/.env
+# Run the sync script
+"$(chezmoi source-path)/bin/executable_atuin-1p-sync"
+
+echo ""
+echo "Applying dotfiles with environment variables available..."
+# This will run the Brewfile installation and apply all dotfiles
+chezmoi apply
+
+echo ""
+echo "================================"
+echo "  Setup Complete!"
+echo "================================"
+echo ""
+echo "Next steps:"
+echo "  1. Restart your terminal"
+echo "  2. Run 'atuin sync' to sync history with other machines"
+echo ""

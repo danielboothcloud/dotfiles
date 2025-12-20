@@ -6,17 +6,53 @@ Managed with chezmoi
 
 ## Setup
 
+### Automated Setup (Recommended)
+
+Run the init script which handles the complete setup in the correct order:
+
 ```bash
-brew install chezmoi
-chezmoi init --apply --source=https://github.com/danielboothcloud/dotfiles.git
+bash <(curl -fsSL https://raw.githubusercontent.com/danielboothcloud/dotfiles/main/init)
 ```
 
-Ensure 1Password application and CLI are configured:
+This will:
+1. Install Homebrew (if not present)
+2. Install 1Password CLI and verify configuration
+3. Install chezmoi
+4. Clone the dotfiles repository
+5. Install atuin (required for environment variable management)
+6. Set up atuin with credentials from 1Password
+7. Sync environment variables from 1Password to atuin
+8. Apply all dotfiles (chezmoi installs remaining packages via Brewfile and applies configs with env vars available)
+
+### Manual Setup
+
+If you prefer to set up manually:
+
+```bash
+# Install chezmoi
+brew install chezmoi
+
+# Initialize repository (don't apply yet)
+chezmoi init danielboothcloud/dotfiles
+
+# Install all packages including atuin
+brew bundle install --file="$(chezmoi source-path)/packages/Brewfile"
+
+# Set up atuin (requires 1Password CLI configured)
+"$(chezmoi source-path)/.chezmoiscripts/run_once_after_setup-atuin.sh"
+
+# Sync 1Password secrets to atuin
+chezmoi apply ~/.env
+"$(chezmoi source-path)/bin/executable_atuin-1p-sync"
+
+# Apply all dotfiles (now with env vars available)
+chezmoi apply
 ```
+
+**Important:** Ensure 1Password application and CLI are configured before running setup:
+```bash
 op account list
 ```
-
-Auto-installs Homebrew, packages, Oh My Zsh, dotfiles, and scripts.
 
 ## Daily Usage
 
