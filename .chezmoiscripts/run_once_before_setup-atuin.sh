@@ -1,5 +1,6 @@
 #!/bin/bash
-# This script runs once to configure atuin with credentials from 1Password
+# This script runs once BEFORE applying dotfiles to configure atuin with credentials from 1Password
+# and sync environment variables that are needed by dotfile templates
 
 set -e
 
@@ -7,13 +8,23 @@ echo "Configuring atuin..."
 
 # Check if atuin is installed
 if ! command -v atuin &> /dev/null; then
-    echo "Error: atuin is not installed. Install it via Homebrew first."
+    echo "Error: atuin is not installed. Please install it first with: brew install atuin"
     exit 1
 fi
 
 # Check if 1Password CLI is installed
 if ! command -v op &> /dev/null; then
     echo "Error: 1Password CLI (op) is not installed."
+    exit 1
+fi
+
+# Check if 1Password CLI is configured
+if ! op account list &>/dev/null; then
+    echo "Error: 1Password CLI is not configured."
+    echo "Please sign in to 1Password CLI before continuing:"
+    echo "  1. Open 1Password app"
+    echo "  2. Enable CLI integration in Settings > Developer"
+    echo "  3. Run: op account list (to verify)"
     exit 1
 fi
 
@@ -64,3 +75,4 @@ else
 fi
 
 echo "Atuin configuration complete!"
+echo "Environment variables synced from atuin server and are now available for chezmoi templates."

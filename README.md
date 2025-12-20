@@ -20,9 +20,11 @@ This will:
 3. Install chezmoi
 4. Clone the dotfiles repository
 5. Install atuin (required for environment variable management)
-6. Set up atuin with credentials from 1Password
-7. Sync environment variables from 1Password to atuin
-8. Apply all dotfiles (chezmoi installs remaining packages via Brewfile and applies configs with env vars available)
+6. Apply dotfiles which automatically:
+   - Logs into atuin with credentials from 1Password and syncs env vars
+   - Installs all packages via Brewfile
+   - Applies all configs with environment variables available
+   - Runs macOS defaults and other setup scripts
 
 ### Manual Setup
 
@@ -32,20 +34,13 @@ If you prefer to set up manually:
 # Install chezmoi
 brew install chezmoi
 
-# Initialize repository (don't apply yet)
+# Initialize repository
 chezmoi init danielboothcloud/dotfiles
 
-# Install all packages including atuin
-brew bundle install --file="$(chezmoi source-path)/packages/Brewfile"
+# Install atuin (needed for env var management before applying dotfiles)
+brew install atuin
 
-# Set up atuin (requires 1Password CLI configured)
-"$(chezmoi source-path)/.chezmoiscripts/run_once_after_setup-atuin.sh"
-
-# Sync 1Password secrets to atuin
-chezmoi apply ~/.env
-"$(chezmoi source-path)/bin/executable_atuin-1p-sync"
-
-# Apply all dotfiles (now with env vars available)
+# Apply all dotfiles (this automatically sets up atuin, installs packages, and applies configs)
 chezmoi apply
 ```
 
