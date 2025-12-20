@@ -1,0 +1,4 @@
+GLM_API_KEY=$(op item get Z.ai --fields label=key --reveal)
+GITLAB_ACCESS_TOKEN=$(op item get GitLab --fields label=token --reveal)
+INFRACOST_API_KEY=$(op item get Infracost --fields label=token --reveal)
+GIT_WORK_EMAIL=$(op item get GitLab --fields label=email --reveal)

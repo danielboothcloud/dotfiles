@@ -1,0 +1,32 @@
+#!/bin/bash
+# This script runs once to install Homebrew and Go packages
+
+set -e
+
+echo "Installing Homebrew packages..."
+
+# Check if Homebrew is installed
+if ! command -v brew &> /dev/null; then
+    echo "Homebrew not found. Installing..."
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+fi
+
+# Install packages from Brewfile
+brew bundle install --file={{ .chezmoi.sourceDir }}/packages/Brewfile
+
+echo "Homebrew packages installed successfully!"
+echo ""
+
+# Install Go binaries with gup
+if command -v gup &> /dev/null; then
+    echo "Installing Go binaries..."
+    cd {{ .chezmoi.sourceDir }}/packages
+    if [ -f gup.conf ]; then
+        gup import
+        echo "Go binaries installed successfully!"
+    else
+        echo "Warning: gup.conf not found, skipping Go binaries installation"
+    fi
+else
+    echo "Warning: gup not installed, skipping Go binaries installation"
+fi

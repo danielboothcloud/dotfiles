@@ -1,0 +1,18 @@
+# Ignore repository documentation and metadata files
+README.md
+CLAUDE.md
+.gitignore
+.gitattributes
+todo.txt
+
+# Ignore git directory
+.git/
+
+# Keep packages in source only (don't deploy to ~/)
+packages/
+
+# Ignore macOS metadata
+.DS_Store
+
+# Ignore runtime state files
+.claude/.claudez_state

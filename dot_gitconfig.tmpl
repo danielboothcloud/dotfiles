@@ -1,0 +1,20 @@
+[user]
+    email = {{ env "GIT_WORK_EMAIL" }}
+    name = Daniel Booth
+[push]
+    autoSetupRemote = true
+[core]
+    editor = cat
+    excludesfile = /Users/danielbooth/.gitignore_global
+[pull]
+    rebase = true
+
+[includeIf "gitdir:~/projects/home/"]
+	path = ~/.gitconfig-github
+[filter "lfs"]
+	required = true
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+[coderabbit]
+	machineId = cli/1ae13591697543adb566bf872421e922

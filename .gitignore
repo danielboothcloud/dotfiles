@@ -1,0 +1,16 @@
+# Chezmoi runtime data
+.chezmoi.state
+
+# Temporary files
+.tmp/
+*.bak
+*.tmp
+*.swp
+*~
+
+# macOS
+.DS_Store
+
+# Editor
+.vscode/
+.idea/

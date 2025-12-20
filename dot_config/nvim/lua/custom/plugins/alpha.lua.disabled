@@ -1,0 +1,346 @@
+return {
+	"goolord/alpha-nvim",
+	priority = 2000,
+	lazy = false,
+	dependencies = { "nvim-tree/nvim-web-devicons" },
+	config = function()
+		local alpha = require("alpha")
+		local dashboard = require("alpha.themes.dashboard")
+		local icons = require("utils.icons").icons
+		local datetime = tonumber(os.date(" %H "))
+		local stats = require("lazy").stats()
+		local total_plugins = stats.count
+		local get_header = require("utils.startpage-headers")
+		local function button(sc, txt, keybind, keybind_opts)
+			local b = dashboard.button(sc, txt, keybind, keybind_opts)
+			b.opts.hl_shortcut = "MiniIconsPurple"
+			return b
+		end
+
+		dashboard.section.header.val = get_header(0, true) -- (index, bool) index of ascii art bool if you want random or not eg: (30, false)
+
+		local function footer()
+			local footer_datetime = os.date("  %m-%d-%Y   %H:%M:%S")
+			local version = vim.version()
+			local nvim_version_info = "   v" .. version.major .. "." .. version.minor .. "." .. version.patch
+			local ms = (math.floor(stats.startuptime * 100 + 0.5) / 100)
+			local value = footer_datetime .. "   Plugins " .. total_plugins .. nvim_version_info
+			return value
+		end
+
+		-- Append the footer string below the ASCII art
+		local count = 0
+		for _ in pairs(dashboard.section.header.val) do
+			count = count + 1
+		end
+		local extraline = count - 14
+		print(extraline)
+
+		for _ = 1, extraline do
+			table.insert(dashboard.section.header.val, 1, "")
+		end
+		-- table.insert(dashboard.section.header.val, footer())
+
+		-- dashboard.section.footer.val = require("alpha.fortune")()
+		dashboard.section.footer.val = footer()
+
+		local greeting = function()
+			-- Determine the appropriate greeting based on the hour
+			local mesg
+			local username = "Daniel" 
+			if datetime >= 0 and datetime < 6 then
+				mesg = "Dreaming..󰒲 󰒲 "
+			elseif datetime >= 6 and datetime < 12 then
+				mesg = "🌅 Hi " .. username .. ", Good Morning ☀️"
+			elseif datetime >= 12 and datetime < 18 then
+				mesg = "🌞 Hi " .. username .. ", Good Afternoon ☕️"
+			elseif datetime >= 18 and datetime < 21 then
+				mesg = "🌆 Hi " .. username .. ", Good Evening 🌙"
+			else
+				mesg = "Hi " .. username .. ", it's getting late, get some sleep 😴"
+			end
+			return mesg
+		end
+
+		local function capture(cmd, raw)
+			local f = assert(io.popen(cmd, "r"))
+			local s = assert(f:read("*a"))
+			f:close()
+			if raw then
+				return s
+			end
+			s = string.gsub(s, "^%s+", "")
+			s = string.gsub(s, "%s+$", "")
+			s = string.gsub(s, "[\n\r]+", " ")
+			return s
+		end
+
+		local function split(source, sep)
+			local result, i = {}, 1
+			while true do
+				local a, b = source:find(sep)
+				if not a then
+					break
+				end
+				local candidat = source:sub(1, a - 1)
+				if candidat ~= "" then
+					result[i] = candidat
+				end
+				i = i + 1
+				source = source:sub(b + 1)
+			end
+			if source ~= "" then
+				result[i] = source
+			end
+			return result
+		end
+
+		-- Function to get files in current directory
+		local function get_directory_files()
+			local cwd = vim.fn.getcwd()
+			local files = {}
+			local handle = vim.loop.fs_scandir(cwd)
+			if handle then
+				local name, type = vim.loop.fs_scandir_next(handle)
+				while name do
+					if type == "file" and not name:match("^%.") then
+						table.insert(files, name)
+					end
+					name, type = vim.loop.fs_scandir_next(handle)
+				end
+			end
+			table.sort(files)
+			return files
+		end
+
+		-- Function to create file buttons
+		local function create_file_buttons()
+			local files = get_directory_files()
+			local file_buttons = {}
+			local max_files = 8 -- Limit to prevent overwhelming the dashboard
+			
+			for i, file in ipairs(files) do
+				if i > max_files then break end
+				local shortcut = tostring(i)
+				local display_name = file
+				if #display_name > 40 then
+					display_name = display_name:sub(1, 37) .. "..."
+				end
+				table.insert(file_buttons, button(shortcut, icons.ui.file .. " " .. display_name, ":e " .. file .. "<CR>"))
+			end
+			
+			if #files > max_files then
+				table.insert(file_buttons, {
+					type = "text",
+					val = "... and " .. (#files - max_files) .. " more files",
+					opts = {
+						position = "center",
+						hl = "Comment",
+					},
+				})
+			end
+			
+			return file_buttons
+		end
+
+		local bottom_section = {
+			type = "text",
+			val = greeting,
+			opts = {
+				position = "center",
+			},
+		}
+
+		-- Check if we're in a directory with files
+		local cwd = vim.fn.getcwd()
+		local is_in_directory = vim.fn.isdirectory(cwd) == 1
+		local files_in_dir = get_directory_files()
+		local has_files = #files_in_dir > 0
+
+		local section = {
+			header = dashboard.section.header,
+			bottom_section = bottom_section,
+			buttons = dashboard.section.buttons,
+			footer = dashboard.section.footer,
+		}
+
+		-- Add file section if we have files in the directory
+		if is_in_directory and has_files then
+			section.file_section = {
+				type = "group",
+				val = {
+					{
+						type = "text",
+						val = "📁 Files in " .. vim.fn.fnamemodify(cwd, ":t"),
+						opts = {
+							position = "center",
+							hl = "String",
+						},
+					},
+					{ type = "padding", val = 1 },
+				},
+			}
+			-- Add file buttons to the file section
+			local file_buttons = create_file_buttons()
+			for _, btn in ipairs(file_buttons) do
+				table.insert(section.file_section.val, btn)
+			end
+		end
+
+		-- Build layout dynamically based on whether we have files
+		local layout = {
+			{ type = "padding", val = 1 },
+			section.header,
+			{ type = "padding", val = 2 },
+			section.buttons,
+		}
+
+		-- Add file section if it exists
+		if section.file_section then
+			table.insert(layout, { type = "padding", val = 2 })
+			table.insert(layout, section.file_section)
+		end
+
+		-- Add bottom section and footer
+		table.insert(layout, { type = "padding", val = 1 })
+		table.insert(layout, section.bottom_section)
+		table.insert(layout, { type = "padding", val = 1 })
+		table.insert(layout, section.footer)
+
+		local opts = {
+			layout = layout,
+			opts = {
+				noautocmd = true,
+			},
+		}
+
+		-- close Lazy and re-open when the dashboard is ready
+		if vim.o.filetype == "lazy" then
+			vim.cmd.close()
+			vim.api.nvim_create_autocmd("User", {
+				once = true,
+				pattern = "AlphaReady",
+				callback = function()
+					require("lazy").show()
+				end,
+			})
+		end
+
+		alpha.setup(opts)
+
+		-- Function to refresh dashboard with current directory files
+		local function refresh_dashboard()
+			-- Recreate the configuration with current directory files
+			local current_cwd = vim.fn.getcwd()
+			local current_files = get_directory_files()
+			local current_has_files = #current_files > 0
+
+			local new_section = {
+				header = dashboard.section.header,
+				bottom_section = bottom_section,
+				buttons = dashboard.section.buttons,
+				footer = dashboard.section.footer,
+			}
+
+			-- Add file section if we have files in the directory
+			if vim.fn.isdirectory(current_cwd) == 1 and current_has_files then
+				new_section.file_section = {
+					type = "group",
+					val = {
+						{
+							type = "text",
+							val = "📁 Files in " .. vim.fn.fnamemodify(current_cwd, ":t"),
+							opts = {
+								position = "center",
+								hl = "String",
+							},
+						},
+						{ type = "padding", val = 1 },
+					},
+				}
+				-- Add file buttons to the file section
+				local current_file_buttons = create_file_buttons()
+				for _, btn in ipairs(current_file_buttons) do
+					table.insert(new_section.file_section.val, btn)
+				end
+			end
+
+			-- Build new layout
+			local new_layout = {
+				{ type = "padding", val = 1 },
+				new_section.header,
+			}
+
+			-- Add file section if it exists
+			if new_section.file_section then
+				table.insert(new_layout, { type = "padding", val = 2 })
+				table.insert(new_layout, new_section.file_section)
+			end
+
+			-- Add bottom section and footer
+			table.insert(new_layout, { type = "padding", val = 1 })
+			table.insert(new_layout, new_section.bottom_section)
+			table.insert(new_layout, { type = "padding", val = 1 })
+			table.insert(new_layout, new_section.footer)
+
+			local new_opts = {
+				layout = new_layout,
+			}
+			new_opts.opts = { noautocmd = true }
+
+			alpha.setup(new_opts)
+			require("alpha").start()
+		end
+
+		-- Add autocommand to open dashboard on startup
+		vim.api.nvim_create_autocmd("VimEnter", {
+			callback = function()
+				-- Only open dashboard if no files were opened and no stdin
+				if vim.fn.argc() == 0 and not vim.g.started_by_firenvim then
+					refresh_dashboard()
+				end
+			end,
+		})
+
+		-- Also open dashboard when opening directories or changing directories
+		vim.api.nvim_create_autocmd({ "BufEnter", "DirChanged" }, {
+			callback = function()
+				local buf_name = vim.api.nvim_buf_get_name(0)
+				if buf_name == "" or vim.fn.isdirectory(buf_name) == 1 then
+					refresh_dashboard()
+				end
+			end,
+		})
+
+		-- don't show status line in alpha dashboard
+		vim.api.nvim_create_autocmd({ "User" }, {
+			pattern = { "AlphaReady" },
+			callback = function()
+				vim.cmd([[ set laststatus=0 | autocmd BufUnload <buffer> set laststatus=3 ]])
+			end,
+		})
+
+		-- onefetch header for alpha dashboard if onefetch is installed and git repo is present
+		vim.api.nvim_create_augroup("vimrc_alpha", { clear = true })
+		vim.api.nvim_create_autocmd({ "User" }, {
+			group = "vimrc_alpha",
+			pattern = "AlphaReady",
+			callback = function()
+				if vim.fn.executable("onefetch") == 1 then
+					local header = split(
+						capture(
+							[[onefetch 2>/dev/null | sed 's/\x1B[@A-Z\\\]^_]\|\x1B\[[0-9:;<=>?]*[-!"#$%&'"'"'()*+,.\/]*[][\\@A-Z^_`a-z{|}~]//g']],
+							true
+						),
+						"\n"
+					)
+					if next(header) ~= nil then
+						require("alpha.themes.dashboard").section.header.val = header
+						require("alpha").redraw()
+					end
+				end
+			end,
+			once = true,
+		})
+	end,
+}

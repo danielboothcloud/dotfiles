@@ -1,0 +1,14 @@
+lefthook.yml
+lefthook-local.yml
+.envrc
+.claude
+.bmad*
+bmad
+_bmad
+CLAUDE.md
+CLAUDE.local.md
+.DS_Store
+.serena
+CRUSH.md
+.crush
+AGENTS.md
