@@ -15,6 +15,11 @@ if [ -f ~/.zsh_private ]; then
     source ~/.zsh_private
 fi
 
+# Load environment variables from .env
+if [ -f ~/.env ]; then
+    source ~/.env
+fi
+
 # Path to your Oh My Zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 export DOCKER_HOST="unix:///tmp/podman.sock"
@@ -102,15 +107,6 @@ eval "$(pyenv init --path)"
 eval "$(direnv hook zsh)"
 eval "$(zoxide init zsh --cmd cd)"
 eval "$(atuin init zsh)"
-
-# Wrapper for atuin to support '1p sync' subcommand
-atuin() {
-  if [[ "$1" == "1p" && "$2" == "sync" ]]; then
-    atuin-1p-sync "${@:3}"
-  else
-    command atuin "$@"
-  fi
-}
 
 # goenv initialization
 export GOENV_ROOT="$HOME/.goenv"

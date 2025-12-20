@@ -64,21 +64,8 @@ echo ""
 echo "Initializing dotfiles repository..."
 chezmoi init danielboothcloud/dotfiles
 
-# Install atuin if not present (needed for environment variable sync before apply)
-if ! command -v atuin &> /dev/null; then
-    echo "Installing atuin..."
-    brew install atuin
-else
-    echo "✓ atuin already installed"
-fi
-
 echo ""
 echo "Applying dotfiles..."
-# This will:
-# 1. Run run_once_before_setup-atuin.sh (login to atuin and sync env vars)
-# 2. Run run_once_before_install-packages.sh.tmpl (install Brewfile)
-# 3. Apply all dotfiles with environment variables available
-# 4. Run any run_once_after_* scripts
 chezmoi apply
 
 echo ""

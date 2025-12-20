@@ -1,6 +1,6 @@
 #!/bin/bash
-# This script runs once BEFORE applying dotfiles to configure atuin with credentials from 1Password
-# and sync environment variables that are needed by dotfile templates
+# This script runs once to configure atuin with credentials from 1Password
+# Atuin is used for shell history sync across machines
 
 set -e
 
@@ -75,4 +75,3 @@ else
 fi
 
 echo "Atuin configuration complete!"
-echo "Environment variables synced from atuin server and are now available for chezmoi templates."
