@@ -4,6 +4,7 @@ CLAUDE.md
 .gitignore
 .gitattributes
 todo.txt
+init
 
 # Ignore git directory
 .git/
