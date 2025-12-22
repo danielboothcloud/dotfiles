@@ -114,6 +114,19 @@ invert = false
 ## https://docs.rs/regex/latest/regex/#syntax
 history_filter = [
   "claude",
+  # Filter common secret-setting patterns
+  "^export.*KEY",
+  "^export.*SECRET",
+  "^export.*TOKEN",
+  "^export.*PASSWORD",
+  ".*--password",
+  ".*--token",
+  ".*--api-key",
+  # Filter commands with 'pass' or 'secret' in them
+  ".*password.*=",
+  ".*secret.*=",
+  ".*apikey.*=",
+  ".*api_key.*=",
 ]
 
 ## prevent commands run with cwd matching any of these regexes from being written
