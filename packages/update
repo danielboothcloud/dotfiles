@@ -24,7 +24,8 @@ echo ""
 echo "Updating gup.conf from installed Go binaries..."
 if command -v gup &> /dev/null; then
     cd "$SCRIPT_DIR"
-    gup export -o > gup.conf
+    gup export
+    cp $HOME/.config/gup/gup.conf .
     echo "✓ gup.conf updated"
 else
     echo "✗ gup not installed, skipping gup.conf"
