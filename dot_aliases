@@ -1,6 +1,5 @@
 #!/bin/zsh
 unalias la 2>/dev/null
-alias find="fd"
 alias kb="kubectl"
 alias istio="istioctl"
 alias mk="minikube"
