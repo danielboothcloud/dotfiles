@@ -11,10 +11,6 @@ export ZSH_DISABLE_COMPFIX=true
 autoload -Uz compinit
 compinit
 
-if [ -f ~/.zsh_private ]; then
-    source ~/.zsh_private
-fi
-
 # Load environment variables from .env
 if [ -f ~/.env ]; then
     source ~/.env
@@ -91,6 +87,7 @@ source /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+FZF_CTRL_R_COMMAND= source <(fzf --zsh)
 
 export XDG_CONFIG_HOME="$HOME/.config"
 export SSH_AUTH_SOCK=~/Library/Group\ Containers/2BUA8C4S2C.com.1password/t/agent.sock
