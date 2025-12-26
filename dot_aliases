@@ -25,3 +25,4 @@ alias less="bat --paging always --style=numbers,changes --theme base16"
 alias top="btop"
 alias todo="togo"
 alias post="posting"
+alias fvi='selected=$(fzf -m --preview="bat --color=always {}") && [[ -n $selected ]] && nvim $selected'
