@@ -67,12 +67,12 @@ commands:
   - name: "edit"
     description: "Edit a managed file"
     examples:
+      - cmd: "ded"
+        description: "Interactive fzf selector to edit managed files"
       - cmd: "chezmoi edit ~/.zshrc"
         description: "Edit zshrc in source directory"
       - cmd: "chezmoi edit --apply ~/.zshrc"
         description: "Edit and apply changes immediately"
-      - cmd: "ded"
-        description: "Interactive fzf selector to edit managed files"
     related:
       - "apply"
       - "add"

@@ -1,0 +1,186 @@
+name: fd
+description: "A fast and user-friendly alternative to find"
+version: "1.0"
+
+overview: |
+  fd
+
+  Find entries in the filesystem.
+  See also: find.
+  More information: https://github.com/sharkdp/fd#how-to-use.
+
+  Recursively find files matching a specific pattern in the current directory:
+
+    fd "string|regex"
+
+  Find files that begin with a specific string:
+
+    fd "^string"
+
+  Find files with a specific extension:
+
+    fd --extension txt
+
+  Find files in a specific directory:
+
+    fd "string|regex" path/to/directory
+
+  Include ignored and hidden files in the search:
+
+    fd --hidden --no-ignore "string|regex"
+
+  Exclude files that match a specific regex:
+
+    fd string --exclude regex
+
+  Execute a command on each search result returned:
+
+    fd "string|regex" --exec command
+
+  Find files only in the current directory:
+
+    fd --max-depth 1 "string|regex"
+
+commands:
+  - name: "pattern"
+    description: "Pattern matching options"
+    examples:
+      - cmd: "fd <pattern>"
+        description: "Find files (regex by default)"
+      - cmd: "fd -g '<pattern>'"
+        description: "Glob pattern (--glob)"
+      - cmd: "fd -F '<string>'"
+        description: "Literal string (--fixed-strings)"
+      - cmd: "fd -i <pattern>"
+        description: "Case-insensitive (--ignore-case)"
+      - cmd: "fd -s <pattern>"
+        description: "Case-sensitive (--case-sensitive)"
+    notes: |
+      Smart case by default (insensitive unless uppercase in pattern)
+
+  - name: "-u/--unrestricted"
+    description: "Show hidden and ignored files"
+    examples:
+      - cmd: "fd -u <pattern>"
+        description: "Show all including hidden and ignored"
+      - cmd: "fd -H <pattern>"
+        description: "Include hidden files (--hidden)"
+      - cmd: "fd -I <pattern>"
+        description: "Include ignored files (--no-ignore)"
+    notes: |
+      -u is shorthand for -H -I
+      Respects .gitignore, .ignore, .fdignore by default
+
+  - name: "-e/--extension"
+    description: "Filter by file extension"
+    examples:
+      - cmd: "fd -e txt"
+        description: "Find .txt files"
+      - cmd: "fd -e py -e js"
+        description: "Multiple extensions"
+
+  - name: "-t/--type"
+    description: "Filter by file type"
+    examples:
+      - cmd: "fd -t f"
+        description: "Files only"
+      - cmd: "fd -t d"
+        description: "Directories only"
+      - cmd: "fd -t l"
+        description: "Symlinks only"
+      - cmd: "fd -t x"
+        description: "Executables only"
+      - cmd: "fd -t e"
+        description: "Empty files/directories"
+    notes: |
+      Types: f (file), d (directory), l (symlink), x (executable), e (empty)
+
+  - name: "-E/--exclude"
+    description: "Exclude patterns"
+    examples:
+      - cmd: "fd -E '*.pyc'"
+        description: "Exclude pattern"
+      - cmd: "fd -E node_modules"
+        description: "Exclude directory"
+      - cmd: "fd --prune"
+        description: "Don't traverse into matching directories"
+
+  - name: "-S/--size"
+    description: "Filter by size"
+    examples:
+      - cmd: "fd -S +100k"
+        description: "Larger than 100 KB"
+      - cmd: "fd -S -10m"
+        description: "Smaller than 10 MB"
+    notes: |
+      Units: b, k, m, g, t (or ki, mi, gi, ti for binary)
+
+  - name: "-d/--max-depth"
+    description: "Control depth"
+    examples:
+      - cmd: "fd -d 1"
+        description: "Current directory only"
+      - cmd: "fd --min-depth 2"
+        description: "Start at depth 2"
+      - cmd: "fd --exact-depth 3"
+        description: "Only depth 3"
+
+  - name: "--changed-within/--changed-before"
+    description: "Filter by modification time"
+    examples:
+      - cmd: "fd --changed-within 1d"
+        description: "Modified within last day"
+      - cmd: "fd --newer 2024-01-01"
+        description: "After date (alias)"
+      - cmd: "fd --changed-before 1week"
+        description: "Before 1 week ago"
+      - cmd: "fd --older 2024-01-01"
+        description: "Before date (alias)"
+    notes: |
+      Durations: h, d, weeks, months. Dates: YYYY-MM-DD HH:MM:SS
+
+  - name: "-x/--exec"
+    description: "Execute commands"
+    examples:
+      - cmd: "fd -e zip -x unzip"
+        description: "Run command per file (parallel)"
+      - cmd: "fd -e jpg -x convert {} {.}.png"
+        description: "Convert files (placeholders)"
+      - cmd: "fd -X vim"
+        description: "Run once with all results (--exec-batch)"
+    notes: |
+      Placeholders: {} (path), {/} (basename), {//} (parent), {.} (no ext)
+
+  - name: "output"
+    description: "Output options"
+    examples:
+      - cmd: "fd -l"
+        description: "Long listing (--list-details)"
+      - cmd: "fd -a"
+        description: "Absolute paths (--absolute-path)"
+      - cmd: "fd -p"
+        description: "Match full path (--full-path)"
+      - cmd: "fd -0"
+        description: "Null-separated (--print0)"
+      - cmd: "fd -1"
+        description: "Single result and quit"
+      - cmd: "fd --color never"
+        description: "Disable colors"
+
+  - name: "advanced"
+    description: "Advanced options"
+    examples:
+      - cmd: "fd -L"
+        description: "Follow symlinks (--follow)"
+      - cmd: "fd --owner <user>"
+        description: "Filter by owner"
+      - cmd: "fd -j 1"
+        description: "Single thread (--threads)"
+      - cmd: "fd --one-file-system"
+        description: "Don't cross filesystem boundaries"
+
+resources:
+  - name: "Official Repository"
+    url: "https://github.com/sharkdp/fd"
+  - name: "How to Use"
+    url: "https://github.com/sharkdp/fd#how-to-use"
