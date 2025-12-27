@@ -26,4 +26,3 @@ alias top="btop"
 alias todo="togo"
 alias post="posting"
 alias fvi='selected=$(fzf -m --preview="bat --color=always {}") && [[ -n $selected ]] && nvim $selected'
-alias ded='selected=$(chezmoi managed -i files | fzf) && chezmoi edit "$HOME/$selected" && chezmoi apply $HOME/$selected -v --no-pager'
