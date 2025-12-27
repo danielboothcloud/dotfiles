@@ -1,0 +1,179 @@
+name: sshuttle
+description: "Transparent proxy VPN over SSH"
+version: "1.0"
+
+overview: |
+  sshuttle
+
+  Transparent proxy server that forwards traffic over SSH.
+  Doesn't require admin privileges on the remote server.
+  More information: https://sshuttle.readthedocs.io/.
+
+  Forward all traffic through remote server:
+
+    sshuttle -r user@sshserver 0/0
+
+  Forward traffic to specific subnet:
+
+    sshuttle -r user@sshserver 10.0.0.0/8
+
+  Forward multiple subnets:
+
+    sshuttle -r user@sshserver 10.0.0.0/8 192.168.0.0/16
+
+  Exclude specific subnets:
+
+    sshuttle -r user@sshserver 0/0 -x 10.0.0.0/8
+
+  Run in daemon mode (background):
+
+    sshuttle -r user@sshserver -D --pidfile=/tmp/sshuttle.pid 10.0.0.0/8
+
+  Include DNS forwarding:
+
+    sshuttle -r user@sshserver --dns 10.0.0.0/8
+
+commands:
+  - name: "-r/--remote"
+    description: "Remote SSH server"
+    examples:
+      - cmd: "sshuttle -r user@server 10.0.0.0/8"
+        description: "Connect to remote server"
+      - cmd: "sshuttle -r server 10.0.0.0/8"
+        description: "Connect using current username"
+      - cmd: "sshuttle -r user@server:2222 10.0.0.0/8"
+        description: "Connect to custom SSH port"
+    notes: |
+      Format: [username[:password]@]hostname[:port]
+      Required for all connections
+
+  - name: "subnets"
+    description: "Subnet routing"
+    examples:
+      - cmd: "sshuttle -r server 10.0.0.0/8"
+        description: "Route single subnet"
+      - cmd: "sshuttle -r server 10.0.0.0/8 192.168.0.0/16"
+        description: "Route multiple subnets"
+      - cmd: "sshuttle -r server 0/0"
+        description: "Route all traffic (0.0.0.0/0)"
+      - cmd: "sshuttle -r server 0/0 -x 192.168.1.0/24"
+        description: "Route all except local subnet"
+    notes: |
+      Format: IP/MASK or IP/MASK:PORT or IP/MASK:PORT-PORT
+
+  - name: "-x/--exclude"
+    description: "Exclude subnets"
+    examples:
+      - cmd: "sshuttle -r server 0/0 -x 192.168.1.0/24"
+        description: "Exclude subnet from routing"
+      - cmd: "sshuttle -r server 0/0 -x 10.0.0.0/8 -x 172.16.0.0/12"
+        description: "Exclude multiple subnets"
+      - cmd: "sshuttle -r server -X exclude.txt 0/0"
+        description: "Exclude subnets from file (--exclude-from)"
+    notes: |
+      Useful to avoid routing local network traffic
+
+  - name: "-D/--daemon"
+    description: "Run in background"
+    examples:
+      - cmd: "sshuttle -r server -D 10.0.0.0/8"
+        description: "Run as daemon"
+      - cmd: "sshuttle -r server -D --pidfile=/tmp/sshuttle.pid 10.0.0.0/8"
+        description: "Run as daemon with custom pidfile"
+    notes: |
+      Default pidfile: ./sshuttle.pid
+      Use --syslog to send logs to syslog
+
+  - name: "--dns"
+    description: "DNS forwarding"
+    examples:
+      - cmd: "sshuttle -r server --dns 10.0.0.0/8"
+        description: "Forward DNS requests to remote server"
+      - cmd: "sshuttle -r server --dns --to-ns 8.8.8.8 10.0.0.0/8"
+        description: "Forward DNS to specific server"
+      - cmd: "sshuttle -r server --ns-hosts 10.0.0.1,10.0.0.2 10.0.0.0/8"
+        description: "Capture DNS requests to specific servers"
+    notes: |
+      Forwards local DNS queries through the tunnel
+
+  - name: "-N/--auto-nets"
+    description: "Auto-detect subnets"
+    examples:
+      - cmd: "sshuttle -r server -N"
+        description: "Automatically determine subnets to route"
+    notes: |
+      Discovers remote subnets automatically
+
+  - name: "-H/--auto-hosts"
+    description: "Auto-update /etc/hosts"
+    examples:
+      - cmd: "sshuttle -r server -H 10.0.0.0/8"
+        description: "Scan and update /etc/hosts with remote hostnames"
+      - cmd: "sshuttle -r server -H --seed-hosts host1,host2 10.0.0.0/8"
+        description: "Start with seed hostnames"
+    notes: |
+      Continuously scans for remote hostnames
+
+  - name: "-l/--listen"
+    description: "Listen address"
+    examples:
+      - cmd: "sshuttle -r server -l 127.0.0.1:12300 10.0.0.0/8"
+        description: "Listen on specific IP and port"
+    notes: |
+      Format: [IP:]PORT
+
+  - name: "-e/--ssh-cmd"
+    description: "Custom SSH command"
+    examples:
+      - cmd: "sshuttle -r server -e 'ssh -i /path/to/key' 10.0.0.0/8"
+        description: "Use custom SSH command/options"
+    notes: |
+      Useful for custom SSH keys or options
+
+  - name: "-v/--verbose"
+    description: "Verbose output"
+    examples:
+      - cmd: "sshuttle -r server -v 10.0.0.0/8"
+        description: "Increase verbosity (can use multiple times)"
+      - cmd: "sshuttle -r server -vv 10.0.0.0/8"
+        description: "Very verbose"
+
+  - name: "--method"
+    description: "Proxy method"
+    examples:
+      - cmd: "sshuttle -r server --method nat 10.0.0.0/8"
+        description: "Use specific method (auto, nft, nat, tproxy, pf, ipfw)"
+    notes: |
+      Default is auto (automatically choose best method)
+
+  - name: "tun"
+    description: "AWS VPN tunnel wrapper (sshuttle-aws)"
+    examples:
+      - cmd: "tun"
+        description: "Connect to all AWS IP ranges via bastion"
+      - cmd: "tun eu-west-2"
+        description: "Connect to specific AWS region ranges"
+      - cmd: "tun -d eu-west-2"
+        description: "Run in daemon mode"
+      - cmd: "tun -p production"
+        description: "Use specific AWS profile"
+      - cmd: "tun -d -p production eu-west-2"
+        description: "Daemon mode with profile and region"
+      - cmd: "tun status"
+        description: "Check if tunnel is running"
+      - cmd: "tun stop"
+        description: "Stop running tunnel"
+    notes: |
+      Wrapper script that:
+        - Automatically finds bastion instance (tag: Name=bastion-*)
+        - Fetches current AWS IP ranges from Amazon's public JSON
+        - Routes traffic through bastion using sshuttle
+        - Supports daemon mode (-d) with pidfile at /tmp/sshuttle-aws.pid
+        - Supports AWS profiles (-p) for different accounts
+        - Can filter by AWS region or route all regions
+
+resources:
+  - name: "Official Documentation"
+    url: "https://sshuttle.readthedocs.io/"
+  - name: "GitHub Repository"
+    url: "https://github.com/sshuttle/sshuttle"
