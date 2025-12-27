@@ -1,0 +1,443 @@
+name: nvim
+description: "Neovim - Hyperextensible Vim-based text editor"
+version: "1.0"
+
+aliases:
+  - vi
+
+overview: |
+  Neovim, a programmer's text editor based on Vim, provides several modes for
+  different kinds of text manipulation.
+  Pressing <i> in normal mode enters insert mode. <Esc> or <Ctrl c> goes back to
+  normal mode, which doesn't allow regular text insertion.
+  See also: vim, vimtutor, vimdiff.
+  More information: https://neovim.io/.
+
+  Open a file:
+    nvim path/to/file
+
+  Enter text editing mode (insert mode):
+    <Esc><i>
+
+  Copy ("yank") or cut ("delete") the current line (paste it with <p>):
+    <Esc><y><y>|<d><d>
+
+  Enter normal mode and undo the last operation:
+    <Esc><u>
+
+  Search for a pattern in the file (press <n>/<N> to go to next/previous match):
+    <Esc></>search_pattern<Enter>
+
+  Perform a regex substitution in the whole file:
+    <Esc><:>%s/regex/replacement/g<Enter>
+
+  Enter normal mode and save (write) the file, and quit:
+    <Esc><Z><Z>|<Esc><:>x<Enter>|<Esc><:>wq<Enter>
+
+  Quit without saving:
+    <Esc><:>q!<Enter>
+
+commands:
+  - name: "opening-files"
+    description: "Open files and start nvim"
+    examples:
+      - cmd: "fvi"
+        description: "Fuzzy find and open files with preview (fzf + nvim)"
+      - cmd: "nvim <file>"
+        description: "Open a file"
+      - cmd: "nvim <file1> <file2>"
+        description: "Open multiple files in buffers"
+      - cmd: "nvim -o <file1> <file2>"
+        description: "Open files in horizontal splits"
+      - cmd: "nvim -O <file1> <file2>"
+        description: "Open files in vertical splits"
+      - cmd: "nvim -p <file1> <file2>"
+        description: "Open files in tabs"
+      - cmd: "nvim -d <file1> <file2>"
+        description: "Open in diff mode"
+      - cmd: "nvim +<line> <file>"
+        description: "Open file at specific line"
+      - cmd: "nvim +/<pattern> <file>"
+        description: "Open file and jump to pattern"
+      - cmd: "nvim -R <file>"
+        description: "Open in read-only mode"
+    notes: |
+      Use nvim --clean to start without config
+      Use nvim --headless for scripts
+
+  - name: "modes"
+    description: "Switch between vim modes"
+    examples:
+      - cmd: "i"
+        description: "Enter insert mode (before cursor)"
+      - cmd: "a"
+        description: "Enter insert mode (after cursor)"
+      - cmd: "I"
+        description: "Insert at beginning of line"
+      - cmd: "A"
+        description: "Insert at end of line"
+      - cmd: "o"
+        description: "Open new line below and insert"
+      - cmd: "O"
+        description: "Open new line above and insert"
+      - cmd: "v"
+        description: "Enter visual mode (character)"
+      - cmd: "V"
+        description: "Enter visual line mode"
+      - cmd: "Ctrl+v"
+        description: "Enter visual block mode"
+      - cmd: "Esc"
+        description: "Return to normal mode"
+      - cmd: ":"
+        description: "Enter command mode"
+    notes: |
+      Always press Esc to return to normal mode
+      Most commands work in normal mode
+
+  - name: "save-quit"
+    description: "Save and quit operations"
+    examples:
+      - cmd: ":w"
+        description: "Save (write) file"
+      - cmd: ":w <filename>"
+        description: "Save as new file"
+      - cmd: ":q"
+        description: "Quit (fails if unsaved changes)"
+      - cmd: ":q!"
+        description: "Quit without saving"
+      - cmd: ":wq"
+        description: "Save and quit"
+      - cmd: ":x"
+        description: "Save and quit (only if changes)"
+      - cmd: "ZZ"
+        description: "Save and quit (normal mode)"
+      - cmd: "ZQ"
+        description: "Quit without saving (normal mode)"
+      - cmd: ":wa"
+        description: "Write all buffers"
+      - cmd: ":qa"
+        description: "Quit all buffers"
+      - cmd: ":wqa"
+        description: "Write and quit all"
+    related:
+      - "opening-files"
+    notes: |
+      Use ! to force commands (e.g., :q! to force quit)
+
+  - name: "navigation"
+    description: "Move around in files"
+    examples:
+      - cmd: "h, j, k, l"
+        description: "Left, down, up, right"
+      - cmd: "w"
+        description: "Jump to next word"
+      - cmd: "b"
+        description: "Jump to previous word"
+      - cmd: "0"
+        description: "Jump to start of line"
+      - cmd: "$"
+        description: "Jump to end of line"
+      - cmd: "gg"
+        description: "Jump to first line"
+      - cmd: "G"
+        description: "Jump to last line"
+      - cmd: ":<line>"
+        description: "Jump to specific line number"
+      - cmd: "Ctrl+d"
+        description: "Scroll down half page"
+      - cmd: "Ctrl+u"
+        description: "Scroll up half page"
+      - cmd: "%"
+        description: "Jump to matching bracket"
+      - cmd: "*"
+        description: "Find next occurrence of word under cursor"
+      - cmd: "#"
+        description: "Find previous occurrence of word under cursor"
+    notes: |
+      Prefix with number for repetition (e.g., 5j moves down 5 lines)
+
+  - name: "edit"
+    description: "Edit and manipulate text"
+    examples:
+      - cmd: "x"
+        description: "Delete character under cursor"
+      - cmd: "dd"
+        description: "Delete (cut) current line"
+      - cmd: "D"
+        description: "Delete from cursor to end of line"
+      - cmd: "yy"
+        description: "Yank (copy) current line"
+      - cmd: "Y"
+        description: "Yank from cursor to end of line"
+      - cmd: "p"
+        description: "Paste after cursor"
+      - cmd: "P"
+        description: "Paste before cursor"
+      - cmd: "u"
+        description: "Undo"
+      - cmd: "Ctrl+r"
+        description: "Redo"
+      - cmd: "."
+        description: "Repeat last command"
+      - cmd: "~"
+        description: "Toggle case of character"
+      - cmd: "r<char>"
+        description: "Replace character under cursor"
+      - cmd: "J"
+        description: "Join current line with next"
+      - cmd: "gcc"
+        description: "Comment out current line (toggle)"
+      - cmd: "gc<motion>"
+        description: "Comment out motion (e.g., gcap for paragraph)"
+    related:
+      - "visual"
+    notes: |
+      Commands work in normal mode
+      Prefix with number for repetition (e.g., 3dd deletes 3 lines)
+      Use gc in visual mode to comment selection
+
+  - name: "search-replace"
+    description: "Search and replace text"
+    examples:
+      - cmd: "/<pattern>"
+        description: "Search forward for pattern"
+      - cmd: "?<pattern>"
+        description: "Search backward for pattern"
+      - cmd: "n"
+        description: "Go to next search result"
+      - cmd: "N"
+        description: "Go to previous search result"
+      - cmd: ":noh"
+        description: "Clear search highlighting"
+      - cmd: ":%s/old/new/g"
+        description: "Replace all occurrences in file"
+      - cmd: ":%s/old/new/gc"
+        description: "Replace all with confirmation"
+      - cmd: ":s/old/new/g"
+        description: "Replace in current line"
+      - cmd: ":'<,'>s/old/new/g"
+        description: "Replace in visual selection"
+    notes: |
+      Add 'i' flag for case-insensitive: :%s/old/new/gi
+      Use regex patterns for advanced searches
+
+  - name: "visual"
+    description: "Visual mode operations"
+    examples:
+      - cmd: "v"
+        description: "Enter visual character mode"
+      - cmd: "V"
+        description: "Enter visual line mode"
+      - cmd: "Ctrl+v"
+        description: "Enter visual block mode"
+      - cmd: "d"
+        description: "Delete selection"
+      - cmd: "y"
+        description: "Yank (copy) selection"
+      - cmd: ">"
+        description: "Indent selection"
+      - cmd: "<"
+        description: "Unindent selection"
+      - cmd: "="
+        description: "Auto-indent selection"
+      - cmd: "~"
+        description: "Toggle case of selection"
+    related:
+      - "edit"
+    notes: |
+      Select with h,j,k,l after entering visual mode
+      Press Esc to exit visual mode
+
+  - name: "buffers"
+    description: "Work with multiple buffers"
+    examples:
+      - cmd: ":e <file>"
+        description: "Edit (open) a file in new buffer"
+      - cmd: ":ls"
+        description: "List all buffers"
+      - cmd: ":bn"
+        description: "Go to next buffer"
+      - cmd: ":bp"
+        description: "Go to previous buffer"
+      - cmd: ":b<n>"
+        description: "Go to buffer number n"
+      - cmd: ":bd"
+        description: "Delete (close) current buffer"
+      - cmd: ":bd<n>"
+        description: "Delete buffer number n"
+      - cmd: ":bufdo <cmd>"
+        description: "Execute command in all buffers"
+    related:
+      - "windows"
+      - "tabs"
+
+  - name: "windows"
+    description: "Split windows and navigate"
+    examples:
+      - cmd: ":sp <file>"
+        description: "Split window horizontally"
+      - cmd: ":vsp <file>"
+        description: "Split window vertically"
+      - cmd: "Ctrl+w s"
+        description: "Split window horizontally"
+      - cmd: "Ctrl+w v"
+        description: "Split window vertically"
+      - cmd: "Ctrl+w h/j/k/l"
+        description: "Navigate between windows"
+      - cmd: "Ctrl+w w"
+        description: "Cycle through windows"
+      - cmd: "Ctrl+w q"
+        description: "Close current window"
+      - cmd: "Ctrl+w o"
+        description: "Close all other windows"
+      - cmd: "Ctrl+w ="
+        description: "Make all windows equal size"
+    related:
+      - "buffers"
+      - "tabs"
+
+  - name: "tabs"
+    description: "Work with tabs"
+    examples:
+      - cmd: ":tabnew <file>"
+        description: "Open file in new tab"
+      - cmd: ":tabn"
+        description: "Go to next tab"
+      - cmd: ":tabp"
+        description: "Go to previous tab"
+      - cmd: ":tabc"
+        description: "Close current tab"
+      - cmd: ":tabo"
+        description: "Close all other tabs"
+      - cmd: "gt"
+        description: "Go to next tab (normal mode)"
+      - cmd: "gT"
+        description: "Go to previous tab (normal mode)"
+    related:
+      - "buffers"
+      - "windows"
+
+  - name: "folding"
+    description: "Code folding operations"
+    examples:
+      - cmd: "zf"
+        description: "Create fold (with motion or visual)"
+      - cmd: "za"
+        description: "Toggle fold"
+      - cmd: "zo"
+        description: "Open fold"
+      - cmd: "zc"
+        description: "Close fold"
+      - cmd: "zR"
+        description: "Open all folds"
+      - cmd: "zM"
+        description: "Close all folds"
+
+  - name: "macros"
+    description: "Record and replay macros"
+    examples:
+      - cmd: "q<register>"
+        description: "Start recording macro to register"
+      - cmd: "q"
+        description: "Stop recording macro"
+      - cmd: "@<register>"
+        description: "Play macro from register"
+      - cmd: "@@"
+        description: "Replay last macro"
+    notes: |
+      Example: qa to start recording to register a
+      Then q to stop, @a to replay
+
+  - name: "marks"
+    description: "Set and jump to marks"
+    examples:
+      - cmd: "m<letter>"
+        description: "Set mark at current position"
+      - cmd: "'<letter>"
+        description: "Jump to mark"
+      - cmd: "``"
+        description: "Jump back to previous position"
+      - cmd: ":marks"
+        description: "List all marks"
+    notes: |
+      Lowercase marks are local to buffer
+      Uppercase marks are global
+
+  - name: "custom-keybindings"
+    description: "Custom keybindings from your config"
+    examples:
+      - cmd: "<Space>"
+        description: "Leader key - access most custom commands"
+      - cmd: "<Space><Space>"
+        description: "Find files (Telescope)"
+      - cmd: "<leader>fg"
+        description: "Live grep (Telescope)"
+      - cmd: "<leader>fb"
+        description: "List buffers (Telescope)"
+      - cmd: "<leader>fh"
+        description: "Search help tags (Telescope)"
+      - cmd: "<leader>sh"
+        description: "Search help documentation"
+      - cmd: "<Tab> / <S-Tab>"
+        description: "Navigate buffers (next/previous)"
+      - cmd: "<leader>[ / <leader>]"
+        description: "Navigate buffers (previous/next)"
+      - cmd: "<leader>f"
+        description: "Format current buffer"
+      - cmd: "<leader>mr"
+        description: "Toggle markdown rendering"
+      - cmd: "Ctrl+h/j/k/l"
+        description: "Navigate between window splits"
+      - cmd: "grn"
+        description: "LSP: Rename symbol"
+      - cmd: "gra"
+        description: "LSP: Code action"
+      - cmd: "grr"
+        description: "LSP: Find references"
+      - cmd: "grd"
+        description: "LSP: Go to definition"
+      - cmd: "gri"
+        description: "LSP: Go to implementation"
+      - cmd: "gO"
+        description: "LSP: Document symbols"
+      - cmd: "gW"
+        description: "LSP: Workspace symbols"
+      - cmd: "<leader>th"
+        description: "LSP: Toggle inlay hints"
+    notes: |
+      Leader key is <Space>
+      Delete operations (d, c, x) use black hole register (don't copy to clipboard)
+      Use which-key (<Space> + wait) to discover more keybindings
+      Clipboard is synced with OS (yy copies to system clipboard)
+
+  - name: "plugins"
+    description: "Installed plugins and features"
+    examples:
+      - cmd: ":Lazy"
+        description: "Open plugin manager"
+      - cmd: ":Mason"
+        description: "Open LSP/tool installer"
+      - cmd: ":Neotree"
+        description: "Toggle file explorer"
+      - cmd: ":checkhealth"
+        description: "Check Neovim configuration health"
+      - cmd: ":Tutor"
+        description: "Start Vim tutorial"
+    notes: |
+      Theme: Oxocarbon
+      File Explorer: Neo-tree
+      Fuzzy Finder: Telescope
+      LSP: nvim-lspconfig with Mason
+      Completion: blink.cmp
+      Snippets: LuaSnip
+      Git: gitsigns
+      Status line: lualine
+      Buffer tabs: bufferline
+
+resources:
+  - name: "Official Docs"
+    url: "https://neovim.io/doc/"
+  - name: "User Manual"
+    url: "https://neovim.io/doc/user/"
+  - name: "Vim Cheat Sheet"
+    url: "https://vim.rtorr.com/"
