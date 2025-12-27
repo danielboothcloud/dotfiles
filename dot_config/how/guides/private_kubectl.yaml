@@ -4,7 +4,6 @@ version: "1.0"
 
 aliases:
   - kb
-  - k
 
 overview: |
   kubectl - Kubernetes command-line tool for cluster management.
