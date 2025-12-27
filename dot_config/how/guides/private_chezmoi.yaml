@@ -1,0 +1,131 @@
+name: chezmoi
+description: "Manage your dotfiles across multiple machines"
+version: "1.0"
+
+aliases:
+  - dotfiles
+
+categories:
+  - name: "Basics"
+    description: "Essential commands"
+  - name: "Management"
+    description: "Managing dotfiles"
+  - name: "Advanced"
+    description: "Advanced features"
+
+commands:
+  - name: "status"
+    description: "Check what would change"
+    category: "Basics"
+    tags: ["status", "diff"]
+    examples:
+      - cmd: "chezmoi diff"
+        description: "See what would change"
+      - cmd: "chezmoi status"
+        description: "Show status of managed files"
+    related:
+      - "apply"
+    notes: |
+      Use 'diff' to see actual changes.
+      Use 'status' for a quick overview.
+
+  - name: "apply"
+    description: "Apply changes to home directory"
+    category: "Basics"
+    tags: ["apply", "sync"]
+    examples:
+      - cmd: "chezmoi apply"
+        description: "Apply all changes"
+      - cmd: "chezmoi apply -v"
+        description: "Apply changes verbosely"
+      - cmd: "chezmoi apply --dry-run"
+        description: "Show what would happen without applying"
+    related:
+      - "status"
+      - "edit"
+    notes: |
+      Always run 'chezmoi diff' before apply to review changes.
+      Use --dry-run to test without making changes.
+
+  - name: "edit"
+    description: "Edit a managed file"
+    category: "Management"
+    tags: ["edit"]
+    examples:
+      - cmd: "chezmoi edit ~/.zshrc"
+        description: "Edit zshrc in source directory"
+      - cmd: "chezmoi edit --apply ~/.zshrc"
+        description: "Edit and apply changes immediately"
+    related:
+      - "apply"
+      - "add"
+    notes: |
+      Opens the source file in $EDITOR.
+      Changes are not applied until you run 'chezmoi apply'.
+
+  - name: "add"
+    description: "Add new file to chezmoi"
+    category: "Management"
+    tags: ["add", "new"]
+    examples:
+      - cmd: "chezmoi add ~/.config/newfile"
+        description: "Start managing a new file"
+      - cmd: "chezmoi add --template ~/.gitconfig"
+        description: "Add file as a template"
+    related:
+      - "edit"
+      - "remove"
+    notes: |
+      Files are copied to chezmoi source directory.
+      Use --template for files with dynamic content.
+
+  - name: "remove"
+    description: "Stop managing a file"
+    category: "Management"
+    tags: ["remove", "delete"]
+    examples:
+      - cmd: "chezmoi remove ~/.oldfile"
+        description: "Stop managing a file"
+    related:
+      - "add"
+
+  - name: "update"
+    description: "Pull and apply latest changes"
+    category: "Basics"
+    tags: ["update", "git", "sync"]
+    examples:
+      - cmd: "chezmoi update"
+        description: "Pull latest changes from git and apply"
+      - cmd: "chezmoi update -v"
+        description: "Update verbosely"
+    notes: |
+      Equivalent to: git pull && chezmoi apply.
+      Only works if source directory is a git repo.
+
+  - name: "cd"
+    description: "Change to source directory"
+    category: "Advanced"
+    tags: ["cd", "source"]
+    examples:
+      - cmd: "chezmoi cd"
+        description: "Open shell in source directory"
+    notes: |
+      Useful for running git commands manually.
+
+  - name: "managed"
+    description: "List all managed files"
+    category: "Basics"
+    tags: ["list", "managed"]
+    examples:
+      - cmd: "chezmoi managed"
+        description: "List all managed files"
+      - cmd: "chezmoi managed -i files"
+        description: "List only files (with full paths)"
+    related:
+      - "status"
+
+resources:
+  - name: "Official Docs"
+    url: "https://www.chezmoi.io/quick-start/"
+  - name: "User Guide"
+    url: "https://www.chezmoi.io/user-guide/command-overview/"

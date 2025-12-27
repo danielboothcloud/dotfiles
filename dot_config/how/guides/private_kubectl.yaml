@@ -1,0 +1,144 @@
+name: kubectl
+description: "Kubernetes command-line tool"
+version: "1.0"
+
+aliases:
+  - kb
+  - k
+
+categories:
+  - name: "Pods"
+    description: "Working with pods"
+  - name: "Deployments"
+    description: "Managing deployments"
+  - name: "Debugging"
+    description: "Troubleshooting and debugging"
+  - name: "Configuration"
+    description: "Config and context management"
+
+commands:
+  - name: "get-pods"
+    description: "List all pods in current namespace"
+    category: "Pods"
+    tags: ["list", "pods", "basics"]
+    examples:
+      - cmd: "kubectl get pods"
+        description: "List pods in current namespace"
+      - cmd: "kubectl get pods -A"
+        description: "List pods in all namespaces"
+      - cmd: "kubectl get pods -o wide"
+        description: "List pods with more details (node, IP)"
+      - cmd: "kubectl get pods --field-selector=status.phase=Running"
+        description: "List only running pods"
+    related:
+      - "describe-pod"
+      - "logs"
+      - "exec-pod"
+    notes: |
+      Use -w or --watch to stream updates.
+      Common output formats: -o json, -o yaml, -o wide, -o name
+
+  - name: "describe-pod"
+    description: "Show detailed information about a pod"
+    category: "Pods"
+    tags: ["debug", "details", "pods"]
+    examples:
+      - cmd: "kubectl describe pod <pod-name>"
+        description: "Show pod details"
+      - cmd: "kubectl describe pod <pod-name> -n <namespace>"
+        description: "Describe pod in specific namespace"
+    related:
+      - "get-pods"
+      - "logs"
+
+  - name: "logs"
+    description: "View pod logs"
+    category: "Debugging"
+    tags: ["logs", "debug", "troubleshoot"]
+    examples:
+      - cmd: "kubectl logs <pod-name>"
+        description: "Show logs from pod"
+      - cmd: "kubectl logs <pod-name> -f"
+        description: "Stream logs (follow)"
+      - cmd: "kubectl logs <pod-name> --tail=100"
+        description: "Show last 100 lines"
+      - cmd: "kubectl logs <pod-name> -c <container-name>"
+        description: "Logs from specific container"
+      - cmd: "kubectl logs <pod-name> --previous"
+        description: "Logs from previous instance (after crash)"
+    related:
+      - "describe-pod"
+      - "exec-pod"
+    notes: |
+      Use -f to follow logs in real-time.
+      Use --previous to see logs from crashed containers.
+
+  - name: "exec-pod"
+    description: "Execute command in a pod"
+    category: "Debugging"
+    tags: ["exec", "debug", "shell"]
+    examples:
+      - cmd: "kubectl exec <pod-name> -- <command>"
+        description: "Run command in pod"
+      - cmd: "kubectl exec -it <pod-name> -- /bin/bash"
+        description: "Get interactive shell in pod"
+      - cmd: "kubectl exec <pod-name> -c <container> -- <command>"
+        description: "Run command in specific container"
+    related:
+      - "logs"
+      - "describe-pod"
+
+  - name: "switch-context"
+    description: "Switch Kubernetes context"
+    category: "Configuration"
+    tags: ["context", "config", "cluster"]
+    examples:
+      - cmd: "kubectl config get-contexts"
+        description: "List all contexts"
+      - cmd: "kubectl config current-context"
+        description: "Show current context"
+      - cmd: "kubectl config use-context <context-name>"
+        description: "Switch to different context"
+    related:
+      - "switch-namespace"
+
+  - name: "switch-namespace"
+    description: "Switch default namespace"
+    category: "Configuration"
+    tags: ["namespace", "config"]
+    examples:
+      - cmd: "kubectl config set-context --current --namespace=<namespace>"
+        description: "Set default namespace for current context"
+      - cmd: "kubectl get namespaces"
+        description: "List all namespaces"
+    related:
+      - "switch-context"
+
+  - name: "get-deployments"
+    description: "List deployments"
+    category: "Deployments"
+    tags: ["list", "deployments"]
+    examples:
+      - cmd: "kubectl get deployments"
+        description: "List deployments in current namespace"
+      - cmd: "kubectl get deployments -A"
+        description: "List all deployments in all namespaces"
+    related:
+      - "describe-deployment"
+      - "scale-deployment"
+
+  - name: "scale-deployment"
+    description: "Scale a deployment"
+    category: "Deployments"
+    tags: ["scale", "deployments"]
+    examples:
+      - cmd: "kubectl scale deployment <name> --replicas=<count>"
+        description: "Scale deployment to specific replica count"
+    related:
+      - "get-deployments"
+
+resources:
+  - name: "Official Docs"
+    url: "https://kubernetes.io/docs/reference/kubectl/"
+  - name: "Kubectl Cheat Sheet"
+    url: "https://kubernetes.io/docs/reference/kubectl/cheatsheet/"
