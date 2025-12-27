@@ -1,6 +1,5 @@
 font-family = MesloLGS Nerd Font Mono
 font-size = 17
 background-opacity = 1
-# theme = catppuccin-mocha.conf
-theme = Oxocarbon
+theme = Rose Pine Moon
 keybind = shift+enter=text:\n
