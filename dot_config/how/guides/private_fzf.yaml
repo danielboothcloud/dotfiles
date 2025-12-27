@@ -1,0 +1,261 @@
+name: fzf
+description: "Command-line fuzzy finder"
+version: "1.0"
+
+overview: |
+  fzf
+
+  Fuzzy finder.
+  Similar to sk.
+  More information: https://github.com/junegunn/fzf#usage.
+
+  Start fzf on all files in the specified directory:
+
+    find path/to/directory -type f | fzf
+
+  Start fzf for running processes:
+
+    ps aux | fzf
+
+  Select multiple files with <Shift Tab> and write to a file:
+
+    find path/to/directory -type f | fzf --multi > path/to/file
+
+  Start fzf with a specified query:
+
+    fzf --query "query"
+
+  Start fzf on entries that start with core and end with either go, rb, or py:
+
+    fzf --query "^core go$ | rb$ | py$"
+
+  Start fzf on entries that do not match pyc and contain travis:
+
+    fzf --query '!pyc travis'
+
+commands:
+  - name: "search"
+    description: "Search mode options"
+    examples:
+      - cmd: "fzf"
+        description: "Start fzf (reads from stdin)"
+      - cmd: "fzf -e"
+        description: "Exact match (--exact)"
+      - cmd: "fzf -i"
+        description: "Case-insensitive (--ignore-case)"
+      - cmd: "fzf +i"
+        description: "Case-sensitive (--no-ignore-case)"
+      - cmd: "fzf --smart-case"
+        description: "Smart case match (default)"
+    notes: |
+      Smart case is default (case-insensitive if pattern is lowercase)
+
+  - name: "-q/--query"
+    description: "Start with initial query"
+    examples:
+      - cmd: "fzf -q 'pattern'"
+        description: "Start with query"
+      - cmd: "fzf -q '^core go$ | rb$ | py$'"
+        description: "Query with regex"
+      - cmd: "fzf -q '!pyc travis'"
+        description: "Exclude pattern (!)"
+    notes: |
+      Query patterns support regex and negation with !
+
+  - name: "-m/--multi"
+    description: "Multi-select mode"
+    examples:
+      - cmd: "fzf -m"
+        description: "Enable multi-select with Tab/Shift-Tab"
+      - cmd: "fzf --multi=5"
+        description: "Limit to max 5 selections"
+    notes: |
+      Tab to select, Shift-Tab to deselect
+
+  - name: "-1/-0"
+    description: "Auto-select shortcuts"
+    examples:
+      - cmd: "fzf -1"
+        description: "Auto-select if only one match (--select-1)"
+      - cmd: "fzf -0"
+        description: "Exit immediately if no match (--exit-0)"
+
+  - name: "-f/--filter"
+    description: "Filter mode (non-interactive)"
+    examples:
+      - cmd: "fzf -f 'pattern'"
+        description: "Print matches and exit (no UI)"
+    notes: |
+      Useful for scripting
+
+  - name: "--preview"
+    description: "Preview window"
+    examples:
+      - cmd: "fzf --preview 'cat {}'"
+        description: "Preview with cat"
+      - cmd: "fzf --preview 'bat --color=always {}'"
+        description: "Preview with bat"
+      - cmd: "fzf --preview-window=right:50%"
+        description: "Preview on right, 50% width"
+      - cmd: "fzf --preview-window=up:30%:wrap"
+        description: "Preview on top, 30% height, wrap lines"
+    notes: |
+      {} is replaced with selected item
+      Preview window positions: up, down, left, right
+
+  - name: "--height"
+    description: "Height control"
+    examples:
+      - cmd: "fzf --height 40%"
+        description: "Use 40% of screen height"
+      - cmd: "fzf --height ~40%"
+        description: "Adaptive height up to 40%"
+    notes: |
+      Prefix with ~ for adaptive height
+
+  - name: "--layout"
+    description: "Layout options"
+    examples:
+      - cmd: "fzf --layout=reverse"
+        description: "Reverse layout (input at top)"
+      - cmd: "fzf --layout=default"
+        description: "Default layout (input at bottom)"
+
+  - name: "--border"
+    description: "Border styles"
+    examples:
+      - cmd: "fzf --border"
+        description: "Draw border (rounded, default)"
+      - cmd: "fzf --border=sharp"
+        description: "Sharp border"
+      - cmd: "fzf --border=none"
+        description: "No border"
+    notes: |
+      Styles: rounded, sharp, bold, double, horizontal, vertical, none
+
+  - name: "--prompt"
+    description: "Customize prompt"
+    examples:
+      - cmd: "fzf --prompt='Select> '"
+        description: "Custom prompt text"
+
+  - name: "--bind"
+    description: "Custom key bindings"
+    examples:
+      - cmd: "fzf --bind 'ctrl-a:select-all'"
+        description: "Bind Ctrl-A to select all"
+      - cmd: "fzf --bind 'ctrl-y:execute-silent(echo {} | pbcopy)'"
+        description: "Bind Ctrl-Y to copy to clipboard"
+
+  - name: "--color"
+    description: "Color scheme"
+    examples:
+      - cmd: "fzf --color=dark"
+        description: "Dark color scheme"
+      - cmd: "fzf --color=light"
+        description: "Light color scheme"
+      - cmd: "fzf --no-color"
+        description: "Disable colors"
+
+  - name: "--header"
+    description: "Header text"
+    examples:
+      - cmd: "fzf --header 'Select files'"
+        description: "Show header text"
+      - cmd: "fzf --header-lines=2"
+        description: "First 2 lines as header"
+
+  - name: "--print-query"
+    description: "Output options"
+    examples:
+      - cmd: "fzf --print-query"
+        description: "Print query as first line of output"
+
+  - name: "--expect"
+    description: "Capture key press"
+    examples:
+      - cmd: "fzf --expect=ctrl-v,ctrl-e"
+        description: "Exit on Ctrl-V or Ctrl-E, print key pressed"
+    notes: |
+      Useful for different actions based on key
+
+  - name: "--read0/--print0"
+    description: "NUL-delimited I/O"
+    examples:
+      - cmd: "find . -print0 | fzf --read0"
+        description: "Read NUL-delimited input"
+      - cmd: "fzf --print0"
+        description: "Print NUL-delimited output"
+    notes: |
+      Useful for filenames with spaces
+
+  - name: "--history"
+    description: "Search history"
+    examples:
+      - cmd: "fzf --history ~/.fzf_history"
+        description: "Store search history in file"
+      - cmd: "fzf --history-size=500"
+        description: "Limit history to 500 entries"
+
+  - name: "--tmux"
+    description: "Tmux popup mode"
+    examples:
+      - cmd: "fzf --tmux"
+        description: "Open in tmux popup (center, 50%)"
+      - cmd: "fzf --tmux=80%"
+        description: "Open in tmux popup (80% size)"
+    notes: |
+      Requires tmux 3.3+
+
+  - name: "integrations"
+    description: "Shell integration (zsh/bash/fish)"
+    examples:
+      - cmd: "vim **<TAB>"
+        description: "Fuzzy find files under current directory"
+      - cmd: "cd **<TAB>"
+        description: "Fuzzy find directories under current directory"
+      - cmd: "vim ../**<TAB>"
+        description: "Fuzzy find files under parent directory"
+      - cmd: "vim ~/projects/**<TAB>"
+        description: "Fuzzy find files under ~/projects"
+      - cmd: "kill -9 **<TAB>"
+        description: "Fuzzy find PIDs for kill command"
+      - cmd: "ssh **<TAB>"
+        description: "Fuzzy find from /etc/hosts and ~/.ssh/config"
+      - cmd: "export **<TAB>"
+        description: "Fuzzy find environment variables"
+      - cmd: "unset **<TAB>"
+        description: "Fuzzy find environment variables to unset"
+      - cmd: "unalias **<TAB>"
+        description: "Fuzzy find aliases to remove"
+    notes: |
+      ** trigger followed by TAB activates fuzzy completion
+      Use TAB/Shift-TAB to select multiple items, Enter to confirm
+      Customize trigger: export FZF_COMPLETION_TRIGGER='~~'
+
+      Key bindings (zsh/bash):
+        Ctrl-T: Paste selected files/dirs onto command line
+        Ctrl-R: Paste selected command from history
+        Alt-C:  cd into selected directory
+
+  - name: "environment-variables"
+    description: "Environment variables"
+    examples:
+      - cmd: "FZF_DEFAULT_COMMAND='fd --type f'"
+        description: "Set default command for input"
+      - cmd: "FZF_DEFAULT_OPTS='--layout=reverse'"
+        description: "Set default options"
+      - cmd: "FZF_COMPLETION_TRIGGER='~~'"
+        description: "Change zsh completion trigger from ** to ~~"
+      - cmd: "FZF_COMPLETION_OPTS='--preview \"bat {}\"'"
+        description: "Options for shell completion"
+    notes: |
+      Set in ~/.zshrc or ~/.bashrc for persistence
+
+resources:
+  - name: "Official Repository"
+    url: "https://github.com/junegunn/fzf"
+  - name: "Shell Integration Guide"
+    url: "https://junegunn.github.io/fzf/shell-integration/"
+  - name: "Advanced Guide"
+    url: "https://thevaluable.dev/fzf-shell-integration/"
