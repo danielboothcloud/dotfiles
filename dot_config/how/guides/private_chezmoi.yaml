@@ -5,19 +5,9 @@ version: "1.0"
 aliases:
   - dotfiles
 
-categories:
-  - name: "Basics"
-    description: "Essential commands"
-  - name: "Management"
-    description: "Managing dotfiles"
-  - name: "Advanced"
-    description: "Advanced features"
-
 commands:
   - name: "status"
     description: "Check what would change"
-    category: "Basics"
-    tags: ["status", "diff"]
     examples:
       - cmd: "chezmoi diff"
         description: "See what would change"
@@ -31,8 +21,6 @@ commands:
 
   - name: "apply"
     description: "Apply changes to home directory"
-    category: "Basics"
-    tags: ["apply", "sync"]
     examples:
       - cmd: "chezmoi apply"
         description: "Apply all changes"
@@ -49,24 +37,23 @@ commands:
 
   - name: "edit"
     description: "Edit a managed file"
-    category: "Management"
-    tags: ["edit"]
     examples:
       - cmd: "chezmoi edit ~/.zshrc"
         description: "Edit zshrc in source directory"
       - cmd: "chezmoi edit --apply ~/.zshrc"
         description: "Edit and apply changes immediately"
+      - cmd: "ded"
+        description: "Interactive fzf selector to edit managed files"
     related:
       - "apply"
       - "add"
     notes: |
       Opens the source file in $EDITOR.
       Changes are not applied until you run 'chezmoi apply'.
+      The 'ded' alias uses fzf for interactive file selection and auto-applies.
 
   - name: "add"
     description: "Add new file to chezmoi"
-    category: "Management"
-    tags: ["add", "new"]
     examples:
       - cmd: "chezmoi add ~/.config/newfile"
         description: "Start managing a new file"
@@ -81,8 +68,6 @@ commands:
 
   - name: "remove"
     description: "Stop managing a file"
-    category: "Management"
-    tags: ["remove", "delete"]
     examples:
       - cmd: "chezmoi remove ~/.oldfile"
         description: "Stop managing a file"
@@ -91,8 +76,6 @@ commands:
 
   - name: "update"
     description: "Pull and apply latest changes"
-    category: "Basics"
-    tags: ["update", "git", "sync"]
     examples:
       - cmd: "chezmoi update"
         description: "Pull latest changes from git and apply"
@@ -104,18 +87,15 @@ commands:
 
   - name: "cd"
     description: "Change to source directory"
-    category: "Advanced"
-    tags: ["cd", "source"]
     examples:
       - cmd: "chezmoi cd"
         description: "Open shell in source directory"
     notes: |
       Useful for running git commands manually.
+      Source directory: /Users/danielbooth/projects/home/dotfiles
 
   - name: "managed"
     description: "List all managed files"
-    category: "Basics"
-    tags: ["list", "managed"]
     examples:
       - cmd: "chezmoi managed"
         description: "List all managed files"

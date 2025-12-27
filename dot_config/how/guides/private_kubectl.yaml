@@ -6,21 +6,9 @@ aliases:
   - kb
   - k
 
-categories:
-  - name: "Pods"
-    description: "Working with pods"
-  - name: "Deployments"
-    description: "Managing deployments"
-  - name: "Debugging"
-    description: "Troubleshooting and debugging"
-  - name: "Configuration"
-    description: "Config and context management"
-
 commands:
-  - name: "get-pods"
-    description: "List all pods in current namespace"
-    category: "Pods"
-    tags: ["list", "pods", "basics"]
+  - name: "get"
+    description: "Get resources from the cluster"
     examples:
       - cmd: "kubectl get pods"
         description: "List pods in current namespace"
@@ -30,31 +18,39 @@ commands:
         description: "List pods with more details (node, IP)"
       - cmd: "kubectl get pods --field-selector=status.phase=Running"
         description: "List only running pods"
+      - cmd: "kubectl get deployments"
+        description: "List deployments in current namespace"
+      - cmd: "kubectl get deployments -A"
+        description: "List all deployments"
+      - cmd: "kubectl get svc"
+        description: "List services"
+      - cmd: "kubectl get nodes"
+        description: "List all nodes"
+      - cmd: "kubectl get namespaces"
+        description: "List all namespaces"
     related:
-      - "describe-pod"
-      - "logs"
-      - "exec-pod"
+      - "describe"
     notes: |
       Use -w or --watch to stream updates.
       Common output formats: -o json, -o yaml, -o wide, -o name
 
-  - name: "describe-pod"
-    description: "Show detailed information about a pod"
-    category: "Pods"
-    tags: ["debug", "details", "pods"]
+  - name: "describe"
+    description: "Show detailed information about resources"
     examples:
       - cmd: "kubectl describe pod <pod-name>"
         description: "Show pod details"
       - cmd: "kubectl describe pod <pod-name> -n <namespace>"
         description: "Describe pod in specific namespace"
+      - cmd: "kubectl describe node <node-name>"
+        description: "Show node details"
+      - cmd: "kubectl describe deployment <deployment-name>"
+        description: "Show deployment details"
     related:
-      - "get-pods"
+      - "get"
       - "logs"
 
   - name: "logs"
     description: "View pod logs"
-    category: "Debugging"
-    tags: ["logs", "debug", "troubleshoot"]
     examples:
       - cmd: "kubectl logs <pod-name>"
         description: "Show logs from pod"
@@ -67,31 +63,28 @@ commands:
       - cmd: "kubectl logs <pod-name> --previous"
         description: "Logs from previous instance (after crash)"
     related:
-      - "describe-pod"
-      - "exec-pod"
+      - "describe"
+      - "exec"
     notes: |
       Use -f to follow logs in real-time.
       Use --previous to see logs from crashed containers.
 
-  - name: "exec-pod"
+  - name: "exec"
     description: "Execute command in a pod"
-    category: "Debugging"
-    tags: ["exec", "debug", "shell"]
     examples:
       - cmd: "kubectl exec <pod-name> -- <command>"
         description: "Run command in pod"
       - cmd: "kubectl exec -it <pod-name> -- /bin/bash"
         description: "Get interactive shell in pod"
+      - cmd: "kubectl exec -it <pod-name> -- sh"
+        description: "Get shell (when bash not available)"
       - cmd: "kubectl exec <pod-name> -c <container> -- <command>"
         description: "Run command in specific container"
     related:
       - "logs"
-      - "describe-pod"
 
-  - name: "switch-context"
-    description: "Switch Kubernetes context"
-    category: "Configuration"
-    tags: ["context", "config", "cluster"]
+  - name: "config"
+    description: "Manage kubectl configuration"
     examples:
       - cmd: "kubectl config get-contexts"
         description: "List all contexts"
@@ -99,43 +92,89 @@ commands:
         description: "Show current context"
       - cmd: "kubectl config use-context <context-name>"
         description: "Switch to different context"
-    related:
-      - "switch-namespace"
-
-  - name: "switch-namespace"
-    description: "Switch default namespace"
-    category: "Configuration"
-    tags: ["namespace", "config"]
-    examples:
       - cmd: "kubectl config set-context --current --namespace=<namespace>"
         description: "Set default namespace for current context"
-      - cmd: "kubectl get namespaces"
-        description: "List all namespaces"
-    related:
-      - "switch-context"
 
-  - name: "get-deployments"
-    description: "List deployments"
-    category: "Deployments"
-    tags: ["list", "deployments"]
+  - name: "apply"
+    description: "Apply configuration from file"
     examples:
-      - cmd: "kubectl get deployments"
-        description: "List deployments in current namespace"
-      - cmd: "kubectl get deployments -A"
-        description: "List all deployments in all namespaces"
+      - cmd: "kubectl apply -f <file.yaml>"
+        description: "Apply configuration from file"
+      - cmd: "kubectl apply -f <directory>/"
+        description: "Apply all configs in directory"
     related:
-      - "describe-deployment"
-      - "scale-deployment"
+      - "delete"
 
-  - name: "scale-deployment"
-    description: "Scale a deployment"
-    category: "Deployments"
-    tags: ["scale", "deployments"]
+  - name: "delete"
+    description: "Delete resources"
+    examples:
+      - cmd: "kubectl delete pod <pod-name>"
+        description: "Delete a pod"
+      - cmd: "kubectl delete -f <file.yaml>"
+        description: "Delete resources defined in file"
+
+  - name: "scale"
+    description: "Scale deployments"
     examples:
       - cmd: "kubectl scale deployment <name> --replicas=<count>"
         description: "Scale deployment to specific replica count"
+
+  - name: "port-forward"
+    description: "Forward local port to pod"
+    examples:
+      - cmd: "kubectl port-forward <pod-name> <local-port>:<pod-port>"
+        description: "Forward local port to pod port"
+      - cmd: "kubectl port-forward svc/<service-name> <local-port>:<service-port>"
+        description: "Forward local port to service"
+
+  - name: "ctx"
+    description: "Switch Kubernetes contexts (kubectx)"
+    examples:
+      - cmd: "kubectl ctx"
+        description: "List all contexts"
+      - cmd: "kubectl ctx <context-name>"
+        description: "Switch to context"
+      - cmd: "kubectl ctx -"
+        description: "Switch to previous context"
+      - cmd: "kubectl ctx <new-name>=<old-name>"
+        description: "Rename a context"
+      - cmd: "kubectl ctx <new-name>=."
+        description: "Rename current context"
     related:
-      - "get-deployments"
+      - "config"
+      - "ns"
+    notes: |
+      kubectx is faster than 'kubectl config use-context'
+
+  - name: "ns"
+    description: "Switch namespaces (kubens)"
+    examples:
+      - cmd: "kubectl ns"
+        description: "List all namespaces"
+      - cmd: "kubectl ns <namespace>"
+        description: "Switch to namespace"
+      - cmd: "kubectl ns -"
+        description: "Switch to previous namespace"
+    related:
+      - "config"
+      - "ctx"
+    notes: |
+      kubens is faster than 'kubectl config set-context --current --namespace'
+
+  - name: "tree"
+    description: "Show resource hierarchy (kubectl-tree)"
+    examples:
+      - cmd: "kubectl tree"
+        description: "Show resource tree for current namespace"
+      - cmd: "kubectl tree -n <namespace>"
+        description: "Show resource tree for specific namespace"
+      - cmd: "kubectl tree -debug"
+        description: "Show tree with debug output"
+    related:
+      - "get"
+      - "describe"
+    notes: |
+      Shows parent-child relationships between resources in the namespace
 
 resources:
   - name: "Official Docs"
