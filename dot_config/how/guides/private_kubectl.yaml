@@ -6,6 +6,39 @@ aliases:
   - kb
   - k
 
+overview: |
+  kubectl - Kubernetes command-line tool for cluster management.
+  More information: https://kubernetes.io/docs/reference/kubectl/
+
+  Get cluster info:
+    kubectl cluster-info
+
+  List resources:
+    kubectl get pods
+    kubectl get deployments
+    kubectl get services
+
+  View resource details:
+    kubectl describe pod <pod-name>
+
+  View logs:
+    kubectl logs <pod-name>
+    kubectl logs -f <pod-name>
+
+  Execute commands in a pod:
+    kubectl exec -it <pod-name> -- sh
+
+  Apply configuration:
+    kubectl apply -f <file.yaml>
+
+  Switch context:
+    kubectl config use-context <context-name>
+
+  Extensions used:
+    kubectl ctx - Switch contexts (kubectx)
+    kubectl ns - Switch namespaces (kubens)
+    kubectl tree - Show resource hierarchy
+
 commands:
   - name: "get"
     description: "Get resources from the cluster"
