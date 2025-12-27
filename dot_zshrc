@@ -74,7 +74,14 @@ kube() {
 
 source <(kubectl completion zsh)
 source $ZSH/oh-my-zsh.sh
-source ~/.config/zsh/functions/clones.zsh
+
+# Load custom functions
+for func_file in ~/.config/zsh/functions/*.zsh; do
+  if [[ -r "$func_file" ]]; then
+    source "$func_file"
+  fi
+done
+unset func_file
 
 # pnpm
 export PNPM_HOME="/Users/danielbooth/Library/pnpm"
