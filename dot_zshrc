@@ -1,5 +1,25 @@
+# Load environment variables from .env
+if [ -f ~/.env ]; then
+    source ~/.env
+fi
+
+# Load aliases
+if [ -f ~/.aliases ]; then
+    source ~/.aliases
+fi
+
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
+[[ "$TERM" == "ghostty" || "$TERM" == "xterm-ghostty" ]] && alias ssh='TERM=xterm-256color ssh'
+
+if [[ -n "$SSH_CONNECTION" ]]; then
+    if infocmp ghostty &>/dev/null; then
+        export TERM=ghostty
+    else
+        export TERM=xterm-256color
+    fi
 fi
 
 typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
@@ -10,11 +30,6 @@ export ZSH_DISABLE_COMPFIX=true
 
 autoload -Uz compinit
 compinit
-
-# Load environment variables from .env
-if [ -f ~/.env ]; then
-    source ~/.env
-fi
 
 # Path to your Oh My Zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
@@ -81,11 +96,6 @@ source /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme
 source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 FZF_CTRL_R_COMMAND= source <(fzf --zsh)
-
-# Load aliases
-if [ -f ~/.aliases ]; then
-    source ~/.aliases
-fi
 
 eval "$(pyenv init --path)"
 eval "$(direnv hook zsh)"
