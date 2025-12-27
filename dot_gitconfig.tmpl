@@ -11,6 +11,12 @@
 
 [includeIf "gitdir:~/projects/home/"]
 	path = ~/.gitconfig-github
+[includeIf "gitdir:**/danielboothcloud/**"]
+	path = ~/.gitconfig-github
+[includeIf "gitdir:**/danielbooth-cloud/**"]
+	path = ~/.gitconfig-github
+[includeIf "gitdir:**/Infantry-Cloud/**"]
+	path = ~/.gitconfig-github
 [filter "lfs"]
 	required = true
 	clean = git-lfs clean -- %f

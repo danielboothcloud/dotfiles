@@ -12,5 +12,8 @@
     "debugLogsDays": 7,
     "shellSnapshotsMax": 50,
     "fileHistoryMaxEntries": 1000
+  },
+  "enabledPlugins": {
+    "gopls-lsp@claude-plugins-official": true
   }
 }

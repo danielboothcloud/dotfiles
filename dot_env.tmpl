@@ -1,3 +1,10 @@
+# Secrets from 1Password
 export GLM_API_KEY="{{ onepasswordRead "op://Private/qulejdgqsjyb75eiwrb5ul3kv4/key" }}"
 export GITLAB_ACCESS_TOKEN="{{ onepasswordRead "op://Work/n45byn73aoyep64m2sqss6ufwe/token" }}"
 export INFRACOST_API_KEY="{{ onepasswordRead "op://Private/opjadhhudbd4ejsshqxroduj5i/token" }}"
+export GITHUB_ACCESS_TOKEN="{{ onepasswordRead "op://Private/gwqgezp72q4rmwb5vhyizz7m6i/token" }}"
+
+# Static environment variables
+export XDG_CONFIG_HOME="$HOME/.config"
+export SSH_AUTH_SOCK="$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
+export DOCKER_HOST="unix:///tmp/podman.sock"
