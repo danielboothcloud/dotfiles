@@ -1,0 +1,266 @@
+name: rg
+description: "Ripgrep - A recursive line-oriented search tool"
+version: "1.0"
+
+overview: |
+  rg
+
+  Ripgrep, a recursive line-oriented search tool.
+  Aims to be a faster alternative to grep.
+  More information: https://github.com/BurntSushi/ripgrep/blob/master/GUIDE.md.
+
+  Recursively search current directory for a pattern (regex):
+
+    rg pattern
+
+  Recursively search for a pattern in a file or directory:
+
+    rg pattern path/to/file_or_directory
+
+  Search for a literal string pattern:
+
+    rg --fixed-strings -- string
+
+  Include hidden files and entries listed in .gitignore:
+
+    rg --hidden --no-ignore pattern
+
+  Only search the files whose names match the glob pattern(s) (e.g. README.*):
+
+    rg pattern --glob filename_glob_pattern
+
+  Recursively list filenames in the current directory that match a pattern:
+
+    rg --files | rg pattern
+
+  Only list matched files (useful when piping to other commands):
+
+    rg --files-with-matches pattern
+
+  Show lines that do not match the pattern:
+
+    rg --invert-match pattern
+
+commands:
+  - name: "pattern"
+    description: "Pattern matching options"
+    examples:
+      - cmd: "rg <pattern>"
+        description: "Search for regex pattern"
+      - cmd: "rg -F '<string>'"
+        description: "Literal string search (--fixed-strings)"
+      - cmd: "rg -e <pattern>"
+        description: "Specify pattern (--regexp)"
+      - cmd: "rg -f <file>"
+        description: "Read patterns from file (--file)"
+      - cmd: "rg -w <pattern>"
+        description: "Match whole words only (--word-regexp)"
+      - cmd: "rg -x <pattern>"
+        description: "Match whole lines only (--line-regexp)"
+    notes: |
+      Regex by default, use -F for literal strings
+      Multiple -e flags to search multiple patterns
+
+  - name: "-i/--ignore-case"
+    description: "Case sensitivity options"
+    examples:
+      - cmd: "rg -i <pattern>"
+        description: "Case-insensitive search"
+      - cmd: "rg -s <pattern>"
+        description: "Case-sensitive search (--case-sensitive)"
+      - cmd: "rg -S <pattern>"
+        description: "Smart case (--smart-case, default)"
+    notes: |
+      Smart case is default (insensitive if pattern is lowercase)
+
+  - name: "-v/--invert-match"
+    description: "Invert matching"
+    examples:
+      - cmd: "rg -v <pattern>"
+        description: "Show non-matching lines"
+    notes: |
+      Inverts line-by-line matching
+
+  - name: "-./--hidden"
+    description: "Search hidden files"
+    examples:
+      - cmd: "rg -. <pattern>"
+        description: "Include hidden files/directories"
+      - cmd: "rg --no-ignore <pattern>"
+        description: "Don't respect .gitignore"
+      - cmd: "rg -. --no-ignore <pattern>"
+        description: "Include hidden and ignored files"
+      - cmd: "rg -u <pattern>"
+        description: "Same as --no-ignore (one -u)"
+      - cmd: "rg -uu <pattern>"
+        description: "Same as --no-ignore --hidden (two -u)"
+      - cmd: "rg -uuu <pattern>"
+        description: "Search all including binary (three -u)"
+    notes: |
+      Hidden files start with dot (.)
+      -u flags: -u (no-ignore), -uu (no-ignore + hidden), -uuu (+ binary)
+
+  - name: "-t/--type"
+    description: "Filter by file type"
+    examples:
+      - cmd: "rg -t py <pattern>"
+        description: "Search Python files only"
+      - cmd: "rg -t js -t ts <pattern>"
+        description: "Multiple types"
+      - cmd: "rg -T js <pattern>"
+        description: "Exclude JavaScript files (--type-not)"
+      - cmd: "rg --type-list"
+        description: "List all supported file types"
+    notes: |
+      Common types: py, js, ts, rust, go, java, md, json, yaml
+
+  - name: "-g/--glob"
+    description: "Filter by glob pattern"
+    examples:
+      - cmd: "rg -g '*.py' <pattern>"
+        description: "Include glob pattern"
+      - cmd: "rg -g '!*.min.js' <pattern>"
+        description: "Exclude glob pattern"
+      - cmd: "rg -g 'src/**' <pattern>"
+        description: "Search in src directory"
+      - cmd: "rg --iglob '*.TXT' <pattern>"
+        description: "Case-insensitive glob"
+    notes: |
+      Globbing rules match .gitignore
+      Use ! to exclude patterns
+
+  - name: "-l/--files-with-matches"
+    description: "Output control"
+    examples:
+      - cmd: "rg -l <pattern>"
+        description: "Show only filenames with matches"
+      - cmd: "rg --files-without-match <pattern>"
+        description: "Show only filenames without matches"
+      - cmd: "rg -c <pattern>"
+        description: "Show count of matches per file (--count)"
+      - cmd: "rg --count-matches <pattern>"
+        description: "Count individual matches, not lines"
+    notes: |
+      -l is useful for piping to other commands
+
+  - name: "-C/--context"
+    description: "Show context lines"
+    examples:
+      - cmd: "rg -C 3 <pattern>"
+        description: "Show 3 lines before and after match"
+      - cmd: "rg -A 2 <pattern>"
+        description: "Show 2 lines after match (--after-context)"
+      - cmd: "rg -B 2 <pattern>"
+        description: "Show 2 lines before match (--before-context)"
+    notes: |
+      -C is shorthand for both -A and -B
+
+  - name: "-m/--max-count"
+    description: "Limit matches"
+    examples:
+      - cmd: "rg -m 5 <pattern>"
+        description: "Stop after 5 matches per file"
+      - cmd: "rg --max-filesize 1M <pattern>"
+        description: "Skip files larger than 1MB"
+
+  - name: "-n/--line-number"
+    description: "Line numbers and columns"
+    examples:
+      - cmd: "rg -n <pattern>"
+        description: "Show line numbers (default)"
+      - cmd: "rg -N <pattern>"
+        description: "Don't show line numbers (--no-line-number)"
+      - cmd: "rg --column <pattern>"
+        description: "Show column numbers"
+
+  - name: "-o/--only-matching"
+    description: "Show only matched parts"
+    examples:
+      - cmd: "rg -o <pattern>"
+        description: "Show only the matching part of lines"
+      - cmd: "rg -r '$1' '(\\w+)' <pattern>"
+        description: "Replace with capture group (--replace)"
+    notes: |
+      -o shows just the match, not the whole line
+
+  - name: "-U/--multiline"
+    description: "Multiline matching"
+    examples:
+      - cmd: "rg -U '<pattern>' <path>"
+        description: "Enable multiline matching"
+      - cmd: "rg -U 'fn.*?\\}' <path>"
+        description: "Match across multiple lines"
+    notes: |
+      Allows patterns to match across line boundaries
+      May be slower and use more memory
+
+  - name: "-P/--pcre2"
+    description: "Use PCRE2 regex engine"
+    examples:
+      - cmd: "rg -P '(?<=foo)bar' <path>"
+        description: "Use PCRE2 for lookbehind"
+      - cmd: "rg -P '(\\w+)\\1' <path>"
+        description: "Use backreferences"
+    notes: |
+      Enables advanced features like lookaround and backreferences
+      Default engine is faster for most cases
+
+  - name: "-z/--search-zip"
+    description: "Search compressed files"
+    examples:
+      - cmd: "rg -z <pattern>"
+        description: "Search in compressed files (gz, bz2, xz, etc.)"
+    notes: |
+      Requires decompression binaries in PATH
+
+  - name: "--files"
+    description: "List files that would be searched"
+    examples:
+      - cmd: "rg --files"
+        description: "List all files that would be searched"
+      - cmd: "rg --files | rg <pattern>"
+        description: "Filter file list by pattern"
+
+  - name: "-L/--follow"
+    description: "Follow symbolic links"
+    examples:
+      - cmd: "rg -L <pattern>"
+        description: "Follow symlinks while traversing"
+    notes: |
+      By default, ripgrep doesn't follow symlinks
+
+  - name: "--sort"
+    description: "Sort results"
+    examples:
+      - cmd: "rg --sort path <pattern>"
+        description: "Sort by file path"
+      - cmd: "rg --sort modified <pattern>"
+        description: "Sort by modification time"
+      - cmd: "rg --sortr modified <pattern>"
+        description: "Reverse sort (--sortr)"
+    notes: |
+      Options: path, modified, accessed, created, none
+
+  - name: "--stats"
+    description: "Print statistics"
+    examples:
+      - cmd: "rg --stats <pattern>"
+        description: "Show search statistics"
+    notes: |
+      Shows files searched, matches found, and bytes searched
+
+  - name: "-j/--threads"
+    description: "Control threads"
+    examples:
+      - cmd: "rg -j 1 <pattern>"
+        description: "Use single thread"
+      - cmd: "rg -j 8 <pattern>"
+        description: "Use 8 threads"
+    notes: |
+      Default (0) uses heuristics to choose thread count
+
+resources:
+  - name: "Official Repository"
+    url: "https://github.com/BurntSushi/ripgrep"
+  - name: "User Guide"
+    url: "https://github.com/BurntSushi/ripgrep/blob/master/GUIDE.md"
