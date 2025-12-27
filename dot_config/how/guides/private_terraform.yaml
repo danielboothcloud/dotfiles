@@ -1,0 +1,282 @@
+name: terraform
+description: "Infrastructure as Code tool for building, changing, and versioning infrastructure"
+version: "1.0"
+
+aliases:
+  - tf
+
+overview: |
+  Create and deploy infrastructure as code to cloud providers.
+  More information: https://developer.hashicorp.com/terraform/cli/commands.
+
+  Initialize a new or existing Terraform configuration:
+    terraform init
+
+  Verify that the configuration files are syntactically valid:
+    terraform validate
+
+  Format configuration according to Terraform language style conventions:
+    terraform fmt
+
+  Generate and show an execution plan:
+    terraform plan
+
+  Build or change infrastructure:
+    terraform apply
+
+  Destroy Terraform-managed infrastructure:
+    terraform destroy
+
+commands:
+  - name: "init"
+    description: "Initialize a Terraform working directory"
+    examples:
+      - cmd: "terraform init"
+        description: "Initialize current directory"
+      - cmd: "terraform init -upgrade"
+        description: "Upgrade providers to latest versions"
+      - cmd: "terraform init -reconfigure"
+        description: "Reconfigure backend, ignoring saved config"
+      - cmd: "terraform init -migrate-state"
+        description: "Migrate state to new backend"
+      - cmd: "terraform init -backend-config=config.tfbackend"
+        description: "Initialize with backend config file"
+    related:
+      - "validate"
+      - "plan"
+    notes: |
+      First command to run for any Terraform configuration
+      Safe to run multiple times
+      Downloads providers and modules
+
+  - name: "validate"
+    description: "Check whether the configuration is valid"
+    examples:
+      - cmd: "terraform validate"
+        description: "Validate configuration"
+      - cmd: "terraform validate -json"
+        description: "Output validation results as JSON"
+    related:
+      - "init"
+      - "fmt"
+    notes: |
+      Checks syntax and internal consistency
+      Does not access remote services
+
+  - name: "plan"
+    description: "Show changes required by the current configuration"
+    examples:
+      - cmd: "terraform plan"
+        description: "Generate and show execution plan"
+      - cmd: "terraform plan -out=tfplan"
+        description: "Save plan to a file"
+      - cmd: "terraform plan -var='region=us-west-2'"
+        description: "Set variable value"
+      - cmd: "terraform plan -var-file=prod.tfvars"
+        description: "Load variables from file"
+      - cmd: "terraform plan -target=aws_instance.example"
+        description: "Plan only for specific resource"
+      - cmd: "terraform plan -destroy"
+        description: "Plan to destroy all resources"
+      - cmd: "terraform plan -refresh=false"
+        description: "Skip refresh of remote state"
+      - cmd: "terraform plan -detailed-exitcode"
+        description: "Return exit code 2 if changes needed"
+    related:
+      - "apply"
+      - "destroy"
+    notes: |
+      Shows what actions Terraform will take
+      Does not make any changes
+      Use -out to save plan for apply
+
+  - name: "apply"
+    description: "Create or update infrastructure"
+    examples:
+      - cmd: "terraform apply"
+        description: "Apply changes with confirmation"
+      - cmd: "terraform apply -auto-approve"
+        description: "Apply without confirmation prompt"
+      - cmd: "terraform apply tfplan"
+        description: "Apply a saved plan file"
+      - cmd: "terraform apply -var='region=us-west-2'"
+        description: "Apply with variable"
+      - cmd: "terraform apply -var-file=prod.tfvars"
+        description: "Apply with variables file"
+      - cmd: "terraform apply -target=aws_instance.example"
+        description: "Apply only specific resource"
+      - cmd: "terraform apply -replace=aws_instance.example"
+        description: "Force replacement of resource"
+    related:
+      - "plan"
+      - "destroy"
+    notes: |
+      Creates/updates infrastructure to match configuration
+      Prompts for approval unless -auto-approve is used
+      Can accept a saved plan file
+
+  - name: "destroy"
+    description: "Destroy previously-created infrastructure"
+    examples:
+      - cmd: "terraform destroy"
+        description: "Destroy all infrastructure"
+      - cmd: "terraform destroy -auto-approve"
+        description: "Destroy without confirmation"
+      - cmd: "terraform destroy -target=aws_instance.example"
+        description: "Destroy specific resource"
+    related:
+      - "apply"
+      - "plan"
+    notes: |
+      Destroys all resources managed by Terraform
+      Prompts for confirmation unless -auto-approve
+      Equivalent to: terraform apply -destroy
+
+  - name: "fmt"
+    description: "Reformat configuration files to canonical format"
+    examples:
+      - cmd: "terraform fmt"
+        description: "Format files in current directory"
+      - cmd: "terraform fmt -recursive"
+        description: "Format files recursively"
+      - cmd: "terraform fmt -check"
+        description: "Check if files need formatting"
+      - cmd: "terraform fmt -diff"
+        description: "Show formatting changes"
+    related:
+      - "validate"
+    notes: |
+      Standardizes formatting of .tf files
+      Safe to run at any time
+      Use in pre-commit hooks
+
+  - name: "workspace"
+    description: "Manage workspaces"
+    examples:
+      - cmd: "terraform workspace list"
+        description: "List all workspaces"
+      - cmd: "terraform workspace show"
+        description: "Show current workspace"
+      - cmd: "terraform workspace new <name>"
+        description: "Create new workspace"
+      - cmd: "terraform workspace select <name>"
+        description: "Switch to workspace"
+      - cmd: "terraform workspace delete <name>"
+        description: "Delete workspace"
+    related:
+      - "init"
+    notes: |
+      Workspaces allow multiple state files
+      Default workspace is named 'default'
+      Useful for managing multiple environments
+
+  - name: "state"
+    description: "Advanced state management"
+    examples:
+      - cmd: "terraform state list"
+        description: "List resources in state"
+      - cmd: "terraform state show <resource>"
+        description: "Show details of resource"
+      - cmd: "terraform state mv <source> <destination>"
+        description: "Move resource in state"
+      - cmd: "terraform state rm <resource>"
+        description: "Remove resource from state"
+      - cmd: "terraform state pull"
+        description: "Pull current state to stdout"
+      - cmd: "terraform state push <file>"
+        description: "Push local state to remote"
+    related:
+      - "show"
+    notes: |
+      Advanced commands for state manipulation
+      Creates timestamped backups before modifications
+      Use with caution in production
+
+  - name: "output"
+    description: "Show output values from root module"
+    examples:
+      - cmd: "terraform output"
+        description: "Show all outputs"
+      - cmd: "terraform output <name>"
+        description: "Show specific output"
+      - cmd: "terraform output -json"
+        description: "Show outputs as JSON"
+      - cmd: "terraform output -raw <name>"
+        description: "Show output without quotes"
+    related:
+      - "show"
+    notes: |
+      Displays values from output blocks
+      Useful for passing values to other tools
+
+  - name: "show"
+    description: "Show current state or saved plan"
+    examples:
+      - cmd: "terraform show"
+        description: "Show current state"
+      - cmd: "terraform show tfplan"
+        description: "Show saved plan file"
+      - cmd: "terraform show -json"
+        description: "Show as JSON"
+    related:
+      - "state"
+      - "output"
+
+  - name: "import"
+    description: "Import existing infrastructure into Terraform"
+    examples:
+      - cmd: "terraform import aws_instance.example i-1234567890abcdef0"
+        description: "Import existing resource"
+      - cmd: "terraform import -var-file=prod.tfvars aws_instance.example i-123"
+        description: "Import with variables file"
+    related:
+      - "state"
+    notes: |
+      Associates existing infrastructure with Terraform resource
+      Resource must be defined in configuration first
+      Does not generate configuration automatically
+
+  - name: "taint"
+    description: "Mark a resource for recreation"
+    examples:
+      - cmd: "terraform taint aws_instance.example"
+        description: "Mark resource as tainted"
+    related:
+      - "untaint"
+      - "apply"
+    notes: |
+      Forces resource to be destroyed and recreated on next apply
+      Use -replace in plan/apply instead (newer approach)
+
+  - name: "untaint"
+    description: "Remove taint from a resource"
+    examples:
+      - cmd: "terraform untaint aws_instance.example"
+        description: "Remove taint from resource"
+    related:
+      - "taint"
+
+  - name: "refresh"
+    description: "Update state to match remote systems"
+    examples:
+      - cmd: "terraform refresh"
+        description: "Refresh state"
+    notes: |
+      Updates state file with real infrastructure
+      Use terraform plan -refresh-only instead (newer approach)
+
+  - name: "providers"
+    description: "Show providers required for configuration"
+    examples:
+      - cmd: "terraform providers"
+        description: "Show required providers"
+      - cmd: "terraform providers lock"
+        description: "Write provider locks"
+    related:
+      - "init"
+
+resources:
+  - name: "Official Docs"
+    url: "https://www.terraform.io/docs/cli"
+  - name: "CLI Reference"
+    url: "https://www.terraform.io/cli/commands"
