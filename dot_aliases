@@ -26,3 +26,5 @@ alias top="btop"
 alias todo="togo"
 alias post="posting"
 alias fvi='selected=$(fzf -m --preview="bat --color=always {}") && [[ -n $selected ]] && nvim $selected'
+alias za='zellij attach $(zellij list-sessions | fzf --ansi | awk "{print \$1}")'
+alias zd='zellij delete-session --force $(zellij list-sessions | fzf --ansi | awk "{print \$1}")'

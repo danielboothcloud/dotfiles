@@ -3,11 +3,6 @@ if [ -f ~/.env ]; then
     source ~/.env
 fi
 
-# Load aliases
-if [ -f ~/.aliases ]; then
-    source ~/.aliases
-fi
-
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
@@ -116,3 +111,8 @@ eval "$(goenv init -)"
 
 # Set GOBIN to a static location for go install binaries
 export GOBIN="$HOME/go/bin"
+
+# Load aliases
+if [ -f ~/.aliases ]; then
+    source ~/.aliases
+fi
