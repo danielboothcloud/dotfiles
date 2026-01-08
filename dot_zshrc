@@ -9,7 +9,7 @@ if [ -f ~/.env ]; then
 fi
 
 # -----------------------------------------------------------------------------
-# 1. INSTANT PROMPT - Must be at the very top
+#  INSTANT PROMPT - Must be at the very top
 # -----------------------------------------------------------------------------
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
@@ -18,7 +18,7 @@ fi
 typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
 
 # -----------------------------------------------------------------------------
-# 2. TERMINAL SETUP
+#  TERMINAL SETUP
 # -----------------------------------------------------------------------------
 [[ "$TERM" == "ghostty" || "$TERM" == "xterm-ghostty" ]] && alias ssh='TERM=xterm-256color ssh'
 
@@ -31,7 +31,7 @@ if [[ -n "$SSH_CONNECTION" ]]; then
 fi
 
 # -----------------------------------------------------------------------------
-# 3. PATH SETUP - Set all paths before loading plugins
+#  PATH SETUP - Set all paths before loading plugins
 # -----------------------------------------------------------------------------
 export PATH="/opt/homebrew/bin:$HOME/bin:$HOME/.local/bin:/usr/local/bin:${KREW_ROOT:-$HOME/.krew}/bin:$HOME/go/bin:$PATH"
 
@@ -52,7 +52,7 @@ export PATH="$GOENV_ROOT/bin:$PATH"
 export GOBIN="$HOME/go/bin"
 
 # -----------------------------------------------------------------------------
-# 4. OH MY ZSH - Load framework (adds completion paths to fpath)
+#  OH MY ZSH - Load framework (adds completion paths to fpath)
 # -----------------------------------------------------------------------------
 export ZSH="$HOME/.oh-my-zsh"
 export ZSH_DISABLE_COMPFIX=true
@@ -65,50 +65,7 @@ source $ZSH/oh-my-zsh.sh
 unalias gup 2>/dev/null
 
 # -----------------------------------------------------------------------------
-# 5. CUSTOM FUNCTIONS
-# -----------------------------------------------------------------------------
-ccinit() {
-  claude mcp add --transport http context7 https://mcp.context7.com/mcp
-  claude mcp add sequential-thinking npx @modelcontextprotocol/server-sequential-thinking
-  claude mcp add endor -- endor mcp --allow-net # mcp for endor (development sandboxes)
-  claude mcp add playwright npx @playwright/mcp@latest # mcp for playwright (testing)
-  claude mcp add svelte-docs npx mcp-svelte-docs # mcp for svelte 5
-  claude mcp add tailwind-v4-docs node /Users/danielbooth/projects/home/tailwind-mcp/build/index.js  # mcp for tailwind v4
-  claude mcp add go-docs /Users/danielbooth/go/bin/godoc-mcp # mcp for golang documentation
-  claude mcp add serena -- uvx --from git+https://github.com/oraios/serena serena start-mcp-server --context ide-assistant --project $(pwd)
-  uvx --from git+https://github.com/oraios/serena serena project index
-  # mcp for terraform
-  # mcp for atmos
-}
-
-kube() {
-  if [[ -z "$1" ]]; then
-    if [[ -n "$KUBECONFIG" ]]; then
-      atuin dotfiles var delete KUBECONFIG &>/dev/null
-      unset KUBECONFIG
-      echo "KUBECONFIG unset"
-    else
-      export KUBECONFIG="/Users/$(whoami)/.kube/config"
-      atuin dotfiles var set KUBECONFIG '/Users/danielbooth/.kube/config' &>/dev/null
-      echo "Switched to $(kubectl config current-context) Kubernetes context"
-    fi
-  else
-    export KUBECONFIG="/Users/$(whoami)/.kube/$1/config"
-    atuin dotfiles var set KUBECONFIG '/Users/danielbooth/.kube/config' &>/dev/null
-    echo "Switched to Kubernetes context: $1"
-  fi
-}
-
-# Load custom function files
-for func_file in ~/.config/zsh/functions/*.zsh; do
-  if [[ -r "$func_file" ]]; then
-    source "$func_file"
-  fi
-done
-unset func_file
-
-# -----------------------------------------------------------------------------
-# 6. CACHED COMPLETIONS - Load before compinit
+#  CACHED COMPLETIONS - Load before compinit
 # -----------------------------------------------------------------------------
 # kubectl completion (cached) - Auto-generates on first run
 if [[ -f ~/.zsh_completion_kubectl ]]; then
@@ -120,7 +77,7 @@ elif command -v kubectl &>/dev/null; then
 fi
 
 # -----------------------------------------------------------------------------
-# 7. COMPINIT - Run AFTER all fpath additions, with caching
+#  COMPINIT - Run AFTER all fpath additions, with caching
 # -----------------------------------------------------------------------------
 autoload -Uz compinit
 
@@ -132,13 +89,13 @@ else
 fi
 
 # -----------------------------------------------------------------------------
-# 8. THEME - Load after Oh My Zsh and compinit
+#  THEME - Load after Oh My Zsh and compinit
 # -----------------------------------------------------------------------------
 source /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 # -----------------------------------------------------------------------------
-# 9. LAZY-LOADED TOOLS - Only initialize when actually used
+#  LAZY-LOADED TOOLS - Only initialize when actually used
 # -----------------------------------------------------------------------------
 # pyenv - lazy load (saves ~100ms startup)
 pyenv() {
@@ -156,7 +113,7 @@ goenv() {
 }
 
 # -----------------------------------------------------------------------------
-# 10. FREQUENTLY-USED TOOLS - Cache when possible
+#  FREQUENTLY-USED TOOLS - Cache when possible
 # -----------------------------------------------------------------------------
 # direnv - cached hook (regenerate with: direnv hook zsh > ~/.zsh_direnv_hook)
 if [[ -f ~/.zsh_direnv_hook ]]; then
@@ -180,22 +137,42 @@ elif command -v zoxide &>/dev/null; then
   source ~/.zsh_zoxide
 fi
 
-# atuin - cached (regenerate with: atuin init zsh > ~/.zsh_atuin)
-if [[ -f ~/.zsh_atuin ]]; then
-  source ~/.zsh_atuin
-elif command -v atuin &>/dev/null; then
-  atuin init zsh > ~/.zsh_atuin
-  source ~/.zsh_atuin
-fi
+# atuin - must run fresh each time to load dotfiles vars
+eval "$(atuin init zsh)"
 
 # -----------------------------------------------------------------------------
-# 11. SYNTAX HIGHLIGHTING - Must be loaded last
+#  SYNTAX HIGHLIGHTING - Must be loaded last
 # -----------------------------------------------------------------------------
 source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # -----------------------------------------------------------------------------
-# 12. ALIASES - Load at the end
+#  CUSTOM FUNCTIONS
+# -----------------------------------------------------------------------------
+ccinit() {
+  claude mcp add --transport http context7 https://mcp.context7.com/mcp
+  claude mcp add sequential-thinking npx @modelcontextprotocol/server-sequential-thinking
+  claude mcp add endor -- endor mcp --allow-net # mcp for endor (development sandboxes)
+  claude mcp add playwright npx @playwright/mcp@latest # mcp for playwright (testing)
+  claude mcp add svelte-docs npx mcp-svelte-docs # mcp for svelte 5
+  claude mcp add tailwind-v4-docs node /Users/danielbooth/projects/home/tailwind-mcp/build/index.js  # mcp for tailwind v4
+  claude mcp add go-docs /Users/danielbooth/go/bin/godoc-mcp # mcp for golang documentation
+  claude mcp add serena -- uvx --from git+https://github.com/oraios/serena serena start-mcp-server --context ide-assistant --project $(pwd)
+  uvx --from git+https://github.com/oraios/serena serena project index
+  # mcp for terraform
+  # mcp for atmos
+}
+
+# Load custom function files
+for func_file in ~/.config/zsh/functions/*.zsh; do
+  if [[ -r "$func_file" ]]; then
+    source "$func_file"
+  fi
+done
+unset func_file
+
+# -----------------------------------------------------------------------------
+#  ALIASES - Load at the end
 # -----------------------------------------------------------------------------
 if [ -f ~/.aliases ]; then
     source ~/.aliases
