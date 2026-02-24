@@ -2,11 +2,16 @@
 
 Managed with chezmoi
 
-**Stack:** Neovim (kickstart), Zsh (Oh My Zsh + Powerlevel10k), Ghostty, 100+ Homebrew packages
+Neovim (kickstart), Zsh (Oh My Zsh + Powerlevel10k), Ghostty, Homebrew packages
 
 ## Setup
 
-### Automated Setup (Recommended)
+### Automated Setup 
+
+**Important:** Ensure 1Password application and CLI are configured before running setup:
+```bash
+op account list
+```
 
 Run the init script which handles the complete setup in the correct order:
 
@@ -37,10 +42,6 @@ brew install chezmoi
 chezmoi init --apply danielboothcloud/dotfiles
 ```
 
-**Important:** Ensure 1Password application and CLI are configured before running setup:
-```bash
-op account list
-```
 
 ## Daily Usage
 
