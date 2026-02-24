@@ -1,10 +1,16 @@
 # Secrets from 1Password
-export GLM_API_KEY="{{ onepasswordRead "op://Private/qulejdgqsjyb75eiwrb5ul3kv4/key" }}"
+export ZAI_API_KEY="{{ onepasswordRead "op://Homelab/illhoq7x5cl2rtfk7kfnfsauju/key" }}"
 export GITLAB_ACCESS_TOKEN="{{ onepasswordRead "op://Work/n45byn73aoyep64m2sqss6ufwe/token" }}"
 export INFRACOST_API_KEY="{{ onepasswordRead "op://Private/opjadhhudbd4ejsshqxroduj5i/token" }}"
 export GITHUB_ACCESS_TOKEN="{{ onepasswordRead "op://Private/gwqgezp72q4rmwb5vhyizz7m6i/token" }}"
+export JIRA_API_TOKEN="{{ onepasswordRead "op://Work/xoigul5bauewoyfg4zhlrkzxlq/token" }}"
+export CLOUDSTACK_ENDPOINT="{{ onepasswordRead "op://Homelab/67cwmr6e7nvqmbxcyjdwudz324/website" }}client/api"
+export CLOUDSTACK_API_KEY="{{ onepasswordRead "op://Homelab/67cwmr6e7nvqmbxcyjdwudz324/api-key" }}"
+export CLOUDSTACK_SECRET_KEY="{{ onepasswordRead "op://Homelab/67cwmr6e7nvqmbxcyjdwudz324/secret-key" }}"
+export OPENROUTER_API_KEY="{{ onepasswordRead "op://Homelab/ep4usdt373peyzc54nw5t2oxum/api-key" }}"
 
 # Static environment variables
 export XDG_CONFIG_HOME="$HOME/.config"
 export SSH_AUTH_SOCK="$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
 export DOCKER_HOST="unix:///tmp/podman.sock"
+export DISABLE_TELEMETRY=true

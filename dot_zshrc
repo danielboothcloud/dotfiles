@@ -149,19 +149,6 @@ source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 # -----------------------------------------------------------------------------
 #  CUSTOM FUNCTIONS
 # -----------------------------------------------------------------------------
-ccinit() {
-  claude mcp add --transport http context7 https://mcp.context7.com/mcp
-  claude mcp add sequential-thinking npx @modelcontextprotocol/server-sequential-thinking
-  claude mcp add endor -- endor mcp --allow-net # mcp for endor (development sandboxes)
-  claude mcp add playwright npx @playwright/mcp@latest # mcp for playwright (testing)
-  claude mcp add svelte-docs npx mcp-svelte-docs # mcp for svelte 5
-  claude mcp add tailwind-v4-docs node /Users/danielbooth/projects/home/tailwind-mcp/build/index.js  # mcp for tailwind v4
-  claude mcp add go-docs /Users/danielbooth/go/bin/godoc-mcp # mcp for golang documentation
-  claude mcp add serena -- uvx --from git+https://github.com/oraios/serena serena start-mcp-server --context ide-assistant --project $(pwd)
-  uvx --from git+https://github.com/oraios/serena serena project index
-  # mcp for terraform
-  # mcp for atmos
-}
 
 # Load custom function files
 for func_file in ~/.config/zsh/functions/*.zsh; do

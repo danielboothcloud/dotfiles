@@ -114,10 +114,12 @@ invert = false
 ## https://docs.rs/regex/latest/regex/#syntax
 history_filter = [
   "claude",
+  "opencode",
+  "deck",
   "exit",
   # Filter common secret-setting patterns
   "^export.*KEY",
-  "^export.*SECRET",
+  # "^export.*SECRET",
   "^export.*TOKEN",
   "^export.*PASSWORD",
   ".*--password",
@@ -125,7 +127,7 @@ history_filter = [
   ".*--api-key",
   # Filter commands with 'pass' or 'secret' in them
   ".*password.*=",
-  ".*secret.*=",
+  # ".*secret.*=",
   ".*apikey.*=",
   ".*api_key.*=",
 ]
@@ -165,7 +167,7 @@ history_filter = [
 ## 3. Slack oauth tokens (bot, user)
 ## 4. Slack webhooks
 ## 5. Stripe live/test keys
-# secrets_filter = true
+secrets_filter = true
 
 ## Defaults to true. If set to false, commands with non-zero exit status will not be stored in history.
 store_failed = true
