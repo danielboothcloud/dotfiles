@@ -1,0 +1,11 @@
+# Exclude patterns for clones
+# One pattern per line - matches against: owner/name, platform/owner/name, and description
+# Lines starting with # are comments
+
+# Example: Exclude archived repositories
+archived
+
+# Example: Exclude specific patterns
+# /archive/
+# /deprecated/
+# /test/

@@ -1,9 +1,37 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"/Users/danielbooth/.claude/hooks/gsd-check-update.js\""
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"/Users/danielbooth/.claude/hooks/gsd-context-monitor.js\""
+          }
+        ]
+      }
+    ]
+  },
   "statusLine": {
     "type": "command",
-    "command": "bash ~/.claude/statusline.sh"
+    "command": "node \"/Users/danielbooth/.claude/hooks/gsd-statusline.js\""
   },
+  "enabledPlugins": {
+    "gopls-lsp@claude-plugins-official": false,
+    "code-simplifier@claude-plugins-official": true,
+    "context7@claude-plugins-official": true
+  },
+  "promptSuggestionEnabled": false,
   "feedbackSurveyState": {
     "lastShownTime": 1754066564580
   },
@@ -13,7 +41,5 @@
     "shellSnapshotsMax": 50,
     "fileHistoryMaxEntries": 1000
   },
-  "enabledPlugins": {
-    "gopls-lsp@claude-plugins-official": true
-  }
+  "effortLevel": "medium"
 }

@@ -1,0 +1,11 @@
+# JQL filter - only show tickets matching this query
+# Leave empty to show all tickets found in branches
+enabled: true
+base_url: {{ onepasswordRead "op://Work/xoigul5bauewoyfg4zhlrkzxlq/url" }}
+email: {{ onepasswordRead "op://Work/xoigul5bauewoyfg4zhlrkzxlq/email" }}
+
+jql: assignee = currentUser() AND status not in (Closed, Done, Completed)
+
+# Custom active statuses (optional, comma-separated)
+# Uses defaults if not set: In Progress, In Review, To Do, Pending
+active_statuses: In Progress, In Review, To Do, Pending
