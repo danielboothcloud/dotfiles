@@ -16,13 +16,14 @@ if command -v brew &> /dev/null; then
         echo "Updating Brewfile + Brewfile.darwin (macOS)..."
 
         # Auto-detect Mac-only formulas via :macos requirement
+        # Use .full_name so tap-prefixed formulas (e.g. gromgit/fuse/sshfs-mac) are preserved
         MAC_FORMULAS=$(brew info --json=v2 --installed \
-            | jq -r '.formulae[] | select(.requirements[]?.name == "macos") | .name')
+            | jq -r '.formulae[] | select(.requirements[]?.name == "macos") | .full_name')
 
         # Brewfile.darwin: casks only
         brew bundle dump --force --cask --file=Brewfile.darwin
 
-        # Append Mac-only formulas to Brewfile.darwin
+        # Append Mac-only formulas to Brewfile.darwin (preserving tap prefixes)
         if [ -n "$MAC_FORMULAS" ]; then
             while IFS= read -r formula; do
                 echo "brew \"$formula\"" >> Brewfile.darwin
@@ -32,12 +33,12 @@ if command -v brew &> /dev/null; then
         # Brewfile: everything except casks and go
         brew bundle dump --force --formula --tap --mas --vscode --cargo --uv --krew --npm --file=Brewfile
 
-        # Strip Mac-only formulas from common Brewfile
+        # Strip Mac-only formulas from common Brewfile (exact-line literal match)
         if [ -n "$MAC_FORMULAS" ]; then
             while IFS= read -r formula; do
-                sed -i.bak "/^brew \"$formula\"\$/d" Brewfile
+                grep -vxF "brew \"$formula\"" Brewfile > Brewfile.tmp
+                mv Brewfile.tmp Brewfile
             done <<< "$MAC_FORMULAS"
-            rm -f Brewfile.bak
         fi
 
         echo "✓ Brewfile + Brewfile.darwin updated"
