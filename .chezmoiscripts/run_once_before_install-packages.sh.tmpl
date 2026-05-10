@@ -5,23 +5,32 @@ set -e
 
 echo "Installing Homebrew packages..."
 
-# Check if Homebrew is installed
+{{ if eq .chezmoi.os "darwin" -}}
+# Install Homebrew on macOS if missing (bluefin ships brew, no install needed)
 if ! command -v brew &> /dev/null; then
     echo "Homebrew not found. Installing..."
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 fi
-
-# Install packages from Brewfile
+{{ end }}
+# Install packages from the common Brewfile (cross-platform)
 brew bundle install --file={{ .chezmoi.sourceDir }}/packages/Brewfile
 
+{{ if eq .chezmoi.os "darwin" -}}
+# Install Mac-only packages (casks + macos-required formulas)
+brew bundle install --file={{ .chezmoi.sourceDir }}/packages/Brewfile.darwin
+
+{{ end -}}
 echo "Homebrew packages installed successfully!"
 echo ""
 
-# Enable brew autoupdate (every 12 hours) if not already running
+{{ if eq .chezmoi.os "darwin" -}}
+# Enable brew autoupdate (every 12 hours) if not already running — macOS only
 if ! brew autoupdate status 2>/dev/null | grep -q 'running'; then
     brew autoupdate start 43200 --upgrade --cleanup --immediate --sudo
 fi
 echo ""
+
+{{ end -}}
 
 # Install Go binaries with gup
 if command -v gup &> /dev/null; then

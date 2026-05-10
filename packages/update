@@ -8,14 +8,47 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 echo "Updating package lists..."
 echo ""
 
-# Update Brewfile
-echo "Updating Brewfile from installed Homebrew packages..."
+# Update Brewfiles — split out Brewfile.darwin on macOS, single Brewfile on Linux
 if command -v brew &> /dev/null; then
     cd "$SCRIPT_DIR"
-    brew bundle dump --force --no-go
-    echo "✓ Brewfile updated"
+
+    if [[ "$(uname)" == "Darwin" ]]; then
+        echo "Updating Brewfile + Brewfile.darwin (macOS)..."
+
+        # Auto-detect Mac-only formulas via :macos requirement
+        MAC_FORMULAS=$(brew info --json=v2 --installed \
+            | jq -r '.formulae[] | select(.requirements[]?.name == "macos") | .name')
+
+        # Brewfile.darwin: casks only
+        brew bundle dump --force --cask --file=Brewfile.darwin
+
+        # Append Mac-only formulas to Brewfile.darwin
+        if [ -n "$MAC_FORMULAS" ]; then
+            while IFS= read -r formula; do
+                echo "brew \"$formula\"" >> Brewfile.darwin
+            done <<< "$MAC_FORMULAS"
+        fi
+
+        # Brewfile: everything except casks and go
+        brew bundle dump --force --formula --tap --mas --vscode --cargo --uv --krew --npm --file=Brewfile
+
+        # Strip Mac-only formulas from common Brewfile
+        if [ -n "$MAC_FORMULAS" ]; then
+            while IFS= read -r formula; do
+                sed -i.bak "/^brew \"$formula\"\$/d" Brewfile
+            done <<< "$MAC_FORMULAS"
+            rm -f Brewfile.bak
+        fi
+
+        echo "✓ Brewfile + Brewfile.darwin updated"
+    else
+        echo "Updating Brewfile (non-macOS)..."
+        # Linux: just dump common Brewfile (no casks, no Mac-only formulas)
+        brew bundle dump --force --formula --tap --vscode --cargo --uv --krew --npm --file=Brewfile
+        echo "✓ Brewfile updated"
+    fi
 else
-    echo "✗ Homebrew not installed, skipping Brewfile"
+    echo "✗ Homebrew not installed, skipping Brewfiles"
 fi
 
 echo ""

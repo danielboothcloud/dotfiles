@@ -37,6 +37,7 @@ if status is-interactive
     end
   end
 
+{{- if eq .chezmoi.os "darwin" }}
   # Auto-mosh into bluefin (mosh-off / mosh-on to toggle persistently)
   alias mosh-off='touch ~/.no-automosh; and echo "auto-mosh disabled"'
   alias mosh-on='rm -f ~/.no-automosh; and echo "auto-mosh enabled"'
@@ -44,6 +45,7 @@ if status is-interactive
   if test -z "$SSH_CONNECTION"; and not test -e ~/.no-automosh
     mosh bluefin-vm
   end
+{{- end }}
 
   starship init fish | source
   atuin init fish | source
