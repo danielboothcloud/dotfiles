@@ -1,6 +1,4 @@
-cask "1password-cli"
 cask "alfred"
-cask "claude-code"
 cask "cursor-cli"
 cask "font-meslo-lg-nerd-font"
 cask "fuse-t"
