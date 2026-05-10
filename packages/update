@@ -12,7 +12,7 @@ echo ""
 echo "Updating Brewfile from installed Homebrew packages..."
 if command -v brew &> /dev/null; then
     cd "$SCRIPT_DIR"
-    brew bundle dump --force
+    brew bundle dump --force --no-go
     echo "✓ Brewfile updated"
 else
     echo "✗ Homebrew not installed, skipping Brewfile"
@@ -20,15 +20,15 @@ fi
 
 echo ""
 
-# Update gup.conf
-echo "Updating gup.conf from installed Go binaries..."
-if command -v gup &> /dev/null; then
+# Update gup.json
+echo "Updating gup.json from installed Go binaries..."
+if command -v \gup &> /dev/null; then
     cd "$SCRIPT_DIR"
-    gup export
-    cp $HOME/.config/gup/gup.conf .
-    echo "✓ gup.conf updated"
+    \gup export
+    cp $HOME/.config/gup/gup.json .
+    echo "✓ gup.json updated"
 else
-    echo "✗ gup not installed, skipping gup.conf"
+    echo "✗ gup not installed, skipping gup.json"
 fi
 
 echo ""

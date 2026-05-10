@@ -1,0 +1,11 @@
+clone_root: ~/bluefin/work
+remote:
+  host: bluefin-vm
+  path: /var/home/danielbooth/projects/work
+  sync_timeout_seconds: 30
+  ops:
+    - clone
+    - delete
+    - pull
+    - push
+    - checkout

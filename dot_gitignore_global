@@ -1,11 +1,13 @@
-lefthook.yml
 lefthook-local.yml
-.envrc
+mise.local.toml
 .claude
 .bmad*
 .planning
 bmad
 _bmad
+_bmad-output
+.cursor
+.opencode
 CLAUDE.md
 GEMINI.md
 AGENTS.md
@@ -13,6 +15,5 @@ CLAUDE.local.md
 .DS_Store
 .serena
 CRUSH.md
-.crush
 AGENTS.md
 .togo

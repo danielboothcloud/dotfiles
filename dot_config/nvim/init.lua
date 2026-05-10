@@ -133,6 +133,20 @@ vim.g.have_nerd_font = true
 --  See `:help 'clipboard'`
 vim.schedule(function()
   vim.o.clipboard = 'unnamedplus'
+
+  if os.getenv('SSH_TTY') then
+    vim.g.clipboard = {
+      name = 'OSC 52',
+      copy = {
+        ['+'] = require('vim.ui.clipboard.osc52').copy('+'),
+        ['*'] = require('vim.ui.clipboard.osc52').copy('*'),
+      },
+      paste = {
+        ['+'] = require('vim.ui.clipboard.osc52').paste('+'),
+        ['*'] = require('vim.ui.clipboard.osc52').paste('*'),
+      },
+    }
+  end
 end)
 
 -- Enable break indent
@@ -244,6 +258,15 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
   callback = function()
     vim.hl.on_yank()
+  end,
+})
+
+vim.api.nvim_create_autocmd('FileType', {
+  desc = 'Set commentstring for Terraform files',
+  group = vim.api.nvim_create_augroup('terraform-commentstring', { clear = true }),
+  pattern = { 'terraform', 'tf' },
+  callback = function()
+    vim.bo.commentstring = '# %s'
   end,
 })
 

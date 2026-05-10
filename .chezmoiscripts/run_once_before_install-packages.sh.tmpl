@@ -17,15 +17,21 @@ brew bundle install --file={{ .chezmoi.sourceDir }}/packages/Brewfile
 echo "Homebrew packages installed successfully!"
 echo ""
 
+# Enable brew autoupdate (every 12 hours) if not already running
+if ! brew autoupdate status 2>/dev/null | grep -q 'running'; then
+    brew autoupdate start 43200 --upgrade --cleanup --immediate --sudo
+fi
+echo ""
+
 # Install Go binaries with gup
 if command -v gup &> /dev/null; then
     echo "Installing Go binaries..."
     cd {{ .chezmoi.sourceDir }}/packages
-    if [ -f gup.conf ]; then
+    if [ -f gup.json ]; then
         gup import
         echo "Go binaries installed successfully!"
     else
-        echo "Warning: gup.conf not found, skipping Go binaries installation"
+        echo "Warning: gup.json not found, skipping Go binaries installation"
     fi
 else
     echo "Warning: gup not installed, skipping Go binaries installation"

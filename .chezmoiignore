@@ -17,3 +17,6 @@ packages/
 
 # Ignore runtime state files
 .claude/.claudez_state
+
+# Lazy.nvim plugin lockfile — regenerated per machine
+.config/nvim/lazy-lock.json
