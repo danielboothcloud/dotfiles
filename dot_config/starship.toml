@@ -1,0 +1,59 @@
+format = """$directory$git_branch$git_status$python$character"""
+right_format = """$aws$kubernetes"""
+command_timeout = 5000
+palette = "oxocarbon"
+
+[palettes.oxocarbon]
+grey = "#525252"
+red = "#ff7eb6"
+yellow = "#ffab91"
+blue = "#78a9ff"
+magenta = "#be95ff"
+cyan = "#3ddbd9"
+white = "#f2f4f8"
+green = "#42be65"
+
+[directory]
+truncation_length = 2
+truncation_symbol = "…/"
+truncate_to_repo = false
+style = "red"
+
+[git_branch]
+format = '[$symbol$branch]($style) '
+symbol = '󰘬 '
+style = "magenta"
+
+[git_status]
+format = '[$all_status$ahead_behind]($style)'
+up_to_date = '✓'
+modified = '*'
+untracked = ''
+style = "magenta"
+ahead = "[⇡](cyan)"
+behind = "[⇣](cyan)"
+diverged = "[⇣⇡](cyan)"
+
+[character]
+success_symbol = "[❯](blue)"
+error_symbol = "[❯](red)"
+
+[python]
+format = '[(\($virtualenv\))]($style) '
+style = "grey"
+python_binary = []
+
+[gcloud]
+disabled = true
+
+[aws]
+format = '\[[$symbol$profile]($style)\]'
+symbol = '󰸏 '
+style = "yellow"
+
+[kubernetes]
+disabled = false
+detect_env_vars = ['KUBECONFIG']
+format = '\[[$symbol$context(\($namespace\))]($style)\]'
+symbol = '󱃾 '
+style = "blue"

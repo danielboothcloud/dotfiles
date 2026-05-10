@@ -56,9 +56,9 @@ PHASE 1: Reconcile drift (keep zsh files for now)
         bug (duplicate fallback rules with old `name = "*"` syntax).
         rose-pine-moon flavor removed from home (unused).
 
-[ ] 14. Run `chezmoi diff` — should be empty.
+[x] 14. Run `chezmoi diff` — should be empty.
 
-[ ] 15. COMMIT: phase 1 (reconcile drift)
+[x] 15. COMMIT: phase 1 (reconcile drift)
         Suggested message: "chore: reconcile drifted home state into source"
 
 ================================================================================
