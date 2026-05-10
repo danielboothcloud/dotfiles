@@ -1,6 +1,5 @@
 status is-interactive; or exit 0
 
-alias kb="kubectl"
 alias istio="istioctl"
 alias mk="minikube"
 alias dc="docker-compose"
@@ -21,3 +20,6 @@ alias top="btop"
 alias todo="togo"
 
 alias assume="source (brew --prefix)/bin/assume.fish"
+
+abbr -e gup
+abbr -a kb "kubectl"

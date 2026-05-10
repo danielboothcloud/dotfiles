@@ -4,14 +4,10 @@ fish_add_path $HOME/bin
 fish_add_path $HOME/.local/bin
 fish_add_path /usr/local/bin
 fish_add_path $HOME/go/bin
-fish_add_path $HOME/.pyenv/bin
-fish_add_path $HOME/.goenv/bin
 fish_add_path $HOME/Library/pnpm
 fish_add_path $HOME/.krew/bin
 
 # Environment variables
-set -gx PYENV_ROOT $HOME/.pyenv
-set -gx GOENV_ROOT $HOME/.goenv
 set -gx GOBIN $HOME/go/bin
 set -gx PNPM_HOME $HOME/Library/pnpm
 
