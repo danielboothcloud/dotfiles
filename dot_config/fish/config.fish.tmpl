@@ -1,15 +1,19 @@
-# PATH setup
+{{ if eq .chezmoi.os "darwin" -}}
 fish_add_path /opt/homebrew/bin
+{{ else if eq .chezmoi.os "linux" -}}
+fish_add_path /home/linuxbrew/.linuxbrew/bin
+fish_add_path /home/linuxbrew/.linuxbrew/sbin
+{{ end -}}
 fish_add_path $HOME/bin
 fish_add_path $HOME/.local/bin
 fish_add_path /usr/local/bin
 fish_add_path $HOME/go/bin
-fish_add_path $HOME/Library/pnpm
+fish_add_path $HOME/.local/share/pnpm
 fish_add_path $HOME/.krew/bin
 
 # Environment variables
 set -gx GOBIN $HOME/go/bin
-set -gx PNPM_HOME $HOME/Library/pnpm
+set -gx PNPM_HOME $HOME/.local/share/pnpm
 
 # Load .env if it exists (fish syntax, populated by chezmoi from 1Password)
 if test -f ~/.env
