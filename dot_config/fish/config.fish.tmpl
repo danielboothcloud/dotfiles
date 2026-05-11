@@ -43,12 +43,12 @@ if status is-interactive
   end
 
 {{- if eq .chezmoi.os "darwin" }}
-  # Auto-mosh into bluefin (mosh-off / mosh-on to toggle persistently)
-  alias mosh-off='touch ~/.no-automosh; and echo "auto-mosh disabled"'
-  alias mosh-on='rm -f ~/.no-automosh; and echo "auto-mosh enabled"'
+  # Auto-eternal-terminal into bluefin (etoff / eton to toggle persistently)
+  alias etoff='touch ~/.no-autoet; and echo "auto-et disabled"'
+  alias eton='rm -f ~/.no-autoet; and echo "auto-et enabled"'
 
-  if test -z "$SSH_CONNECTION"; and not test -e ~/.no-automosh
-    mosh bluefin-vm
+  if test -z "$SSH_CONNECTION"; and not test -e ~/.no-autoet
+    et bluefin-vm
   end
 {{- end }}
 
