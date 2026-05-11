@@ -43,9 +43,9 @@ if status is-interactive
   end
 
 {{- if eq .chezmoi.os "darwin" }}
-  # Auto-eternal-terminal into bluefin (etoff / eton to toggle persistently)
-  alias etoff='touch ~/.no-autoet; and echo "auto-et disabled"'
-  alias eton='rm -f ~/.no-autoet; and echo "auto-et enabled"'
+  # Auto-eternal-terminal into bluefin (eternaloff / eternalon to toggle persistently)
+  alias eternaloff='touch ~/.no-autoet; and echo "auto-et disabled"'
+  alias eternalon='rm -f ~/.no-autoet; and echo "auto-et enabled"'
 
   if test -z "$SSH_CONNECTION"; and not test -e ~/.no-autoet
     et bluefin-vm
