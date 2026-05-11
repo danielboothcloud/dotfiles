@@ -7,6 +7,7 @@ awscli = { version = "latest", symlink_bins = true }
 go = "latest"
 helm = "latest"
 helmfile = "latest"
+krew = "latest"
 kubectl = "latest"
 minikube = "latest"
 node = "latest"
