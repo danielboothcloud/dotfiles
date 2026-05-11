@@ -1,16 +1,19 @@
 # Secrets from 1Password
-export ZAI_API_KEY="{{ onepasswordRead "op://Homelab/illhoq7x5cl2rtfk7kfnfsauju/key" }}"
-export GITLAB_ACCESS_TOKEN="{{ onepasswordRead "op://Work/n45byn73aoyep64m2sqss6ufwe/token" }}"
-export INFRACOST_API_KEY="{{ onepasswordRead "op://Private/opjadhhudbd4ejsshqxroduj5i/token" }}"
-export GITHUB_ACCESS_TOKEN="{{ onepasswordRead "op://Private/gwqgezp72q4rmwb5vhyizz7m6i/token" }}"
-export JIRA_API_TOKEN="{{ onepasswordRead "op://Work/xoigul5bauewoyfg4zhlrkzxlq/token" }}"
-export CLOUDSTACK_ENDPOINT="{{ onepasswordRead "op://Homelab/67cwmr6e7nvqmbxcyjdwudz324/website" }}client/api"
-export CLOUDSTACK_API_KEY="{{ onepasswordRead "op://Homelab/67cwmr6e7nvqmbxcyjdwudz324/api-key" }}"
-export CLOUDSTACK_SECRET_KEY="{{ onepasswordRead "op://Homelab/67cwmr6e7nvqmbxcyjdwudz324/secret-key" }}"
-export OPENROUTER_API_KEY="{{ onepasswordRead "op://Homelab/ep4usdt373peyzc54nw5t2oxum/api-key" }}"
+set -gx GLM_API_KEY "{{ onepasswordRead "op://Homelab/illhoq7x5cl2rtfk7kfnfsauju/key" }}"
+set -gx GITLAB_ACCESS_TOKEN "{{ onepasswordRead "op://Work/n45byn73aoyep64m2sqss6ufwe/token" }}"
+set -gx INFRACOST_API_KEY "{{ onepasswordRead "op://Private/opjadhhudbd4ejsshqxroduj5i/token" }}"
+set -gx GITHUB_ACCESS_TOKEN "{{ onepasswordRead "op://Homelab/dwhntxnsrngadsprlju47yp5z4/token" }}"
+set -gx JIRA_API_TOKEN "{{ onepasswordRead "op://Work/xoigul5bauewoyfg4zhlrkzxlq/token" }}"
+set -gx OPENROUTER_API_KEY "{{ onepasswordRead "op://Homelab/ep4usdt373peyzc54nw5t2oxum/api-key" }}"
+set -gx DEEPSEEK_API_KEY "{{ onepasswordRead "op://Homelab/puii5f3ig2f34adpr2q7xizkbm/token" }}"
 
 # Static environment variables
-export XDG_CONFIG_HOME="$HOME/.config"
-export SSH_AUTH_SOCK="$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
-export DOCKER_HOST="unix:///tmp/podman.sock"
-export DISABLE_TELEMETRY=true
+set -gx XDG_CONFIG_HOME $HOME/.config
+set -gx SSH_AUTH_SOCK "$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
+set -gx DOCKER_HOST unix:///tmp/podman.sock
+set -gx DISABLE_TELEMETRY true
+set -gx DISABLE_AUTOUPDATER 1
+set -gx CLAUDE_CODE_USE_BEDROCK 0
+set -gx CLAUDE_CODE_USE_VERTEX 0
+set -gx ESSENTIAL_TRAFFIC_ONLY 1
+set -gx AWS_PAGER ""

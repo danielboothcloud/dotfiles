@@ -114,8 +114,7 @@ invert = false
 ## https://docs.rs/regex/latest/regex/#syntax
 history_filter = [
   "claude",
-  "opencode",
-  "deck",
+  "cursor",
   "exit",
   # Filter common secret-setting patterns
   "^export.*KEY",
@@ -170,7 +169,7 @@ history_filter = [
 secrets_filter = true
 
 ## Defaults to true. If set to false, commands with non-zero exit status will not be stored in history.
-store_failed = true
+store_failed = false
 
 ## Defaults to true. If enabled, upon hitting enter Atuin will immediately execute the command. Press tab to return to the shell and edit.
 # This applies for new installs. Old installs will keep the old behaviour unless configured otherwise.

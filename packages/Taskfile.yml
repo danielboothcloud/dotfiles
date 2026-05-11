@@ -1,0 +1,124 @@
+version: '3'
+
+# Refresh, install, or reconcile package lockfiles.
+# Usage:
+#   task            # show available tasks
+#   task update     # refresh lockfiles from currently installed packages
+#   task install    # install missing packages from lockfiles (additive)
+#   task reconcile  # install + remove anything not in lockfiles (DESTRUCTIVE)
+#
+# OS-awareness (auto-detected at runtime):
+#   macOS — dumps all casks to Brewfile.darwin, then moves any cask listed in
+#           CROSS_PLATFORM_CASKS into the common Brewfile. Mac-only formulas
+#           (auto-detected via :macos requirement) also land in Brewfile.darwin.
+#   Linux — produces only Brewfile (no Brewfile.darwin). Curated cross-platform
+#           casks are appended from CROSS_PLATFORM_CASKS.
+
+vars:
+  # Casks that work on both macOS AND linuxbrew — kept in common Brewfile.
+  CROSS_PLATFORM_CASKS: >-
+    claude-code
+    1password-cli
+
+tasks:
+  default:
+    desc: Show available tasks
+    cmds:
+      - task --list
+    silent: true
+
+  update:
+    desc: Refresh lockfiles from currently installed packages
+    dir: '{{.TASKFILE_DIR}}'
+    cmds:
+      - |
+        set -e
+        if [[ "$(uname)" == "Darwin" ]]; then
+          # macOS — split into common Brewfile + Brewfile.darwin
+
+          # Auto-detect Mac-only formulas via :macos requirement
+          MAC_FORMULAS=$(brew info --json=v2 --installed \
+            | jq -r '.formulae[] | select(.requirements[]?.name == "macos") | .full_name')
+
+          # Brewfile.darwin: all casks
+          brew bundle dump --force --cask --file=Brewfile.darwin
+
+          # Remove cross-platform casks from Brewfile.darwin
+          for cask in {{.CROSS_PLATFORM_CASKS}}; do
+            grep -vxF "cask \"$cask\"" Brewfile.darwin > Brewfile.darwin.tmp
+            mv Brewfile.darwin.tmp Brewfile.darwin
+          done
+
+          # Append Mac-only formulas (preserve tap prefixes)
+          if [ -n "$MAC_FORMULAS" ]; then
+            while IFS= read -r formula; do
+              echo "brew \"$formula\"" >> Brewfile.darwin
+            done <<< "$MAC_FORMULAS"
+          fi
+
+          # Brewfile: everything except casks and go entries
+          brew bundle dump --force --formula --tap --mas --vscode --cargo --uv --krew --npm --file=Brewfile
+
+          # Strip Mac-only formulas from common Brewfile
+          if [ -n "$MAC_FORMULAS" ]; then
+            while IFS= read -r formula; do
+              grep -vxF "brew \"$formula\"" Brewfile > Brewfile.tmp
+              mv Brewfile.tmp Brewfile
+            done <<< "$MAC_FORMULAS"
+          fi
+
+          # Append cross-platform casks to common Brewfile
+          for cask in {{.CROSS_PLATFORM_CASKS}}; do
+            echo "cask \"$cask\"" >> Brewfile
+          done
+
+          echo "✓ Brewfile + Brewfile.darwin updated"
+        else
+          # Linux — common Brewfile only
+          brew bundle dump --force --formula --tap --vscode --cargo --uv --krew --npm --file=Brewfile
+          for cask in {{.CROSS_PLATFORM_CASKS}}; do
+            echo "cask \"$cask\"" >> Brewfile
+          done
+          echo "✓ Brewfile updated"
+        fi
+      - |
+        set -e
+        if command -v gup &> /dev/null; then
+          gup export
+          cp $HOME/.config/gup/gup.json .
+          echo "✓ gup.json updated"
+        else
+          echo "⚠ gup not installed, skipping gup.json"
+        fi
+
+  install:
+    desc: Install missing packages from lockfiles (additive — no removals)
+    dir: '{{.TASKFILE_DIR}}'
+    cmds:
+      - |
+        set -e
+        brew bundle install --file=Brewfile
+        if [[ "$(uname)" == "Darwin" ]]; then
+          brew bundle install --file=Brewfile.darwin
+        fi
+      - |
+        if command -v gup &> /dev/null && [ -f gup.json ]; then
+          gup import
+        else
+          echo "⚠ gup not installed or gup.json missing, skipping"
+        fi
+
+  reconcile:
+    desc: Install missing + remove anything not in lockfiles (DESTRUCTIVE)
+    dir: '{{.TASKFILE_DIR}}'
+    cmds:
+      - task: install
+      - |
+        set -e
+        if [[ "$(uname)" == "Darwin" ]]; then
+          cat Brewfile Brewfile.darwin > /tmp/Brewfile.union
+          brew bundle cleanup --file=/tmp/Brewfile.union --force
+          rm /tmp/Brewfile.union
+        else
+          brew bundle cleanup --file=Brewfile --force
+        fi

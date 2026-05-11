@@ -2,33 +2,21 @@
   "schema_version": 1,
   "packages": [
     {
-      "name": "air",
-      "import_path": "github.com/air-verse/air",
-      "version": "v1.64.5",
-      "channel": "latest"
-    },
-    {
       "name": "clones",
       "import_path": "github.com/danielboothcloud/clones",
-      "version": "v1.0.0",
+      "version": "v1.1.0",
       "channel": "latest"
     },
     {
-      "name": "dlv",
-      "import_path": "github.com/go-delve/delve/cmd/dlv",
-      "version": "v1.26.0",
-      "channel": "latest"
-    },
-    {
-      "name": "godoc-mcp",
-      "import_path": "github.com/mrjoshuak/godoc-mcp",
-      "version": "v1.0.1",
+      "name": "gcx",
+      "import_path": "github.com/grafana/gcx/cmd/gcx",
+      "version": "v0.2.14",
       "channel": "latest"
     },
     {
       "name": "goimports",
       "import_path": "golang.org/x/tools/cmd/goimports",
-      "version": "v0.42.0",
+      "version": "v0.45.0",
       "channel": "latest"
     },
     {
@@ -38,27 +26,9 @@
       "channel": "latest"
     },
     {
-      "name": "staticcheck",
-      "import_path": "honnef.co/go/tools/cmd/staticcheck",
-      "version": "v0.7.0",
-      "channel": "latest"
-    },
-    {
-      "name": "swag",
-      "import_path": "github.com/swaggo/swag/cmd/swag",
-      "version": "v1.16.6",
-      "channel": "latest"
-    },
-    {
       "name": "togo",
       "import_path": "github.com/prime-run/togo",
       "version": "v1.1.0",
-      "channel": "latest"
-    },
-    {
-      "name": "viscosity-cli",
-      "import_path": "github.com/danielbooth-cloud/viscosity-cli",
-      "version": "v1.1.1",
       "channel": "latest"
     }
   ]

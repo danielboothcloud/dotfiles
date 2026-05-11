@@ -179,9 +179,7 @@ rules = [
 	{ mime = "vfs/{absent,stale}", fg = "#525252" },
 	# Fallback
 	{ url = "*", fg = "#f2f4f8" },
-	{ url = "*/", fg = "#78a9ff" },
-	{ name = "*", fg = "#f2f4f8" },
-	{ name = "*/", fg = "#78a9ff" }
+	{ url = "*/", fg = "#78a9ff" }
 ]
 
 # : }}}

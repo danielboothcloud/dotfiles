@@ -8,7 +8,7 @@ host i-* mi-*
     ProxyCommand bash -c "aws ssm start-session --target %h --document-name AWS-StartSSHSession --parameters 'portNumber=%p'"
     User DanielBooth
 
-    #host gitlab.com
-    #Hostname altssh.gitlab.com
-    #User git
-    #Port 443
+    # host gitlab.com
+    # Hostname altssh.gitlab.com
+    # User git
+    # Port 443
