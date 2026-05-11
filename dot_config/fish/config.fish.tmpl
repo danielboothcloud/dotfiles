@@ -30,8 +30,9 @@ if test -n "$SSH_CONNECTION"
   end
 end
 
+{{ if eq .chezmoi.os "darwin" -}}
 set -g __fish_start_time (command perl -MTime::HiRes=time -e 'printf "%d\n", time()*1000')
-
+{{ end }}
 if status is-interactive
   # When local TERM is ghostty, downgrade outbound ssh to xterm-256color
   # so remote hosts without ghostty terminfo don't choke
@@ -55,12 +56,14 @@ if status is-interactive
   atuin init fish | source
   zoxide init fish --cmd cd | source
 
+{{- if eq .chezmoi.os "darwin" }}
   function __fish_startup_time --on-event fish_prompt
     set -l now (command perl -MTime::HiRes=time -e 'printf "%d\n", time()*1000')
     set -l elapsed (math $now - $__fish_start_time)
     echo "── fish startup: {$elapsed}ms ──"
     functions -e __fish_startup_time
   end
+{{- end }}
 end
 
 mise activate fish | source
