@@ -1,5 +1,6 @@
 lefthook-local.yml
 mise.local.toml
+mise.local.lock
 .claude
 .bmad*
 .planning

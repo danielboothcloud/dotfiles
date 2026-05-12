@@ -134,7 +134,7 @@ vim.g.have_nerd_font = true
 vim.schedule(function()
   vim.o.clipboard = 'unnamedplus'
 
-  if os.getenv('SSH_TTY') then
+  if os.getenv('SSH_TTY') or os.getenv('ET_VERSION') then
     vim.g.clipboard = {
       name = 'OSC 52',
       copy = {

@@ -14,6 +14,10 @@ fish_add_path $HOME/.krew/bin
 # Environment variables
 set -gx GOBIN $HOME/go/bin
 set -gx PNPM_HOME $HOME/.local/share/pnpm
+{{ if eq .chezmoi.os "linux" -}}
+# Headless: route BROWSER to OSC 8 hyperlink printer (Ghostty makes it clickable)
+set -gx BROWSER $HOME/bin/clickable
+{{ end -}}
 
 # Load .env if it exists (fish syntax, populated by chezmoi from 1Password)
 if test -f ~/.env

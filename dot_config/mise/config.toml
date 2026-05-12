@@ -6,7 +6,6 @@ idiomatic_version_file_enable_tools = ["terraform", "opentofu", "node", "go", "p
 awscli = { version = "latest", symlink_bins = true }
 go = "latest"
 helm = "latest"
-helmfile = "latest"
 minikube = "latest"
 node = "latest"
 pipx = "latest"

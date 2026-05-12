@@ -1,6 +1,5 @@
 status is-interactive; or exit 0
 
-alias istio="istioctl"
 alias vi="nvim"
 alias pm="pnpm"
 alias px="pnpx"
