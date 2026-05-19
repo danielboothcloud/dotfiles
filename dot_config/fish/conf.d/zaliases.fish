@@ -2,7 +2,6 @@ status is-interactive; or exit 0
 
 alias vi="nvim"
 alias pm="pnpm"
-alias px="pnpx"
 alias docker="podman"
 alias dotfiles="chezmoi"
 alias ll="eza --color=always --long --git --icons=always --no-user"
@@ -20,3 +19,4 @@ abbr -a tf "terraform"
 abbr -a mk "minikube"
 abbr -a tg "terragrunt"
 abbr -a tpe "telepresence"
+abbr -a px "pnpm dlx"
