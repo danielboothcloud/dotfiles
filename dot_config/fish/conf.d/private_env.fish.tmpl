@@ -9,11 +9,12 @@ set -gx DEEPSEEK_API_KEY "{{ onepasswordRead "op://Homelab/puii5f3ig2f34adpr2q7x
 
 # Static environment variables
 set -gx XDG_CONFIG_HOME $HOME/.config
-set -gx SSH_AUTH_SOCK "$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
-set -gx DOCKER_HOST unix:///tmp/podman.sock
 set -gx DISABLE_TELEMETRY true
 set -gx DISABLE_AUTOUPDATER 1
 set -gx CLAUDE_CODE_USE_BEDROCK 0
 set -gx CLAUDE_CODE_USE_VERTEX 0
 set -gx ESSENTIAL_TRAFFIC_ONLY 1
 set -gx AWS_PAGER ""
+{{ if eq .chezmoi.os "darwin" -}}
+set -gx DOCKER_HOST unix:///tmp/podman.sock
+{{ end -}}

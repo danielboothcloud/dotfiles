@@ -20,11 +20,6 @@ set -gx PNPM_HOME $HOME/.local/share/pnpm
 set -gx BROWSER $HOME/bin/clickable
 {{ end -}}
 
-# Load .env if it exists (fish syntax, populated by chezmoi from 1Password)
-if test -f ~/.env
-  source ~/.env
-end
-
 # Inside an SSH session, prefer ghostty terminfo if the remote has it,
 # else fall back to xterm-256color
 if test -n "$SSH_CONNECTION"
