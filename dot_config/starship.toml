@@ -1,4 +1,4 @@
-format = """$directory$git_branch$git_status$python$character"""
+format = """$directory$git_branch$git_status$python$jobs$status$character"""
 right_format = """$aws$kubernetes"""
 command_timeout = 5000
 palette = "oxocarbon"
@@ -38,10 +38,18 @@ diverged = "[⇣⇡](cyan)"
 success_symbol = "[❯](blue)"
 error_symbol = "[❯](red)"
 
+[jobs]
+format = '[$symbol$number]($style) '
+symbol = '✦'
+style = "cyan"
+
 [python]
-format = '[(\($virtualenv\))]($style) '
+format = '[(\($virtualenv\)) ]($style)'
 style = "grey"
 python_binary = []
+detect_extensions = []
+detect_files = []
+detect_folders = []
 
 [gcloud]
 disabled = true
