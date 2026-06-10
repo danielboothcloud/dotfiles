@@ -3,7 +3,7 @@ mise.local.toml
 mise.local.lock
 .claude
 .bmad*
-.planning
+_bmad
 .cursor
 CLAUDE.md
 CLAUDE.local.md
