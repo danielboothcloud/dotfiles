@@ -4,58 +4,88 @@ tap "hashicorp/tap"
 tap "nao1215/tap"
 tap "null-dev/firefox-profile-switcher"
 tap "siderolabs/tap"
+# GitOps Continuous Delivery for Kubernetes
 brew "argocd"
+# Improved shell history for zsh, bash, fish and nushell
 brew "atuin"
-brew "python@3.13"
-brew "azure-cli"
+# Clone of cat(1) with syntax highlighting and Git integration
 brew "bat"
+# Resource monitor. C++ version and continuation of bashtop and bpytop
 brew "btop"
+# CD/DVD/Blu-ray premastering and recording software
 brew "cdrtools"
+# Manage your dotfiles across multiple diverse machines, securely
 brew "chezmoi"
+# Container Signing
 brew "cosign"
+# Remote terminal with IP roaming
 brew "et"
+# Modern, maintained replacement for ls
 brew "eza"
+# Simple, fast and user-friendly alternative to find
 brew "fd"
+# User-friendly command-line shell for UNIX-like operating systems
 brew "fish"
+# Command-line fuzzy finder written in Go
 brew "fzf"
+# GitHub command-line tool
 brew "gh"
-brew "git-filter-repo"
+# Git extension for versioning large files
 brew "git-lfs"
+# Open-source GitLab command-line tool
 brew "glab"
+# GNU Privacy Guard (OpenPGP)
 brew "gnupg"
+# Package manager for kubectl plugins
 brew "krew"
+# Kubernetes testing according to Hardening Guidance by NSA and CISA
 brew "kubescape"
+# Kubernetes controller and tool for one-way encrypted Secrets
 brew "kubeseal"
+# Simple terminal UI for git commands
 brew "lazygit"
+# Fast and powerful Git hooks manager for any type of projects
 brew "lefthook"
+# CLI client for interacting with LXD
 brew "lxc"
+# Polyglot runtime manager (asdf rust clone)
 brew "mise"
+# Incremental parsing library
 brew "tree-sitter"
+# Ambitious Vim-fork focused on extensibility and agility
 brew "neovim"
-brew "podman-compose"
+# Pinentry for GPG on Mac
+brew "pinentry-mac"
+# Command-line shell and scripting language
 brew "powershell"
-brew "rclone"
+# Search tool like grep and The Silver Searcher
 brew "ripgrep"
-brew "sshuttle"
+# Cross-shell prompt for astronauts
 brew "starship"
+# Easiest, most secure way to use WireGuard and 2FA
 brew "tailscale"
+# Tool Command Language
 brew "tcl-tk"
+# Parser generator tool
 brew "tree-sitter-cli"
+# Source code spell checker
 brew "typos-cli"
+# Executes a program periodically, showing output fullscreen
 brew "watch"
+# Internet file retriever
 brew "wget"
+# Access X11 clipboards from the command-line
 brew "xclip"
+# Blazing fast terminal file manager written in Rust, based on async I/O
 brew "yazi"
+# Process YAML, JSON, XML, CSV and properties documents from the CLI
 brew "yq"
+# Shell extension to navigate your filesystem faster
 brew "zoxide"
-brew "common-fate/granted/granted"
-brew "hashicorp/tap/vault"
-brew "nao1215/tap/gup"
-brew "null-dev/firefox-profile-switcher/firefox-profile-switcher-connector"
-brew "siderolabs/tap/talosctl"
 krew "ctx"
 krew "krew"
 krew "neat"
 krew "ns"
+krew "stern"
 cask "claude-code"
 cask "1password-cli"

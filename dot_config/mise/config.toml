@@ -5,13 +5,17 @@ go_set_gobin = false
 
 [tools]
 awscli = { version = "latest", symlink_bins = true }
+azure-cli = { version = "latest", uvx_args = "--prerelease=allow" }
 azure-kubelogin = "latest"
 go = "latest"
 helm = "latest"
 minikube = "latest"
 node = "latest"
 pipx = "latest"
+"pipx:dooit" = "latest"
+"pipx:podman-compose" = "latest"
 pnpm = "latest"
+podman = "latest"
 python = "latest"
 telepresence = "latest"
 uv = "latest"
