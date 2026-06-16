@@ -19,7 +19,6 @@ podman = "latest"
 python = "latest"
 telepresence = "latest"
 uv = "latest"
-vcluster = "latest"
 
 [tasks.sources]
 description = "Show which config files reference each installed tool"
@@ -28,7 +27,11 @@ run = '''
 mise list 2>/dev/null | while read -r line; do
   tool="$(echo "$line" | awk '{print $1}')"
   ver="$(echo "$line" | awk '{print $2}')"
-  sources="$(fd -IHp 'mise(\.[^/]+)?\.toml$|/mise/config\.toml$|\.tool-versions$' ~ -E node_modules -E .cache -E '.local/share' -E '.local/state' -x grep -sl "^$tool[ =]" {} 2>/dev/null | sed "s|$HOME|~|" | paste -sd, -)"
+  if grep -qE "^\"?$tool\"?[ =]" ~/.config/mise/config.toml 2>/dev/null; then
+    sources="~/.config/mise/config.toml"
+  else
+    sources="$(fd -IHp 'mise(\.[^/]+)?\.toml$|/mise/config\.toml$|\.tool-versions$' ~/projects -E node_modules -E .cache -x grep -sEl "^\"?$tool\"?[ =]" {} 2>/dev/null | sed "s|$HOME|~|" | paste -sd, -)"
+  fi
   if [ -n "$sources" ]; then
     printf "%-20s %-10s %s\n" "$tool" "$ver" "$sources"
   else
