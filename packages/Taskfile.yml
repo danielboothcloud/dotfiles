@@ -19,6 +19,8 @@ vars:
   CROSS_PLATFORM_CASKS: >-
     claude-code
     1password-cli
+  MAC_ONLY_FORMULAS: >-
+    pinentry-mac
 
 tasks:
   default:
@@ -36,9 +38,10 @@ tasks:
         if [[ "$(uname)" == "Darwin" ]]; then
           # macOS — split into common Brewfile + Brewfile.darwin
 
-          # Auto-detect Mac-only formulas via :macos requirement
+          # Auto-detect Mac-only formulas via :macos requirement, plus curated list
           MAC_FORMULAS=$(brew info --json=v2 --installed \
             | jq -r '.formulae[] | select(.requirements[]?.name == "macos") | .full_name')
+          MAC_FORMULAS=$(printf '%s\n%s\n' "$MAC_FORMULAS" "$(printf '%s\n' {{.MAC_ONLY_FORMULAS}})" | grep -v '^$' | sort -u)
 
           # Brewfile.darwin: all casks
           brew bundle dump --force --cask --file=Brewfile.darwin

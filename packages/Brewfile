@@ -40,8 +40,6 @@ brew "gnupg"
 brew "krew"
 # Kubernetes testing according to Hardening Guidance by NSA and CISA
 brew "kubescape"
-# Kubernetes controller and tool for one-way encrypted Secrets
-brew "kubeseal"
 # Simple terminal UI for git commands
 brew "lazygit"
 # Fast and powerful Git hooks manager for any type of projects
@@ -55,7 +53,6 @@ brew "tree-sitter"
 # Ambitious Vim-fork focused on extensibility and agility
 brew "neovim"
 # Pinentry for GPG on Mac
-brew "pinentry-mac"
 # Command-line shell and scripting language
 brew "powershell"
 # Search tool like grep and The Silver Searcher

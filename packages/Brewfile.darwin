@@ -11,3 +11,4 @@ cask "font-meslo-lg-nerd-font"
 cask "ghostty"
 # Verify system files structure, run miscellaneous maintenance and more
 cask "onyx"
+brew "pinentry-mac"
