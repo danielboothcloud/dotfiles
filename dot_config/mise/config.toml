@@ -7,12 +7,12 @@ go_set_gobin = false
 awscli = { version = "latest", symlink_bins = true }
 azure-cli = { version = "latest", uvx_args = "--prerelease=allow" }
 azure-kubelogin = "latest"
+gcloud = "latest"
 go = "latest"
 helm = "latest"
 minikube = "latest"
 node = "latest"
 pipx = "latest"
-"pipx:dooit" = "latest"
 "pipx:podman-compose" = "latest"
 pnpm = "latest"
 podman = "latest"
@@ -20,3 +20,19 @@ python = "latest"
 telepresence = "latest"
 uv = "latest"
 vcluster = "latest"
+
+[tasks.sources]
+description = "Show which config files reference each installed tool"
+hide = true
+run = '''
+mise list 2>/dev/null | while read -r line; do
+  tool="$(echo "$line" | awk '{print $1}')"
+  ver="$(echo "$line" | awk '{print $2}')"
+  sources="$(fd -IHp 'mise(\.[^/]+)?\.toml$|/mise/config\.toml$|\.tool-versions$' ~ -E node_modules -E .cache -E '.local/share' -E '.local/state' -x grep -sl "^$tool[ =]" {} 2>/dev/null | sed "s|$HOME|~|" | paste -sd, -)"
+  if [ -n "$sources" ]; then
+    printf "%-20s %-10s %s\n" "$tool" "$ver" "$sources"
+  else
+    printf "%-20s %-10s (orphan)\n" "$tool" "$ver"
+  fi
+done
+'''
