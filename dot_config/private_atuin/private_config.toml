@@ -113,7 +113,7 @@ invert = false
 ## For details on the supported regular expression syntax, see
 ## https://docs.rs/regex/latest/regex/#syntax
 history_filter = [
-  "claude",
+  "codex",
   "cursor",
   "exit",
   # Filter common secret-setting patterns
