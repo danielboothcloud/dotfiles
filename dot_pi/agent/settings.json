@@ -1,0 +1,32 @@
+{
+  "lastChangelogVersion": "0.80.10",
+  "theme": "dark",
+  "defaultProvider": "openai-codex",
+  "defaultModel": "gpt-5.6-sol",
+  "defaultThinkingLevel": "high",
+  "packages": [
+    "npm:@heyhuynhgiabuu/pi-pretty",
+    "npm:@quandev104/pi-rules",
+    "npm:@hypabolic/pi-hypa",
+    "npm:@heyhuynhgiabuu/pi-diff",
+    "npm:pi-web-access",
+    "npm:pi-subagents",
+    "npm:@upstash/context7-pi",
+    "npm:pi-lens",
+    "npm:@juicesharp/rpiv-todo",
+    "npm:pi-powerline-footer",
+    "npm:@tmustier/pi-code-actions",
+    "npm:@juicesharp/rpiv-ask-user-question",
+    "npm:pi-prompt-template-model",
+    "npm:pi-mcp-adapter"
+  ],
+  "enabledModels": [
+    "openai-codex/gpt-5.3-codex-spark",
+    "openai-codex/gpt-5.4",
+    "openai-codex/gpt-5.4-mini",
+    "openai-codex/gpt-5.5",
+    "openai-codex/gpt-5.6-luna",
+    "openai-codex/gpt-5.6-sol",
+    "openai-codex/gpt-5.6-terra"
+  ]
+}
