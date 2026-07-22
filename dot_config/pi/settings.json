@@ -1,0 +1,38 @@
+{
+  "lastChangelogVersion": "0.81.1",
+  "defaultProvider": "cursor",
+  "defaultModel": "composer-2.5",
+  "defaultThinkingLevel": "high",
+  "packages": [
+    "npm:pi-cursor-sdk",
+    "npm:@quandev104/pi-rules",
+    "npm:pi-web-access",
+    "npm:pi-subagents",
+    "npm:@upstash/context7-pi",
+    "npm:pi-lens",
+    "npm:pi-powerline-footer",
+    "npm:pi-mcp-adapter",
+    "npm:@hypabolic/pi-hypa",
+    "git:github.com/danielboothcloud/pi-aio"
+  ],
+  "enabledModels": [
+    "openai-codex/gpt-5.6-sol",
+    "composer-2.5"
+  ],
+  "powerline": {
+    "preset": "default",
+    "disabledSegments": [
+      "thinking"
+    ],
+    "customItems": [
+      {
+        "id": "codex-quota",
+        "statusKey": "codex-quota",
+        "position": "right",
+        "prefix": "codex"
+      }
+    ]
+  },
+  "theme": "dark",
+  "hideThinkingBlock": true
+}
