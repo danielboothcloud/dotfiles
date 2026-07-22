@@ -1,0 +1,7 @@
+{
+  "app.thinking.cycle": [],
+  "app.session.togglePath": [],
+  "app.model.select": [],
+  "app.model.cycleForward": ["ctrl+l"],
+  "app.models.toggleProvider": []
+}
