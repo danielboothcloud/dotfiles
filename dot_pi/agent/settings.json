@@ -14,12 +14,12 @@
     "npm:pi-subagents",
     "npm:@upstash/context7-pi",
     "npm:pi-lens",
-    "npm:@juicesharp/rpiv-todo",
     "npm:pi-powerline-footer",
     "npm:@tmustier/pi-code-actions",
     "npm:@juicesharp/rpiv-ask-user-question",
     "npm:pi-prompt-template-model",
-    "npm:pi-mcp-adapter"
+    "npm:pi-mcp-adapter",
+    "npm:@aprimediet/permission-modes"
   ],
   "enabledModels": [
     "openai-codex/gpt-5.3-codex-spark",
@@ -30,5 +30,16 @@
     "openai-codex/gpt-5.6-sol",
     "openai-codex/gpt-5.6-terra",
     "composer-2.5"
-  ]
+  ],
+  "powerline": {
+    "preset": "default",
+    "customItems": [
+      {
+        "id": "codex-quota",
+        "statusKey": "codex-quota",
+        "position": "right",
+        "prefix": "codex"
+      }
+    ]
+  }
 }

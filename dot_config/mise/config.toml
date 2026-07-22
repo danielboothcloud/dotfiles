@@ -1,4 +1,5 @@
 [settings]
+minimum_release_age = "0"
 lockfile = true
 idiomatic_version_file_enable_tools = ["terraform", "opentofu", "node", "go", "python"]
 go_set_gobin = false
