@@ -19,7 +19,6 @@ pipx = "latest"
 pnpm = "latest"
 podman = "latest"
 python = "latest"
-telepresence = "latest"
 uv = "latest"
 
 [env]

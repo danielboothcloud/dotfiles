@@ -115,6 +115,7 @@ invert = false
 history_filter = [
   "codex",
   "cursor",
+  "pi",
   "exit",
   # Filter common secret-setting patterns
   "^export.*KEY",

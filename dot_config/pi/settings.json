@@ -1,37 +1,39 @@
 {
-  "lastChangelogVersion": "0.81.1",
-  "defaultProvider": "cursor",
-  "defaultModel": "composer-2.5",
+  "lastChangelogVersion": "0.82.1",
+  "defaultProvider": "ollama-cloud",
+  "defaultModel": "glm-5.2",
   "defaultThinkingLevel": "high",
   "packages": [
     "npm:pi-cursor-sdk",
-    "npm:@quandev104/pi-rules",
-    "npm:pi-web-access",
-    "npm:pi-subagents",
     "npm:@upstash/context7-pi",
     "npm:pi-lens",
-    "npm:pi-powerline-footer",
     "npm:pi-mcp-adapter",
     "npm:@hypabolic/pi-hypa",
     "git:github.com/danielboothcloud/pi-aio"
   ],
   "enabledModels": [
     "openai-codex/gpt-5.6-sol",
-    "composer-2.5"
+    "composer-2.5",
+    "opencode-go/kimi-k3",
+    "ollama/deepseek-v4-pro:cloud",
+    "ollama-cloud/glm-5.2"
   ],
-  "powerline": {
-    "preset": "default",
-    "disabledSegments": [
-      "thinking"
-    ],
-    "customItems": [
-      {
-        "id": "codex-quota",
-        "statusKey": "codex-quota",
-        "position": "right",
-        "prefix": "codex"
-      }
-    ]
+  "aio": {
+    "statusLine": {
+      "enabled": true,
+      "segments": [
+        "mode",
+        "path",
+        "git",
+        "context",
+        "effort",
+        "statuses",
+        "cursor",
+        "model"
+      ],
+      "path": "basename",
+      "workingMessage": "minimal"
+    }
   },
   "theme": "dark",
   "hideThinkingBlock": true

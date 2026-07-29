@@ -7,6 +7,7 @@ set -gx GITHUB_TOKEN "{{ onepasswordRead "op://Homelab/dwhntxnsrngadsprlju47yp5z
 set -gx JIRA_API_TOKEN "{{ onepasswordRead "op://Work/xoigul5bauewoyfg4zhlrkzxlq/token" }}"
 set -gx OPENROUTER_API_KEY "{{ onepasswordRead "op://Homelab/ep4usdt373peyzc54nw5t2oxum/api-key" }}"
 set -gx DEEPSEEK_API_KEY "{{ onepasswordRead "op://Homelab/puii5f3ig2f34adpr2q7xizkbm/token" }}"
+set -gx OLLAMA_API_KEY "{{ onepasswordRead "op://Private/non5ilgdcmgasq4dc2xduz2ue4/api-key" }}"
 
 # Static environment variables
 set -gx XDG_CONFIG_HOME $HOME/.config
@@ -17,6 +18,7 @@ set -gx CLAUDE_CODE_USE_VERTEX 0
 set -gx ESSENTIAL_TRAFFIC_ONLY 1
 set -gx AWS_PAGER ""
 set -Ux PI_CODING_AGENT_DIR "$HOME/.config/pi"
+set -Ux PI_CACHE_RETENTION long
 {{ if eq .chezmoi.os "darwin" -}}
 set -gx DOCKER_HOST unix:///tmp/podman.sock
 set -gx CONTAINERS_MACHINE_PROVIDER applehv
