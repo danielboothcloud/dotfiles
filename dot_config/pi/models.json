@@ -1,0 +1,78 @@
+{
+  "providers": {
+    "openai-codex": {
+      "modelOverrides": {
+        "gpt-5.6-sol": {
+          "contextWindow": 1000000
+        },
+        "gpt-5.6-terra": {
+          "contextWindow": 372000
+        },
+        "gpt-5.6-luna": {
+          "contextWindow": 372000
+        }
+      }
+    },
+    "ollama": {
+      "baseUrl": "http://127.0.0.1:11434/v1",
+      "api": "openai-completions",
+      "apiKey": "ollama",
+      "compat": {
+        "supportsDeveloperRole": false,
+        "supportsReasoningEffort": false
+      },
+      "models": [
+        {
+          "id": "deepseek-v4-pro:cloud",
+          "name": "DeepSeek V4 Pro (Ollama)",
+          "reasoning": true,
+          "contextWindow": 1000000,
+          "maxTokens": 16384
+        }
+      ]
+    },
+    "ollama-cloud": {
+      "baseUrl": "https://ollama.com/v1",
+      "api": "openai-completions",
+      "apiKey": "$OLLAMA_API_KEY",
+      "authHeader": true,
+      "compat": {
+        "supportsDeveloperRole": false,
+        "supportsReasoningEffort": false
+      },
+      "models": [
+        {
+          "id": "deepseek-v4-pro",
+          "name": "DeepSeek V4 Pro (Ollama Cloud)",
+          "reasoning": true,
+          "contextWindow": 1000000,
+          "maxTokens": 16384
+        },
+        {
+          "id": "deepseek-v4-flash:0731",
+          "name": "DeepSeek V4 Flash 0731 (Ollama Cloud)",
+          "reasoning": true,
+          "contextWindow": 1000000,
+          "maxTokens": 16384,
+          "thinkingLevelMap": {
+            "low": "low",
+            "high": "high",
+            "xhigh": null,
+            "max": "max"
+          },
+          "compat": {
+            "supportsDeveloperRole": false,
+            "supportsReasoningEffort": true
+          }
+        },
+        {
+          "id": "glm-5.2",
+          "name": "GLM 5.2 (Ollama Cloud)",
+          "reasoning": true,
+          "contextWindow": 1000000,
+          "maxTokens": 16384
+        }
+      ]
+    }
+  }
+}
