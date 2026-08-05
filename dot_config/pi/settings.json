@@ -1,21 +1,21 @@
 {
-  "lastChangelogVersion": "0.82.1",
+  "lastChangelogVersion": "0.83.0",
   "defaultProvider": "ollama-cloud",
-  "defaultModel": "glm-5.2",
-  "defaultThinkingLevel": "high",
+  "defaultModel": "deepseek-v4-flash:0731",
+  "defaultThinkingLevel": "max",
   "packages": [
     "npm:pi-cursor-sdk",
     "npm:@upstash/context7-pi",
     "npm:pi-lens",
     "npm:pi-mcp-adapter",
     "npm:@hypabolic/pi-hypa",
-    "git:github.com/danielboothcloud/pi-aio"
+    "git:github.com/danielboothcloud/pi-aio@fix/questions"
   ],
   "enabledModels": [
     "openai-codex/gpt-5.6-sol",
     "composer-2.5",
     "opencode-go/kimi-k3",
-    "ollama/deepseek-v4-pro:cloud",
+    "ollama-cloud/deepseek-v4-flash:0731",
     "ollama-cloud/glm-5.2"
   ],
   "aio": {

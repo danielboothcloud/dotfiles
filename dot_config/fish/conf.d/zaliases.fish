@@ -16,6 +16,5 @@ abbr -e gup
 abbr -a kb "kubectl"
 abbr -a tf "terraform"
 abbr -a mk "minikube"
-abbr -a tg "terragrunt"
 abbr -a tpe "telepresence"
 abbr -a px "pnpm dlx"

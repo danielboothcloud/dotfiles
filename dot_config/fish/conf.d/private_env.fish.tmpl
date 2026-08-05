@@ -1,7 +1,5 @@
 # Secrets from 1Password
-set -gx GLM_API_KEY "{{ onepasswordRead "op://Homelab/illhoq7x5cl2rtfk7kfnfsauju/key" }}"
 set -gx GITLAB_ACCESS_TOKEN "{{ onepasswordRead "op://Work/n45byn73aoyep64m2sqss6ufwe/token" }}"
-set -gx INFRACOST_API_KEY "{{ onepasswordRead "op://Private/opjadhhudbd4ejsshqxroduj5i/token" }}"
 set -gx GITHUB_ACCESS_TOKEN "{{ onepasswordRead "op://Homelab/dwhntxnsrngadsprlju47yp5z4/token" }}"
 set -gx GITHUB_TOKEN "{{ onepasswordRead "op://Homelab/dwhntxnsrngadsprlju47yp5z4/token" }}"
 set -gx JIRA_API_TOKEN "{{ onepasswordRead "op://Work/xoigul5bauewoyfg4zhlrkzxlq/token" }}"
