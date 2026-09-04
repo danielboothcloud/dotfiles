@@ -1,0 +1,40 @@
+{
+	"enabled": true,
+	"entries": [
+		{
+			"pattern": "\\bbrew\\b",
+			"regex": true,
+			"reason": "use mise install or mise x for one-off commands"
+		},
+		{
+			"pattern": "\\bgit (commit|push)(?![\\w-])",
+			"regex": true,
+			"reason": "commits and pushes are done manually"
+		},
+		{
+			"pattern": "\\bterraform init\\b",
+			"regex": true,
+			"reason": "terraform init runs in CI only"
+		},
+		{
+			"pattern": "\\bterraform validate\\b",
+			"regex": true,
+			"reason": "terraform validate runs in CI only"
+		},
+		{
+			"pattern": "\\bterraform plan\\b",
+			"regex": true,
+			"reason": "terraform plan runs in CI only"
+		},
+		{
+			"pattern": "\\bterraform apply\\b",
+			"regex": true,
+			"reason": "terraform apply runs in CI only"
+		},
+		{
+			"pattern": "\\bvault\\b",
+			"regex": true,
+			"reason": "vault handles sensitive data; this cannot be accessed by agents"
+		}
+	]
+}

@@ -12,3 +12,12 @@ host i-* mi-*
     # Hostname altssh.gitlab.com
     # User git
     # Port 443
+
+Host opl-bastion
+    HostName '{{ onepasswordRead "op://Work/sthqvgpqxshmlxc4u4uazh3mt4/bastion_ip" }}'
+    User '{{ onepasswordRead "op://Work/sthqvgpqxshmlxc4u4uazh3mt4/bastion_user" }}'
+    PKCS11Provider "/usr/local/lib/opensc-pkcs11.so"
+    ForwardAgent yes
+    IdentityFile "~/.ssh/opl.pub"
+    IdentitiesOnly yes
+

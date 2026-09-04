@@ -1,10 +1,9 @@
 {
-  "lastChangelogVersion": "0.83.0",
-  "defaultProvider": "ollama-cloud",
-  "defaultModel": "deepseek-v4-flash:0731",
-  "defaultThinkingLevel": "max",
+  "lastChangelogVersion": "0.84.3",
+  "defaultProvider": "openai-codex",
+  "defaultModel": "gpt-5.6-sol",
+  "defaultThinkingLevel": "high",
   "packages": [
-    "npm:pi-cursor-sdk",
     "npm:@upstash/context7-pi",
     "npm:pi-lens",
     "npm:pi-mcp-adapter",
@@ -13,7 +12,6 @@
   ],
   "enabledModels": [
     "openai-codex/gpt-5.6-sol",
-    "composer-2.5",
     "opencode-go/kimi-k3",
     "ollama-cloud/deepseek-v4-flash:0731",
     "ollama-cloud/glm-5.2"
