@@ -4,7 +4,7 @@ return {
     config = function()
         require('lualine').setup({
             options = {
-                theme = 'oxocarbon',
+                theme = 'rose-pine',
                 icons_enabled = vim.g.have_nerd_font,
                 component_separators = '|',
                 section_separators = '',

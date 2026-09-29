@@ -1,5 +1,5 @@
 {
-  "lastChangelogVersion": "0.84.3",
+  "lastChangelogVersion": "0.87.1",
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-5.6-sol",
   "defaultThinkingLevel": "high",
@@ -7,16 +7,22 @@
     "npm:@upstash/context7-pi",
     "npm:pi-lens",
     "npm:pi-mcp-adapter",
-    "npm:@hypabolic/pi-hypa",
-    "git:github.com/danielboothcloud/pi-aio@fix/questions"
+    "git:github.com/danielboothcloud/pi-aio@feature/ui"
   ],
   "enabledModels": [
     "openai-codex/gpt-5.6-sol",
-    "opencode-go/kimi-k3",
-    "ollama-cloud/deepseek-v4-flash:0731",
-    "ollama-cloud/glm-5.2"
+    "openrouter/z-ai/glm-5.3",
+    "synthetic/hf:deepseek-ai/DeepSeek-V4.1-Flash",
+    "synthetic/hf:zai-org/GLM-5.3-Flash"
   ],
   "aio": {
+    "browserSearch": {
+      "provider": "exa",
+      "exa": {
+        "apiKeyEnv": "EXA_API_KEY",
+        "searchType": "auto"
+      }
+    },
     "statusLine": {
       "enabled": true,
       "segments": [
@@ -27,12 +33,42 @@
         "effort",
         "statuses",
         "cursor",
+        "quota",
         "model"
       ],
       "path": "basename",
-      "workingMessage": "minimal"
+      "workingMessage": "minimal",
+      "providerUsage": {
+        "refreshIntervalMs": 60000,
+        "timeoutMs": 5000,
+        "providers": {
+          "synthetic": {
+            "endpoint": "https://api.synthetic.new/v2/quotas",
+            "headers": {
+              "Authorization": "Bearer ${SYNTHETIC_API_KEY}"
+            },
+            "windows": {
+              "requests": {
+                "label": "synthetic",
+                "mapping": {
+                  "used": "subscription.requests",
+                  "limit": "subscription.limit",
+                  "renewsAt": "subscription.renewsAt"
+                }
+              },
+              "weekly": {
+                "label": "wk",
+                "mapping": {
+                  "text": "weeklyTokenLimit.remainingCredits",
+                  "renewsAt": "weeklyTokenLimit.nextRegenAt"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "theme": "dark",
-  "hideThinkingBlock": true
+  "hideThinkingBlock": false
 }

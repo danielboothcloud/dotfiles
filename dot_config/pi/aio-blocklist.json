@@ -32,6 +32,11 @@
 			"reason": "terraform apply runs in CI only"
 		},
 		{
+			"pattern": "\\bchezmoi (apply|edit|add|update|forget|destroy|init|import|re-add|remove|upgrade|state|execute-template|cd)\\b",
+			"regex": true,
+			"reason": "chezmoi changes are applied manually"
+		},
+		{
 			"pattern": "\\bvault\\b",
 			"regex": true,
 			"reason": "vault handles sensitive data; this cannot be accessed by agents"
