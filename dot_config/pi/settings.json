@@ -1,5 +1,5 @@
 {
-  "lastChangelogVersion": "0.87.1",
+  "lastChangelogVersion": "0.99.1",
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-5.6-sol",
   "defaultThinkingLevel": "high",
@@ -7,11 +7,12 @@
     "npm:@upstash/context7-pi",
     "npm:pi-lens",
     "npm:pi-mcp-adapter",
-    "git:github.com/danielboothcloud/pi-aio@feature/ui"
+    "git:github.com/danielboothcloud/pi-aio@feature/ui2"
   ],
   "enabledModels": [
     "openai-codex/gpt-5.6-sol",
     "openrouter/z-ai/glm-5.3",
+    "openrouter/typesafe/jev-router",
     "synthetic/hf:deepseek-ai/DeepSeek-V4.1-Flash",
     "synthetic/hf:zai-org/GLM-5.3-Flash"
   ],
@@ -48,19 +49,17 @@
               "Authorization": "Bearer ${SYNTHETIC_API_KEY}"
             },
             "windows": {
-              "requests": {
-                "label": "synthetic",
+              "fivehour": {
+                "label": "5h",
                 "mapping": {
-                  "used": "subscription.requests",
-                  "limit": "subscription.limit",
-                  "renewsAt": "subscription.renewsAt"
+                  "remaining": "rollingFiveHourLimit.remaining",
+                  "limit": "rollingFiveHourLimit.max"
                 }
               },
               "weekly": {
                 "label": "wk",
                 "mapping": {
-                  "text": "weeklyTokenLimit.remainingCredits",
-                  "renewsAt": "weeklyTokenLimit.nextRegenAt"
+                  "text": "weeklyTokenLimit.remainingCredits"
                 }
               }
             }
@@ -70,5 +69,5 @@
     }
   },
   "theme": "dark",
-  "hideThinkingBlock": false
+  "hideThinkingBlock": true
 }
