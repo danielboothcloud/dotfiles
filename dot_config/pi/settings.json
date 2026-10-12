@@ -6,7 +6,7 @@
   "packages": [
     "npm:@upstash/context7-pi",
     "npm:pi-lens",
-    "git:github.com/danielboothcloud/pi-aio@fix/loops",
+    "git:github.com/danielboothcloud/pi-aio@main",
     "npm:@gotgenes/pi-anthropic-auth"
   ],
   "enabledModels": [
