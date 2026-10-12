@@ -342,7 +342,7 @@ require('lazy').setup({
     priority = 1000, -- ensure it loads before other plugins
     config = function()
       require('rose-pine').setup {
-        variant = 'moon',
+        variant = 'main',
       }
       vim.cmd [[colorscheme rose-pine]]
     end,

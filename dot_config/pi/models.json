@@ -2,7 +2,7 @@
   "providers": {
     "openai-codex": {
       "modelOverrides": {
-        "gpt-5.6-sol": {
+        "gpt-6.1-sol": {
           "contextWindow": 1000000
         },
         "gpt-5.6-terra": {
@@ -46,18 +46,46 @@
       "apiKey": "$SYNTHETIC_API_KEY",
       "models": [
         {
-          "id": "hf:deepseek-ai/DeepSeek-V4.1-Flash",
-          "name": "DeepSeek V4.1 Flash",
+          "id": "hf:zai-org/GLM-5.3",
+          "name": "GLM 5.3",
           "reasoning": true,
           "thinkingLevelMap": {
             "minimal": null,
             "low": "low",
             "medium": "medium",
             "high": "high",
+            "xhigh": "xhigh",
             "max": "max"
           },
           "compat": {
-            "thinkingFormat": "deepseek"
+            "thinkingFormat": "zai",
+            "supportsReasoningEffort": true
+          },
+          "input": ["text"],
+          "contextWindow": 524288,
+          "maxTokens": 65536,
+          "cost": {
+            "input": 1.4,
+            "output": 4.4,
+            "cacheRead": 0.26,
+            "cacheWrite": 0
+          }
+        },
+        {
+          "id": "hf:zai-org/GLM-5.3-Flash",
+          "name": "GLM V5.3 Flash",
+          "reasoning": true,
+          "thinkingLevelMap": {
+            "minimal": null,
+            "low": "low",
+            "medium": "medium",
+            "high": "high",
+            "xhigh": "xhigh",
+            "max": "max"
+          },
+          "compat": {
+            "thinkingFormat": "zai",
+            "supportsReasoningEffort": true
           },
           "input": ["text", "image"],
           "contextWindow": 512000,
@@ -69,30 +97,29 @@
             "cacheWrite": 0.06
           }
         },
-	{
-          "id": "hf:zai-org/GLM-5.3-Flash",
-          "name": "GLM V5.3 Flash",
+        {
+          "id": "hf:moonshotai/Kimi-K3",
+          "name": "Kimi K3",
           "reasoning": true,
           "thinkingLevelMap": {
+            "off": null,
             "minimal": null,
-            "low": "low",
-            "medium": "medium",
-            "high": "high",
+            "low": null,
+            "medium": null,
+            "high": null,
+            "xhigh": null,
             "max": "max"
           },
-          "compat": {
-            "thinkingFormat": "zai"
-          },
           "input": ["text", "image"],
-          "contextWindow": 512000,
-          "maxTokens": 16384,
+          "contextWindow": 524288,
+          "maxTokens": 65536,
           "cost": {
-            "input": 0.06,
-            "output": 1.2,
-            "cacheRead": 0.03,
-            "cacheWrite": 0.06
-	}
-       }
+            "input": 3,
+            "output": 15,
+            "cacheRead": 0.45,
+            "cacheWrite": 0
+          }
+        }
       ]
     }
   }

@@ -1,11 +1,13 @@
 tap "common-fate/granted"
-tap "domt4/autoupdate"
+tap "domt4/autoupdate", trusted: true
 tap "hashicorp/tap"
 tap "nao1215/tap"
 tap "null-dev/firefox-profile-switcher"
-tap "siderolabs/tap"
+tap "siderolabs/tap", trusted: true
 # GitOps Continuous Delivery for Kubernetes
 brew "argocd"
+# Code searching, linting, rewriting
+brew "ast-grep"
 # Improved shell history for zsh, bash, fish and nushell
 brew "atuin"
 # Clone of cat(1) with syntax highlighting and Git integration
@@ -42,8 +44,6 @@ brew "krew"
 brew "kubescape"
 # Simple terminal UI for git commands
 brew "lazygit"
-# Fast and powerful Git hooks manager for any type of projects
-brew "lefthook"
 # CLI client for interacting with LXD
 brew "lxc"
 # Polyglot runtime manager (asdf rust clone)
@@ -55,6 +55,8 @@ brew "neovim"
 # Pinentry for GPG on Mac
 # Search tool like grep and The Silver Searcher
 brew "ripgrep"
+# CLI proxy to minimize LLM token consumption
+brew "rtk"
 # Cross-shell prompt for astronauts
 brew "starship"
 # Easiest, most secure way to use WireGuard and 2FA
@@ -63,6 +65,8 @@ brew "tailscale"
 brew "tcl-tk"
 # Parser generator tool
 brew "tree-sitter-cli"
+# Code review TUI with vim keybindings
+brew "tuicr"
 # Source code spell checker
 brew "typos-cli"
 # Executes a program periodically, showing output fullscreen
@@ -77,6 +81,14 @@ brew "yazi"
 brew "yq"
 # Shell extension to navigate your filesystem faster
 brew "zoxide"
+# The easiest way to access your cloud.
+brew "common-fate/granted/granted", trusted: true
+# Vault
+brew "hashicorp/tap/vault", trusted: true
+# Fast manager for Go-installed binaries in $GOBIN: update, export/import, and migrate toolsets across machines
+brew "nao1215/tap/gup", trusted: true
+# The native component of the Profile Switcher for Firefox extension.
+brew "null-dev/firefox-profile-switcher/firefox-profile-switcher-connector", trusted: true
 krew "ctx"
 krew "krew"
 krew "neat"

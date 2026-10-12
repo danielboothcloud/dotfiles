@@ -1,12 +1,12 @@
 [settings]
 minimum_release_age = "0"
 lockfile = true
-idiomatic_version_file_enable_tools = ["terraform", "opentofu", "node", "go", "python"]
+# idiomatic_version_file_enable_tools = ["terraform", "opentofu", "node", "go", "python"]
 go_set_gobin = false
 
 [tools]
 awscli = { version = "latest", symlink_bins = true }
-azure-cli = { version = "latest", uvx_args = "--prerelease=allow" }
+azure-cli = "latest"
 azure-kubelogin = "latest"
 gcloud = { version = "latest", depends = ["python"] }
 go = "latest"

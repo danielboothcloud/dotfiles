@@ -1,14 +1,13 @@
 # Command-line interface for 1Password
 # Application launcher and productivity software
 cask "alfred"
-# Screen capturing and editing tool
-cask "bettershot"
-# Terminal-based AI coding assistant
+# OpenAI's coding agent that runs in your terminal
+cask "codex"
 # Command-line agent for Cursor
 cask "cursor-cli"
 cask "font-meslo-lg-nerd-font"
 # Terminal emulator that uses platform-native UI and GPU acceleration
 cask "ghostty"
-# Verify system files structure, run miscellaneous maintenance and more
-cask "onyx"
+# Smart card libraries and utilities
+cask "opensc-app"
 brew "pinentry-mac"

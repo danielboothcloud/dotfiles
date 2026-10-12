@@ -60,7 +60,7 @@ tasks:
           fi
 
           # Brewfile: everything except casks and go entries
-          brew bundle dump --force --formula --tap --mas --vscode --cargo --uv --krew --npm --file=Brewfile
+          brew bundle dump --force --formula --tap --mas --vscode --uv --krew --npm --file=Brewfile
 
           # Strip Mac-only formulas from common Brewfile
           if [ -n "$MAC_FORMULAS" ]; then
@@ -78,7 +78,7 @@ tasks:
           echo "✓ Brewfile + Brewfile.darwin updated"
         else
           # Linux — common Brewfile only
-          brew bundle dump --force --formula --tap --vscode --cargo --uv --krew --npm --file=Brewfile
+          brew bundle dump --force --formula --tap --vscode --uv --krew --npm --file=Brewfile
           for cask in {{.CROSS_PLATFORM_CASKS}}; do
             echo "cask \"$cask\"" >> Brewfile
           done
