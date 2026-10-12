@@ -1,0 +1,97 @@
+{
+  "lastChangelogVersion": "1.1.0",
+  "defaultProvider": "openai-codex",
+  "defaultModel": "gpt-6.1-sol",
+  "defaultThinkingLevel": "xhigh",
+  "packages": [
+    "npm:@upstash/context7-pi",
+    "npm:pi-lens",
+    "git:github.com/danielboothcloud/pi-aio@main",
+    "npm:@gotgenes/pi-anthropic-auth"
+  ],
+  "enabledModels": [
+    "openai-codex/gpt-6.1-sol",
+    "synthetic/hf:zai-org/GLM-5.3",
+    "synthetic/hf:zai-org/GLM-5.3-Flash",
+    "anthropic/claude-opus-5-5",
+    "anthropic/claude-sonnet-5-5"
+  ],
+  "aio": {
+    "browserSearch": {
+      "provider": "exa",
+      "exa": {
+        "apiKeyEnv": "EXA_API_KEY",
+        "searchType": "auto"
+      }
+    },
+    "statusLine": {
+      "enabled": true,
+      "segments": [
+        "mode",
+        "path",
+        "git",
+        "context",
+        "effort",
+        "statuses",
+        "cursor",
+        "quota",
+        "model"
+      ],
+      "path": "basename",
+      "workingMessage": "minimal",
+      "providerUsage": {
+        "refreshIntervalMs": 60000,
+        "timeoutMs": 5000,
+        "providers": {
+          "anthropic": {
+            "endpoint": "https://api.anthropic.com/api/oauth/usage",
+            "auth": "pi-oauth",
+            "refreshIntervalMs": 300000,
+            "windows": {
+              "fiveHour": {
+                "label": "5h",
+                "mapping": {
+                  "usedPercent": "five_hour.utilization",
+                  "renewsAt": "five_hour.resets_at"
+                }
+              },
+              "sevenDay": {
+                "label": "7d",
+                "mapping": {
+                  "usedPercent": "seven_day.utilization",
+                  "renewsAt": "seven_day.resets_at"
+                }
+              }
+            }
+          },
+          "synthetic": {
+            "endpoint": "https://api.synthetic.new/v2/quotas",
+            "headers": {
+              "Authorization": "Bearer ${SYNTHETIC_API_KEY}"
+            },
+            "windows": {
+              "fivehour": {
+                "label": "5h",
+                "mapping": {
+                  "remaining": "rollingFiveHourLimit.remaining",
+                  "limit": "rollingFiveHourLimit.max"
+                }
+              },
+              "weekly": {
+                "label": "wk",
+                "mapping": {
+                  "text": "weeklyTokenLimit.remainingCredits"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "theme": "dark",
+  "hideThinkingBlock": true,
+  "warnings": {
+    "anthropicExtraUsage": false
+  }
+}

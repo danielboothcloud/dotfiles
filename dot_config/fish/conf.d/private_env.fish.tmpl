@@ -1,19 +1,25 @@
 # Secrets from 1Password
-set -gx GLM_API_KEY "{{ onepasswordRead "op://Homelab/illhoq7x5cl2rtfk7kfnfsauju/key" }}"
 set -gx GITLAB_ACCESS_TOKEN "{{ onepasswordRead "op://Work/n45byn73aoyep64m2sqss6ufwe/token" }}"
-set -gx INFRACOST_API_KEY "{{ onepasswordRead "op://Private/opjadhhudbd4ejsshqxroduj5i/token" }}"
 set -gx GITHUB_ACCESS_TOKEN "{{ onepasswordRead "op://Homelab/dwhntxnsrngadsprlju47yp5z4/token" }}"
+set -gx GITHUB_TOKEN "{{ onepasswordRead "op://Homelab/dwhntxnsrngadsprlju47yp5z4/token" }}"
 set -gx JIRA_API_TOKEN "{{ onepasswordRead "op://Work/xoigul5bauewoyfg4zhlrkzxlq/token" }}"
 set -gx OPENROUTER_API_KEY "{{ onepasswordRead "op://Homelab/ep4usdt373peyzc54nw5t2oxum/api-key" }}"
 set -gx DEEPSEEK_API_KEY "{{ onepasswordRead "op://Homelab/puii5f3ig2f34adpr2q7xizkbm/token" }}"
+set -gx EXA_API_KEY "{{ onepasswordRead "op://Homelab/xzy5mavren7pqvuhcyzcfrl6wy/password" }}"
+set -gx SYNTHETIC_API_KEY "{{ onepasswordRead "op://Homelab/6q6iaqagdxm7p3c6blp7wpn754/api-key" }}"
 
 # Static environment variables
 set -gx XDG_CONFIG_HOME $HOME/.config
-set -gx SSH_AUTH_SOCK "$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
-set -gx DOCKER_HOST unix:///tmp/podman.sock
 set -gx DISABLE_TELEMETRY true
 set -gx DISABLE_AUTOUPDATER 1
 set -gx CLAUDE_CODE_USE_BEDROCK 0
 set -gx CLAUDE_CODE_USE_VERTEX 0
 set -gx ESSENTIAL_TRAFFIC_ONLY 1
 set -gx AWS_PAGER ""
+set -Ux PI_CODING_AGENT_DIR "$HOME/.config/pi"
+set -Ux PI_CACHE_RETENTION long
+{{ if eq .chezmoi.os "darwin" -}}
+set -gx DOCKER_HOST unix:///tmp/podman.sock
+set -gx CONTAINERS_MACHINE_PROVIDER applehv
+set -gx CONTAINERS_MACHINE_ROSETTA true
+{{ end -}}

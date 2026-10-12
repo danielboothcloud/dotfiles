@@ -1,16 +1,45 @@
 [settings]
+minimum_release_age = "0"
 lockfile = true
-idiomatic_version_file_enable_tools = ["terraform", "opentofu", "node", "go", "python"]
+# idiomatic_version_file_enable_tools = ["terraform", "opentofu", "node", "go", "python"]
+go_set_gobin = false
 
 [tools]
 awscli = { version = "latest", symlink_bins = true }
+azure-cli = "latest"
+azure-kubelogin = "latest"
+gcloud = { version = "latest", depends = ["python"] }
 go = "latest"
 helm = "latest"
-helmfile = "latest"
 minikube = "latest"
 node = "latest"
+pi = "latest"
 pipx = "latest"
+"pipx:podman-compose" = "latest"
 pnpm = "latest"
+podman = "latest"
 python = "latest"
 uv = "latest"
-vcluster = "latest"
+
+[env]
+CLOUDSDK_PYTHON = { value = "{{ tools.python.path }}/bin/python3", tools = true }
+
+[tasks.sources]
+description = "Show which config files reference each installed tool"
+hide = true
+run = '''
+mise list 2>/dev/null | while read -r line; do
+  tool="$(echo "$line" | awk '{print $1}')"
+  ver="$(echo "$line" | awk '{print $2}')"
+  if grep -qE "^\"?$tool\"?[ =]" ~/.config/mise/config.toml 2>/dev/null; then
+    sources="~/.config/mise/config.toml"
+  else
+    sources="$(fd -IHp 'mise(\.[^/]+)?\.toml$|/mise/config\.toml$|\.tool-versions$' ~/projects -E node_modules -E .cache -x grep -sEl "^\"?$tool\"?[ =]" {} 2>/dev/null | sed "s|$HOME|~|" | paste -sd, -)"
+  fi
+  if [ -n "$sources" ]; then
+    printf "%-20s %-10s %s\n" "$tool" "$ver" "$sources"
+  else
+    printf "%-20s %-10s (orphan)\n" "$tool" "$ver"
+  fi
+done
+'''

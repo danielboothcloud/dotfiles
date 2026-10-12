@@ -1,72 +1,98 @@
 tap "common-fate/granted"
-tap "derailed/k9s"
-tap "domt4/autoupdate"
-tap "go-task/tap"
-tap "gromgit/fuse"
+tap "domt4/autoupdate", trusted: true
 tap "hashicorp/tap"
-tap "knative/client"
-tap "macos-fuse-t/cask"
 tap "nao1215/tap"
-tap "norwoodj/tap"
 tap "null-dev/firefox-profile-switcher"
-tap "oven-sh/bun"
-tap "siderolabs/tap"
-tap "smithy-lang/tap"
-tap "telepresenceio/telepresence"
-tap "weaveworks/tap"
+tap "siderolabs/tap", trusted: true
+# GitOps Continuous Delivery for Kubernetes
 brew "argocd"
+# Code searching, linting, rewriting
+brew "ast-grep"
+# Improved shell history for zsh, bash, fish and nushell
 brew "atuin"
-brew "python@3.13"
-brew "azure-cli"
+# Clone of cat(1) with syntax highlighting and Git integration
 brew "bat"
+# Resource monitor. C++ version and continuation of bashtop and bpytop
 brew "btop"
+# CD/DVD/Blu-ray premastering and recording software
 brew "cdrtools"
+# Manage your dotfiles across multiple diverse machines, securely
 brew "chezmoi"
+# Container Signing
 brew "cosign"
+# Remote terminal with IP roaming
 brew "et"
+# Modern, maintained replacement for ls
 brew "eza"
+# Simple, fast and user-friendly alternative to find
 brew "fd"
+# User-friendly command-line shell for UNIX-like operating systems
 brew "fish"
+# Command-line fuzzy finder written in Go
 brew "fzf"
+# GitHub command-line tool
 brew "gh"
-brew "git-filter-repo"
+# Git extension for versioning large files
 brew "git-lfs"
+# Open-source GitLab command-line tool
 brew "glab"
+# GNU Privacy Guard (OpenPGP)
 brew "gnupg"
+# Package manager for kubectl plugins
 brew "krew"
+# Kubernetes testing according to Hardening Guidance by NSA and CISA
 brew "kubescape"
-brew "kubeseal"
+# Simple terminal UI for git commands
 brew "lazygit"
-brew "lefthook"
+# CLI client for interacting with LXD
 brew "lxc"
+# Polyglot runtime manager (asdf rust clone)
 brew "mise"
+# Incremental parsing library
 brew "tree-sitter"
+# Ambitious Vim-fork focused on extensibility and agility
 brew "neovim"
-brew "podman-compose"
-brew "powershell"
+# Pinentry for GPG on Mac
+# Search tool like grep and The Silver Searcher
 brew "ripgrep"
-brew "sshuttle"
+# CLI proxy to minimize LLM token consumption
+brew "rtk"
+# Cross-shell prompt for astronauts
 brew "starship"
+# Easiest, most secure way to use WireGuard and 2FA
 brew "tailscale"
+# Tool Command Language
 brew "tcl-tk"
+# Parser generator tool
 brew "tree-sitter-cli"
+# Code review TUI with vim keybindings
+brew "tuicr"
+# Source code spell checker
 brew "typos-cli"
+# Executes a program periodically, showing output fullscreen
 brew "watch"
+# Internet file retriever
 brew "wget"
+# Access X11 clipboards from the command-line
 brew "xclip"
+# Blazing fast terminal file manager written in Rust, based on async I/O
 brew "yazi"
+# Process YAML, JSON, XML, CSV and properties documents from the CLI
 brew "yq"
+# Shell extension to navigate your filesystem faster
 brew "zoxide"
-brew "common-fate/granted/granted"
-brew "go-task/tap/go-task"
-brew "hashicorp/tap/vault"
-brew "nao1215/tap/gup"
-brew "null-dev/firefox-profile-switcher/firefox-profile-switcher-connector"
-brew "siderolabs/tap/talosctl"
-brew "telepresenceio/telepresence/telepresence-oss"
+# The easiest way to access your cloud.
+brew "common-fate/granted/granted", trusted: true
+# Vault
+brew "hashicorp/tap/vault", trusted: true
+# Fast manager for Go-installed binaries in $GOBIN: update, export/import, and migrate toolsets across machines
+brew "nao1215/tap/gup", trusted: true
+# The native component of the Profile Switcher for Firefox extension.
+brew "null-dev/firefox-profile-switcher/firefox-profile-switcher-connector", trusted: true
 krew "ctx"
 krew "krew"
 krew "neat"
 krew "ns"
+krew "stern"
 cask "claude-code"
 cask "1password-cli"

@@ -1,5 +1,6 @@
 host *
     SendEnv TERM
+    AddKeysToAgent yes
 
 host i-*.* mi-*.*
   ProxyCommand bash -c "aws ssm start-session --target $(echo %h|cut -d'.' -f1) --region $(echo %h|/usr/bin/cut -d'.' -f2) --document-name AWS-StartSSHSession --parameters 'portNumber=%p'"
@@ -12,3 +13,12 @@ host i-* mi-*
     # Hostname altssh.gitlab.com
     # User git
     # Port 443
+
+Host opl-bastion
+    HostName {{ onepasswordRead "op://Work/sthqvgpqxshmlxc4u4uazh3mt4/bastion_ip" }}
+    User {{ onepasswordRead "op://Work/sthqvgpqxshmlxc4u4uazh3mt4/bastion_user" }}
+    PKCS11Provider "/usr/local/lib/opensc-pkcs11.so"
+    ForwardAgent yes
+    IdentityFile "~/.ssh/opl.pub"
+    IdentitiesOnly yes
+
