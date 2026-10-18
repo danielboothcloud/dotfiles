@@ -18,7 +18,7 @@ pipx = "latest"
 "pipx:podman-compose" = "latest"
 pnpm = "latest"
 podman = "latest"
-python = "latest"
+python = "3.14.8"
 uv = "latest"
 
 [env]
