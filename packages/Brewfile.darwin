@@ -1,6 +1,7 @@
 # Command-line interface for 1Password
 # Application launcher and productivity software
 cask "alfred"
+# Terminal-based AI coding assistant
 # OpenAI's coding agent that runs in your terminal
 cask "codex"
 # Command-line agent for Cursor

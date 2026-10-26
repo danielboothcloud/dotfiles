@@ -1,4 +1,4 @@
-format = """$directory$git_branch$git_status$python$jobs$status$character"""
+format = """$directory${custom.jj}${custom.git_branch}${custom.git_status}$python$jobs$status$character"""
 right_format = """${env_var.aws_profile}$kubernetes"""
 command_timeout = 5000
 palette = "oxocarbon"
@@ -69,3 +69,23 @@ detect_env_vars = ['KUBECONFIG']
 format = '\[[$symbol$context(\($namespace\))]($style)\]'
 symbol = '󱃾 '
 style = "blue"
+
+# --- Jujutsu (jj): takes over from git when a .jj directory is present ---
+[custom.jj]
+when = "jj root --ignore-working-copy"
+command = '''jj log -r@ --ignore-working-copy --no-graph --color never -T 'separate(" ", change_id.shortest(4), bookmarks.join(","), if(conflict, "!"), if(empty, "∅"))' '''
+format = '[$output]($style) '
+style = "magenta"
+
+# --- Git defaults: only when NOT inside a jj repo ---
+[custom.git_branch]
+when = "git rev-parse --is-inside-work-tree && ! jj root --ignore-working-copy"
+command = "git branch --show-current || git rev-parse --short HEAD"
+format = '[󰘬 $output]($style) '
+style = "magenta"
+
+[custom.git_status]
+when = "git rev-parse --is-inside-work-tree && ! jj root --ignore-working-copy"
+command = "git diff --quiet HEAD 2>/dev/null && echo ✓ || echo '*'"
+format = '[$output]($style) '
+style = "magenta"

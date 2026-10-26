@@ -4,13 +4,12 @@
 		"home": {
 			"description": "Personal: Codex Sol daily driver; Claude + Synthetic GLM cycling",
 			"model": "openai-codex/gpt-6.1-sol",
-			"thinkingLevel": "xhigh",
+			"thinkingLevel": "high",
 			"models": [
 				"openai-codex/gpt-6.1-sol",
-				"synthetic/hf:zai-org/GLM-5.3",
-				"synthetic/hf:zai-org/GLM-5.3-Flash",
+				"openai-codex/gpt-6-luna",
 				"anthropic/claude-opus-5-5",
-				"anthropic/claude-sonnet-5-5"
+				"anthropic/claude-haiku-5-5"
 			],
 			"extensions": [
 				"npm:@upstash/context7-pi",
@@ -21,9 +20,10 @@
 		"work": {
 			"description": "Work: Cursor SDK",
 			"model": "cursor/grok-4.7",
-			"thinkingLevel": "xhigh",
+			"thinkingLevel": "medium",
 			"models": [
-				"cursor/grok-4.7"
+				"cursor/grok-4.7",
+				"cursor/composer-2.5"
 			],
 			"extensions": [
 				"npm:@upstash/context7-pi",

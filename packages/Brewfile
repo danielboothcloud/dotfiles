@@ -38,6 +38,8 @@ brew "git-lfs"
 brew "glab"
 # GNU Privacy Guard (OpenPGP)
 brew "gnupg"
+# Git-compatible distributed version control system
+brew "jj"
 # Package manager for kubectl plugins
 brew "krew"
 # Kubernetes testing according to Hardening Guidance by NSA and CISA
@@ -79,6 +81,8 @@ brew "xclip"
 brew "yazi"
 # Process YAML, JSON, XML, CSV and properties documents from the CLI
 brew "yq"
+# Pluggable terminal workspace, with terminal multiplexer as the base feature
+brew "zellij"
 # Shell extension to navigate your filesystem faster
 brew "zoxide"
 # The easiest way to access your cloud.
@@ -93,6 +97,7 @@ krew "ctx"
 krew "krew"
 krew "neat"
 krew "ns"
+krew "oidc-login"
 krew "stern"
 cask "claude-code"
 cask "1password-cli"

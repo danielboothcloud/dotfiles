@@ -40,6 +40,11 @@
 			"pattern": "\\bvault\\b",
 			"regex": true,
 			"reason": "vault handles sensitive data; this cannot be accessed by agents"
+		},
+		{
+			"pattern": "\\bjj\\s+(bookmark|b)\\s+(create|set|move|delete|forget)\\b",
+			"regex": true,
+			"reason": "bookmark changes are managed manually; agents may use jj new and jj describe only"
 		}
 	]
 }

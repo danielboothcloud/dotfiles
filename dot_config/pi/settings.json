@@ -1,20 +1,19 @@
 {
-  "lastChangelogVersion": "1.2.0",
+  "lastChangelogVersion": "1.4.0",
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-6.1-sol",
-  "defaultThinkingLevel": "xhigh",
+  "defaultThinkingLevel": "high",
   "packages": [
     "npm:@upstash/context7-pi",
     "npm:pi-lens",
     "npm:@gotgenes/pi-anthropic-auth",
-    "git:github.com/danielboothcloud/pi-aio@main"
+    "git:github.com/danielboothcloud/pi-aio@feature/fixes"
   ],
   "enabledModels": [
     "openai-codex/gpt-6.1-sol",
-    "synthetic/hf:zai-org/GLM-5.3",
-    "synthetic/hf:zai-org/GLM-5.3-Flash",
+    "openai-codex/gpt-6-luna",
     "anthropic/claude-opus-5-5",
-    "anthropic/claude-sonnet-5-5"
+    "anthropic/claude-haiku-5-5"
   ],
   "aio": {
     "browserSearch": {
@@ -90,7 +89,7 @@
     }
   },
   "theme": "dark",
-  "hideThinkingBlock": true,
+  "hideThinkingBlock": false,
   "warnings": {
     "anthropicExtraUsage": false
   }
