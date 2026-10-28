@@ -1,0 +1,98 @@
+#!/bin/bash
+# Option+e: pick a file in yazi, then open it in a new Zellij tab running nvim.
+# Enter on a single directory stays in yazi. q cancels.
+
+set -euo pipefail
+
+if [[ "${1:-}" == "--self-check" ]]; then
+	root=$(mktemp -d)
+	trap 'rm -rf "$root"' EXIT
+	mkdir -p "$root/proj/sub" "$root/bin"
+	printf 'hello\n' >"$root/proj/sub/note file.txt"
+
+	cat >"$root/bin/yazi" <<EOF
+#!/bin/bash
+file=""
+dir=""
+for a in "\$@"; do
+	case "\$a" in
+		--chooser-file=*) file="\${a#--chooser-file=}" ;;
+		*) dir="\$a" ;;
+	esac
+done
+n=0
+[[ -f "$root/state" ]] && n=\$(cat "$root/state")
+n=\$((n + 1))
+echo "\$n" >"$root/state"
+if [[ "\$n" -eq 1 ]]; then
+	printf '%s\n' "$root/proj/sub" >"\$file"
+else
+	[[ "\$dir" == "$root/proj/sub" ]] || { echo "yazi was not reopened in the directory" >&2; exit 1; }
+	printf '%s\n' "$root/proj/sub/note file.txt" >"\$file"
+fi
+EOF
+	cat >"$root/bin/zellij" <<EOF
+#!/bin/bash
+printf '%s\n' "\$@" >"$root/zellij-args"
+EOF
+	chmod +x "$root/bin/yazi" "$root/bin/zellij"
+
+	PATH="$root/bin:$PATH" /bin/bash "$0"
+	[[ "$(cat "$root/state")" == "2" ]] || { echo "expected yazi twice" >&2; exit 1; }
+	got=$(cat "$root/zellij-args")
+	want=$(printf '%s\n' \
+		action new-tab \
+		--name "note file.txt" \
+		--cwd "$root/proj/sub" \
+		--close-on-exit \
+		-- nvim -- \
+		"$root/proj/sub/note file.txt")
+	[[ "$got" == "$want" ]] || { echo "zellij args mismatch" >&2; echo "$got" >&2; exit 1; }
+
+	cat >"$root/bin/yazi" <<'EOF'
+#!/bin/bash
+exit 0
+EOF
+	chmod +x "$root/bin/yazi"
+	rm -f "$root/zellij-args"
+	PATH="$root/bin:$PATH" /bin/bash "$0"
+	[[ ! -e "$root/zellij-args" ]] || { echo "cancel opened a tab" >&2; exit 1; }
+	exit 0
+fi
+
+choice=$(mktemp)
+trap 'rm -f "$choice"' EXIT
+next=()
+
+while true; do
+	: >"$choice"
+	if ((${#next[@]})); then
+		yazi --chooser-file="$choice" "${next[@]}"
+	else
+		yazi --chooser-file="$choice"
+	fi
+
+	files=()
+	dirs=()
+	while IFS= read -r path || [[ -n "$path" ]]; do
+		[[ -n "$path" ]] || continue
+		if [[ -d "$path" ]]; then
+			dirs+=("$path")
+		else
+			files+=("$path")
+		fi
+	done <"$choice"
+
+	if ((${#files[@]} == 0 && ${#dirs[@]} == 1)); then
+		next=("${dirs[0]}")
+		continue
+	fi
+	((${#files[@]})) || exit 0
+
+	zellij action new-tab \
+		--name "$(basename "${files[0]}")" \
+		--cwd "$(dirname "${files[0]}")" \
+		--close-on-exit \
+		-- nvim -- "${files[@]}"
+	exit 0
+done

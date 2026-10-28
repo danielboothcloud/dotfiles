@@ -12,6 +12,7 @@ keybinds clear-defaults=true {
         bind "Super t" { NewTab; SwitchToMode "locked"; }
         bind "Super d" { NewPane "right"; SwitchToMode "locked"; }
         bind "Super Shift d" { NewPane "down"; SwitchToMode "locked"; }
+        bind "Super Shift f" { ToggleFloatingPanes; SwitchToMode "locked"; }
         bind "Super Shift Enter" { ToggleFocusFullscreen; SwitchToMode "locked"; }
         bind "Super 1" { GoToTab 1; SwitchToMode "locked"; }
         bind "Super 2" { GoToTab 2; SwitchToMode "locked"; }
