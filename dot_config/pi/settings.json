@@ -89,7 +89,7 @@
     }
   },
   "theme": "dark",
-  "hideThinkingBlock": false,
+  "hideThinkingBlock": true,
   "warnings": {
     "anthropicExtraUsage": false
   }
