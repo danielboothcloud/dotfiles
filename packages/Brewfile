@@ -38,8 +38,8 @@ brew "git-lfs"
 brew "glab"
 # GNU Privacy Guard (OpenPGP)
 brew "gnupg"
-# Git-compatible distributed version control system
-brew "jj"
+# Kubernetes CLI To Manage Your Clusters In Style!
+brew "k9s"
 # Package manager for kubectl plugins
 brew "krew"
 # Kubernetes testing according to Hardening Guidance by NSA and CISA
@@ -65,6 +65,8 @@ brew "starship"
 brew "tailscale"
 # Tool Command Language
 brew "tcl-tk"
+# Send macOS User Notifications from the command-line
+brew "terminal-notifier"
 # Parser generator tool
 brew "tree-sitter-cli"
 # Code review TUI with vim keybindings
@@ -101,3 +103,4 @@ krew "oidc-login"
 krew "stern"
 cask "claude-code"
 cask "1password-cli"
+cask "openwhispr"

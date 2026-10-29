@@ -10,7 +10,7 @@
     {
       "name": "gcx",
       "import_path": "github.com/grafana/gcx/cmd/gcx",
-      "version": "v1.6.0",
+      "version": "v1.7.1",
       "channel": "latest"
     },
     {
@@ -22,7 +22,7 @@
     {
       "name": "gopls",
       "import_path": "golang.org/x/tools/gopls",
-      "version": "v0.23.0",
+      "version": "v0.24.0",
       "channel": "latest"
     },
     {

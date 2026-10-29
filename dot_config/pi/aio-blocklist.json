@@ -28,6 +28,11 @@
       "reason": "vault handles sensitive data; this cannot be accessed by agents"
     },
     {
+      "pattern": "^op\\b",
+      "regex": true,
+      "reason": "1Password handles sensitive data; this cannot be accessed by agents"
+    },
+    {
       "pattern": "^jj\\s+((-R|--repository)\\s+\\S+\\s+|--\\S+\\s+)*(bookmark|b)\\s+(create|set|move|delete|forget)\\b",
       "regex": true,
       "reason": "bookmark changes are managed manually; agents may use jj new and jj describe only"
