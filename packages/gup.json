@@ -4,25 +4,25 @@
     {
       "name": "clones",
       "import_path": "github.com/danielboothcloud/clones",
-      "version": "v1.1.0",
+      "version": "v1.2.0",
       "channel": "latest"
     },
     {
       "name": "gcx",
       "import_path": "github.com/grafana/gcx/cmd/gcx",
-      "version": "v1.5.0",
+      "version": "v1.7.1",
       "channel": "latest"
     },
     {
       "name": "goimports",
       "import_path": "golang.org/x/tools/cmd/goimports",
-      "version": "v0.51.0",
+      "version": "v0.52.0",
       "channel": "latest"
     },
     {
       "name": "gopls",
       "import_path": "golang.org/x/tools/gopls",
-      "version": "v0.23.0",
+      "version": "v0.24.0",
       "channel": "latest"
     },
     {

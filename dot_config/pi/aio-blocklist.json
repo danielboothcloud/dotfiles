@@ -1,45 +1,41 @@
 {
-	"enabled": true,
-	"entries": [
-		{
-			"pattern": "\\bbrew\\b",
-			"regex": true,
-			"reason": "use mise install or mise x for one-off commands"
-		},
-		{
-			"pattern": "\\bgit (commit|push)(?![\\w-])",
-			"regex": true,
-			"reason": "commits and pushes are done manually"
-		},
-		{
-			"pattern": "\\bterraform init\\b",
-			"regex": true,
-			"reason": "terraform init runs in CI only"
-		},
-		{
-			"pattern": "\\bterraform validate\\b",
-			"regex": true,
-			"reason": "terraform validate runs in CI only"
-		},
-		{
-			"pattern": "\\bterraform plan\\b",
-			"regex": true,
-			"reason": "terraform plan runs in CI only"
-		},
-		{
-			"pattern": "\\bterraform apply\\b",
-			"regex": true,
-			"reason": "terraform apply runs in CI only"
-		},
-		{
-			"pattern": "\\bchezmoi (apply|edit|add|update|forget|destroy|init|import|re-add|remove|upgrade|state|execute-template|cd)\\b",
-			"regex": true,
-			"reason": "chezmoi changes are applied manually"
-		},
-		{
-			"pattern": "\\bvault\\b",
-			"regex": true,
-			"reason": "vault handles sensitive data; this cannot be accessed by agents"
-		}
-	]
+  "enabled": true,
+  "match": "command",
+  "entries": [
+    {
+      "pattern": "^brew\\b",
+      "regex": true,
+      "reason": "use mise install or mise x for one-off commands"
+    },
+    {
+      "pattern": "^git\\s+((-C|-c)\\s+\\S+\\s+)*(commit|push)(?![\\w-])",
+      "regex": true,
+      "reason": "commits and pushes are done manually"
+    },
+    {
+      "pattern": "^terraform\\s+(-chdir=\\S+\\s+)?(init|validate|plan|apply)\\b",
+      "regex": true,
+      "reason": "terraform init, validate, plan and apply run in CI only"
+    },
+    {
+      "pattern": "^chezmoi\\s+(-\\S+\\s+)*(apply|edit|add|update|forget|destroy|init|import|re-add|remove|upgrade|state|execute-template|cd)\\b",
+      "regex": true,
+      "reason": "chezmoi changes are applied manually"
+    },
+    {
+      "pattern": "^vault\\b",
+      "regex": true,
+      "reason": "vault handles sensitive data; this cannot be accessed by agents"
+    },
+    {
+      "pattern": "^op\\b",
+      "regex": true,
+      "reason": "1Password handles sensitive data; this cannot be accessed by agents"
+    },
+    {
+      "pattern": "^jj\\s+((-R|--repository)\\s+\\S+\\s+|--\\S+\\s+)*(bookmark|b)\\s+(create|set|move|delete|forget)\\b",
+      "regex": true,
+      "reason": "bookmark changes are managed manually; agents may use jj new and jj describe only"
+    }
+  ]
 }

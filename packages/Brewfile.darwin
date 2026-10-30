@@ -10,4 +10,6 @@ cask "font-meslo-lg-nerd-font"
 cask "ghostty"
 # Smart card libraries and utilities
 cask "opensc-app"
+# Privacy-first voice-to-text dictation with AI agents
 brew "pinentry-mac"
+brew "terminal-notifier"

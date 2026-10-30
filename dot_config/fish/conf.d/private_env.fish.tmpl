@@ -9,6 +9,8 @@ set -gx EXA_API_KEY "{{ onepasswordRead "op://Homelab/xzy5mavren7pqvuhcyzcfrl6wy
 set -gx SYNTHETIC_API_KEY "{{ onepasswordRead "op://Homelab/6q6iaqagdxm7p3c6blp7wpn754/api-key" }}"
 
 # Static environment variables
+set -gx EDITOR nvim
+set -gx VISUAL nvim
 set -gx XDG_CONFIG_HOME $HOME/.config
 set -gx DISABLE_TELEMETRY true
 set -gx DISABLE_AUTOUPDATER 1

@@ -19,8 +19,10 @@ vars:
   CROSS_PLATFORM_CASKS: >-
     claude-code
     1password-cli
+    openwhispr
   MAC_ONLY_FORMULAS: >-
     pinentry-mac
+    terminal-notifier
 
 tasks:
   default:
