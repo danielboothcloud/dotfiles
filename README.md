@@ -2,7 +2,7 @@
 
 Managed with chezmoi
 
-Neovim (kickstart), Zsh (Oh My Zsh + Powerlevel10k), Ghostty, Homebrew packages
+Neovim (kickstart), Fish + Starship, Ghostty, Homebrew packages
 
 ## Setup
 

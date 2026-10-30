@@ -49,6 +49,20 @@ EOF
 		"$root/proj/sub/note file.txt")
 	[[ "$got" == "$want" ]] || { echo "zellij args mismatch" >&2; echo "$got" >&2; exit 1; }
 
+	# fd search results come back as search:// URLs
+	cat >"$root/bin/yazi" <<EOF
+#!/bin/bash
+for a in "\$@"; do
+	case "\$a" in --chooser-file=*) file="\${a#--chooser-file=}" ;; esac
+done
+printf '%s\n' "search://note:3:3/$root/proj/sub/note file.txt" >"\$file"
+EOF
+	chmod +x "$root/bin/yazi"
+	rm -f "$root/zellij-args"
+	PATH="$root/bin:$PATH" /bin/bash "$0"
+	got=$(cat "$root/zellij-args")
+	[[ "$got" == "$want" ]] || { echo "search url not normalised" >&2; echo "$got" >&2; exit 1; }
+
 	cat >"$root/bin/yazi" <<'EOF'
 #!/bin/bash
 exit 0
@@ -76,6 +90,12 @@ while true; do
 	dirs=()
 	while IFS= read -r path || [[ -n "$path" ]]; do
 		[[ -n "$path" ]] || continue
+		# Virtual dirs (fd/rg search results) emit scheme URLs like
+		# search://query:3:3//abs/path — strip back to the real path.
+		if [[ "$path" =~ ^[a-z][a-z0-9+.-]*://[^/]*/(/.*)$ ]]; then
+			path="${BASH_REMATCH[1]}"
+		fi
+		[[ -e "$path" ]] || continue
 		if [[ -d "$path" ]]; then
 			dirs+=("$path")
 		else

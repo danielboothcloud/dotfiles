@@ -22,6 +22,7 @@ vars:
     openwhispr
   MAC_ONLY_FORMULAS: >-
     pinentry-mac
+    terminal-notifier
 
 tasks:
   default:

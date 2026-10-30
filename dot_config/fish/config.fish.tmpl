@@ -32,9 +32,6 @@ if test -n "$SSH_CONNECTION"
   end
 end
 
-{{ if eq .chezmoi.os "darwin" -}}
-set -g __fish_start_time (command perl -MTime::HiRes=time -e 'printf "%d\n", time()*1000')
-{{ end }}
 set -g fish_greeting
 
 if status is-interactive
@@ -73,14 +70,45 @@ if status is-interactive
   atuin init fish | source
   zoxide init fish --cmd cd | source
 
-{{- if eq .chezmoi.os "darwin" }}
-  function __fish_startup_time --on-event fish_prompt
-    set -l now (command perl -MTime::HiRes=time -e 'printf "%d\n", time()*1000')
-    set -l elapsed (math $now - $__fish_start_time)
-    echo "── fish startup: {$elapsed}ms ──"
-    functions -e __fish_startup_time
+  function __fish_startup_tip --on-event fish_prompt
+    # Add new tips here; one is chosen at random for each interactive shell.
+    set -l tips \
+      'Zellij: press Ctrl-G to unlock, then E to open Yazi.' \
+      'Zellij: press Cmd-Shift-F to show or hide floating panes, even while locked.' \
+      'Yazi: press s to search for files with fd.' \
+      'Atuin: press ? at the shell prompt to open the AI modal.' \
+      'Zoxide: run cdi to fuzzy-find a directory.' \
+      'Fish: run fvi to fuzzy-pick files to open in Neovim.' \
+      'Zellij: press Ctrl-G, then S to open the session picker.' \
+      'Atuin: press Tab to edit a selected command; Enter runs it.' \
+      'Neovim: press Space, then cd to open Yazi at the current file.' \
+      'Neovim: press Space, then gg to open Lazygit.' \
+      'Neovim: press Space Space to find files; Space rg searches contents.' \
+      'Neovim: press Space gf to open the current file’s Git history.' \
+      'Neovim: press Space mr to toggle rendered Markdown.' \
+      'Neovim: press Tab / Shift-Tab to cycle buffers.' \
+      'Zellij: press Ctrl-G, then P, then E to switch the current pane between tiled and floating.' \
+      'Zellij: press Ctrl-G, then T, then B to move the current pane into its own tab.' \
+      'Ghostty: Cmd-click a URL to open it from terminal output.' \
+      'Clones: run clones to browse remote and local repositories.' \
+      'Fish: px expands to pnpm dlx.' \
+      'Kubernetes: run kube to toggle the Kubernetes context in your Starship prompt.' \
+      'Neovim: press Space gb to open Git Browse.' \
+      'Neovim: ciw replaces the word under your cursor.' \
+      'Neovim: ci" / ci( replaces everything inside quotes or parentheses.' \
+      'Neovim: dap deletes the current paragraph.' \
+      'Neovim: . repeats your last edit.' \
+      'Neovim: >> / << indents or unindents a line.' \
+      'Neovim: f<char> jumps to a character on the line; ; repeats, , reverses.' \
+      'Neovim: % jumps between matching brackets.' \
+      'Neovim: * searches for the word under your cursor; n finds the next match.' \
+      'Neovim: Ctrl-O jumps back to your previous location.' \
+      'Neovim: g; jumps to your previous edit location.' \
+      'Neovim: gv reselects your last visual selection.' \
+      'Neovim: Ctrl-A / Ctrl-X increments or decrements a number.'
+    printf '── Tip: %s ──\n' (random choice $tips)
+    functions -e __fish_startup_tip
   end
-{{- end }}
 end
 
 mise activate fish | source

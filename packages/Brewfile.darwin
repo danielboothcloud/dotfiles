@@ -1,7 +1,6 @@
 # Command-line interface for 1Password
 # Application launcher and productivity software
 cask "alfred"
-# Terminal-based AI coding assistant
 # OpenAI's coding agent that runs in your terminal
 cask "codex"
 # Command-line agent for Cursor
@@ -11,4 +10,6 @@ cask "font-meslo-lg-nerd-font"
 cask "ghostty"
 # Smart card libraries and utilities
 cask "opensc-app"
+# Privacy-first voice-to-text dictation with AI agents
 brew "pinentry-mac"
+brew "terminal-notifier"
