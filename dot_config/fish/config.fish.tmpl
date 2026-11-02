@@ -105,7 +105,14 @@ if status is-interactive
       'Neovim: Ctrl-O jumps back to your previous location.' \
       'Neovim: g; jumps to your previous edit location.' \
       'Neovim: gv reselects your last visual selection.' \
-      'Neovim: Ctrl-A / Ctrl-X increments or decrements a number.'
+      'Neovim: Ctrl-A / Ctrl-X increments or decrements a number.' \
+      'Pi: Ctrl-L cycles through your configured models.' \
+      'Pi: Ctrl-T shows or hides thinking blocks.' \
+      'Pi: type @ to find and attach a file.' \
+      'Pi: !command runs a command and shares its output; !!command keeps it out of the model’s context.' \
+      'Pi: Option-S opens the subagent interface to observe subagents.' \
+      'Pi: Ctrl-P lets you copy output from quote and code blocks.' \
+      'Pi: /review opens tuicr to review agent changes.'
     printf '── Tip: %s ──\n' (random choice $tips)
     functions -e __fish_startup_tip
   end

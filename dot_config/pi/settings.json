@@ -1,5 +1,5 @@
 {
-  "lastChangelogVersion": "1.4.0",
+  "lastChangelogVersion": "1.5.0",
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-6.1-sol",
   "defaultThinkingLevel": "high",
@@ -7,7 +7,7 @@
     "npm:@upstash/context7-pi",
     "npm:pi-lens",
     "npm:@gotgenes/pi-anthropic-auth",
-    "git:github.com/danielboothcloud/pi-aio@feature/fixes"
+    "git:github.com/danielboothcloud/pi-aio@feature/mcp"
   ],
   "enabledModels": [
     "openai-codex/gpt-6.1-sol",
@@ -89,8 +89,12 @@
     }
   },
   "theme": "dark",
-  "hideThinkingBlock": true,
+  "hideThinkingBlock": false,
   "warnings": {
     "anthropicExtraUsage": false
+  },
+  "extensionChangelogVersions": {
+    "{\"source\":\"npm:pi-lens\",\"scope\":\"user\"}": "4.4.8",
+    "{\"source\":\"npm:@gotgenes/pi-anthropic-auth\",\"scope\":\"user\"}": "3.4.4"
   }
 }
