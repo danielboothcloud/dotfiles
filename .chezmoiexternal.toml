@@ -1,0 +1,5 @@
+# Zellij status bar plugin, loaded by the zjstatus alias in dot_config/zellij/config.kdl.
+# Pinned: zellij asks for plugin permissions again whenever the wasm changes.
+[".config/zellij/plugins/zjstatus.wasm"]
+    type = "file"
+    url = "https://github.com/dj95/zjstatus/releases/download/v0.25.0/zjstatus.wasm"

@@ -6,6 +6,8 @@ version: '3'
 #   task update     # refresh lockfiles from currently installed packages
 #   task install    # install missing packages from lockfiles (additive)
 #   task reconcile  # install + remove anything not in lockfiles (DESTRUCTIVE)
+#   task container:build  # build the secret-free dotfiles image (Containerfile)
+#   task container:run    # run it with $PWD mounted at ~/work
 #
 # OS-awareness (auto-detected at runtime):
 #   macOS — dumps all casks to Brewfile.darwin, then moves any cask listed in
@@ -112,6 +114,23 @@ tasks:
         else
           echo "⚠ gup not installed or gup.json missing, skipping"
         fi
+
+  container:build:
+    desc: Build the portable, secret-free dotfiles image (packages/Containerfile)
+    dir: '{{.TASKFILE_DIR}}/..'
+    cmds:
+      - |
+        set -e
+        # Pass a GitHub token (if gh is logged in) so mise avoids API rate limits
+        export GITHUB_TOKEN="${GITHUB_TOKEN:-$(gh auth token 2>/dev/null || true)}"
+        podman build -f packages/Containerfile --secret id=github_token,env=GITHUB_TOKEN -t dotfiles {{.CLI_ARGS}} .
+
+  container:run:
+    desc: Run the dotfiles image with the current directory mounted at ~/work
+    dir: '{{.USER_WORKING_DIR}}'
+    cmds:
+      - podman run --rm -it --userns=keep-id -e COLORTERM=truecolor -v "$PWD:/home/danielbooth/work" dotfiles {{.CLI_ARGS}}
+    interactive: true
 
   reconcile:
     desc: Install missing + remove anything not in lockfiles (DESTRUCTIVE)

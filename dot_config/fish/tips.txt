@@ -1,0 +1,42 @@
+# One tip per line. Shown by fish (config.fish) and the zjstatus bar (zellij/tip).
+Zellij: press Ctrl-G to unlock, then E to open Yazi.
+Zellij: press Cmd-Shift-F to show or hide floating panes, even while locked.
+Yazi: press s to search for files with fd.
+Atuin: press ? at the shell prompt to open the AI modal.
+Zoxide: run cdi to fuzzy-find a directory.
+Fish: run fvi to fuzzy-pick files to open in Neovim.
+Zellij: press Ctrl-G, then S to open the session picker.
+Atuin: press Tab to edit a selected command; Enter runs it.
+Atuin: run atuin resume to pick up an AI agent conversation; --in <agent> continues it in another harness.
+Neovim: press Space, then cd to open Yazi at the current file.
+Neovim: press Space, then gg to open Lazygit.
+Neovim: press Space Space to find files; Space rg searches contents.
+Neovim: press Space gf to open the current file’s Git history.
+Neovim: press Space mr to toggle rendered Markdown.
+Neovim: press Tab / Shift-Tab to cycle buffers.
+Zellij: press Ctrl-G, then P, then E to switch the current pane between tiled and floating.
+Zellij: press Ctrl-G, then T, then B to move the current pane into its own tab.
+Ghostty: Cmd-click a URL to open it from terminal output.
+Clones: run clones to browse remote and local repositories.
+Fish: px expands to pnpm dlx.
+Kubernetes: run kube to toggle the Kubernetes context in your Starship prompt.
+Neovim: press Space gb to open Git Browse.
+Neovim: ciw replaces the word under your cursor.
+Neovim: ci" / ci( replaces everything inside quotes or parentheses.
+Neovim: dap deletes the current paragraph.
+Neovim: . repeats your last edit.
+Neovim: >> / << indents or unindents a line.
+Neovim: f<char> jumps to a character on the line; ; repeats, , reverses.
+Neovim: % jumps between matching brackets.
+Neovim: * searches for the word under your cursor; n finds the next match.
+Neovim: Ctrl-O jumps back to your previous location.
+Neovim: g; jumps to your previous edit location.
+Neovim: gv reselects your last visual selection.
+Neovim: Ctrl-A / Ctrl-X increments or decrements a number.
+Pi: Ctrl-L cycles through your configured models.
+Pi: Ctrl-T shows or hides thinking blocks.
+Pi: type @ to find and attach a file.
+Pi: !command runs a command and shares its output; !!command keeps it out of the model’s context.
+Pi: Option-S opens the subagent interface to observe subagents.
+Pi: Ctrl-P lets you copy output from quote and code blocks.
+Pi: /review opens tuicr to review agent changes.

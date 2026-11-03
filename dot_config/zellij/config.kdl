@@ -304,6 +304,54 @@ plugins {
     welcome-screen location="zellij:session-manager" {
         welcome_screen true
     }
+    // Top bar in layouts/default.kdl: mode, session, tabs, and a rotating tip
+    // from ~/.config/fish/tips.txt. wasm is fetched by .chezmoiexternal.toml.
+    zjstatus location="file:~/.config/zellij/plugins/zjstatus.wasm" {
+        // Rose Pine (matches themes/rose-pine.kdl)
+        color_bg     "#21202e"
+        color_muted  "#6e6a86"
+        color_subtle "#908caa"
+        color_love   "#eb6f92"
+        color_gold   "#f6c177"
+        color_rose   "#ebbcba"
+        color_pine   "#31748f"
+        color_foam   "#9ccfd8"
+        color_iris   "#c4a7e7"
+
+        format_left   "{mode}#[fg=$iris,bg=$bg,bold] {session} {tabs}"
+        format_center ""
+        format_right  "{command_tip}"
+        format_space  "#[bg=$bg]"
+        // Drop the tip (right) rather than the tabs when they collide.
+        format_hide_on_overlength "true"
+        format_precedence         "lcr"
+
+        border_enabled             "false"
+        hide_frame_for_single_pane "false"
+
+        mode_locked          "#[fg=$muted,bg=$bg] 󰌾 "
+        mode_normal          "#[fg=$bg,bg=$pine,bold] {name} "
+        mode_pane            "#[fg=$bg,bg=$foam,bold] {name} "
+        mode_tab             "#[fg=$bg,bg=$gold,bold] {name} "
+        mode_resize          "#[fg=$bg,bg=$rose,bold] {name} "
+        mode_scroll          "#[fg=$bg,bg=$iris,bold] {name} "
+        mode_session         "#[fg=$bg,bg=$love,bold] {name} "
+        mode_default_to_mode "normal"
+
+        tab_normal               "#[fg=$subtle,bg=$bg] {index}:{name} "
+        tab_normal_fullscreen    "#[fg=$subtle,bg=$bg] {index}:{name} {fullscreen_indicator}"
+        tab_active               "#[fg=$bg,bg=$pine,bold] {index}:{name} "
+        tab_active_fullscreen    "#[fg=$bg,bg=$pine,bold] {index}:{name} {fullscreen_indicator}"
+        tab_rename               "#[fg=$bg,bg=$love,bold] {index}:{name} "
+        tab_separator            "#[bg=$bg] "
+        tab_fullscreen_indicator "□ "
+
+        // New random tip every 5 minutes.
+        command_tip_command    "bash -c ~/.config/zellij/tip"
+        command_tip_format     "#[fg=$muted,bg=$bg,italic]󰌵 {stdout} "
+        command_tip_interval   "300"
+        command_tip_rendermode "static"
+    }
 }
 
 // Plugins to load in the background when a new session starts
@@ -593,7 +641,10 @@ pane_frame_style "full"
 // Whether to show tips on startup
 // Default: true
 // 
-// show_startup_tips false
+// Off: tips come from zjstatus ({command_tip}). The startup-tips popup also loads
+// zellij:about, which probes `xdg-open --help` and logs "Failed to run command:
+// No such file or directory" on every session start on macOS.
+show_startup_tips false
  
 // Whether to show release notes on first version run
 // Default: true

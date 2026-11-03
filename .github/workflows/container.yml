@@ -1,0 +1,89 @@
+name: container
+
+# Build packages/Containerfile with buildah for amd64 + arm64 (native runners)
+# and publish a multi-arch image to ghcr.io/<owner>/<repo>:<tag> (+ :latest).
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions: {}
+
+env:
+  REGISTRY: ghcr.io
+  TAG: ${{ github.ref_name }}
+
+jobs:
+  build:
+    name: build (${{ matrix.arch }})
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - arch: amd64
+            runner: ubuntu-24.04
+          - arch: arm64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
+    env:
+      ARCH: ${{ matrix.arch }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Ensure buildah
+        run: command -v buildah || { sudo apt-get update && sudo apt-get install -y buildah; }
+
+      - name: Log in to GHCR
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "IMAGE=${REGISTRY}/${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
+          echo "$GITHUB_TOKEN" | buildah login -u "$GITHUB_ACTOR" --password-stdin "$REGISTRY"
+
+      - name: Build
+        env:
+          # mise resolves "latest" via the GitHub API; avoid anonymous rate limits
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          buildah build \
+            --file packages/Containerfile \
+            --platform "linux/${ARCH}" \
+            --secret id=github_token,env=GITHUB_TOKEN \
+            --label org.opencontainers.image.source="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}" \
+            --label org.opencontainers.image.revision="${GITHUB_SHA}" \
+            --label org.opencontainers.image.version="${TAG}" \
+            --tag "${IMAGE}:${TAG}-${ARCH}" \
+            .
+
+      - name: Push
+        run: buildah push "${IMAGE}:${TAG}-${ARCH}"
+
+  manifest:
+    needs: build
+    permissions:
+      packages: write
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Log in to GHCR
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "IMAGE=${REGISTRY}/${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
+          echo "$GITHUB_TOKEN" | buildah login -u "$GITHUB_ACTOR" --password-stdin "$REGISTRY"
+
+      - name: Create and push multi-arch manifest
+        run: |
+          buildah manifest create dotfiles
+          for arch in amd64 arm64; do
+            buildah manifest add dotfiles "docker://${IMAGE}:${TAG}-${arch}"
+          done
+          buildah manifest inspect dotfiles
+          buildah manifest push --all dotfiles "docker://${IMAGE}:${TAG}"
+          if [[ "$TAG" == v* ]]; then
+            buildah manifest push --all dotfiles "docker://${IMAGE}:latest"
+          fi

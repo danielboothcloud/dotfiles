@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# Print one random tip from ~/.config/fish/tips.txt (no trailing newline).
+# Used by the zjstatus bar ({command_tip} in config.kdl).
+tips="$HOME/.config/fish/tips.txt"
+[ -r "$tips" ] || exit 0
+awk -v seed="$RANDOM$$" '
+  BEGIN { srand(seed) }
+  !/^[[:space:]]*(#|$)/ { a[++n] = $0 }
+  END { if (n) printf "%s", a[int(rand() * n) + 1] }
+' "$tips"
