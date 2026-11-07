@@ -305,13 +305,28 @@ autostart = true
 # debug = true
 
 [search]
-
-[ai]
-enabled = true
 ## The list of enabled filter modes, in order of priority.
 ## The "workspace" mode is skipped when not in a workspace or workspaces = false.
 ## Default filter mode can be overridden with the filter_mode setting.
 # filters = [ "global", "host", "session", "session-preload", "workspace", "directory" ]
 
+[ai]
+enabled = true
+model = "fast"
+tips = true
+
+[ai.opening]
+send_cwd = true
+send_last_command = true
+
+[ai.capabilities]
+enable_history_search = true
+enable_history_output = true
+enable_file_tools = true
+enable_command_execution = true
+
 [threads]
 capture = true
+filter_mode = "directory"
+inline_height = 40
+resume_chooser = true

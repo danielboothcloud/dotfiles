@@ -46,4 +46,9 @@ keybind = cmd+8=csi:56;9u
 keybind = cmd+digit_9=csi:57;9u
 keybind = cmd+9=csi:57;9u
 
+# Cmd+R runs `atuin resume` (agent-session picker) in Zellij/fish. Ghostty sends
+# ^X^R (0x18 0x12), which fish binds to the _atuin_ai_resume widget. The widget
+# only exists at the shell prompt, so running apps are unaffected.
+keybind = cmd+r=text:\x18\x12
+
 shell-integration = fish

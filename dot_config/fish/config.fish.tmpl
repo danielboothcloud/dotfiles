@@ -58,6 +58,10 @@ if status is-interactive
   starship init fish | source
   fzf --fish | source
   atuin init fish | source
+  # Ghostty Cmd+R sends ^X^R; run `atuin resume` exactly as if typed at the
+  # prompt (uses config.toml [threads] settings). The _atuin_ai_resume widget
+  # would force --keymap-mode=emacs + --shell-widget, overriding config.
+  bind \cx\cr 'atuin resume; commandline -f repaint'
   zoxide init fish --cmd cd | source
 
   # Startup tip from ~/.config/fish/tips.txt (also shown in the zjstatus bar).

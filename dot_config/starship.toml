@@ -1,4 +1,4 @@
-format = """$directory${custom.jj}${custom.git_branch}${custom.git_status}$python$jobs$status$character"""
+format = """$directory${custom.jj}${custom.jj_ahead_behind}${custom.git_branch}${custom.git_status}${custom.git_ahead_behind}$python$jobs$status$character"""
 right_format = """${env_var.aws_profile}$kubernetes"""
 command_timeout = 5000
 palette = "oxocarbon"
@@ -73,9 +73,25 @@ style = "blue"
 # --- Jujutsu (jj): takes over from git when a .jj directory is present ---
 [custom.jj]
 when = "jj root --ignore-working-copy"
-command = '''jj log -r@ --ignore-working-copy --no-graph --color never -T 'separate(" ", change_id.shortest(4), bookmarks.join(","), if(conflict, "!"), if(empty, "∅"))' '''
+command = '''jj log -r@ --no-graph --color never -T 'separate(" ", change_id.shortest(4), local_bookmarks.map(|b| b.name()).join(","), if(conflict, "!"), if(empty, "∅", if(!remote_bookmarks.filter(|b| b.remote() != "git"), "*")))' '''
 format = '[$output]($style) '
 style = "magenta"
+
+# Commits to push (⇡N) / pull (⇣N) for bookmarks on @ vs their tracked remotes (largest count wins).
+# Behind count reflects the last `jj git fetch`.
+[custom.jj_ahead_behind]
+when = "jj root --ignore-working-copy"
+shell = ["sh"]
+command = '''
+jj log -r@ --ignore-working-copy --no-graph --color never -T 'local_bookmarks.map(|b| b.name() ++ "\n").join("")' |
+while read -r name; do
+  jj log -r "remote_bookmarks(exact:\"$name\")" --ignore-working-copy --no-graph --color never \
+    -T "remote_bookmarks.filter(|b| b.name() == \"$name\" && b.remote() != \"git\" && b.tracked()).map(|b| b.tracking_behind_count().lower() ++ \" \" ++ b.tracking_ahead_count().lower() ++ \"\n\").join(\"\")"
+done |
+awk '$1 > a { a = $1 } $2 > b { b = $2 } END { if (a > 0) printf "⇡%d", a; if (b > 0) printf "⇣%d", b }'
+'''
+format = '([$output]($style) )'
+style = "cyan"
 
 # --- Git defaults: only when NOT inside a jj repo ---
 [custom.git_branch]
@@ -89,3 +105,10 @@ when = "git rev-parse --is-inside-work-tree && ! jj root --ignore-working-copy"
 command = "git diff --quiet HEAD 2>/dev/null && echo ✓ || echo '*'"
 format = '[$output]($style) '
 style = "magenta"
+
+# Commits to push (⇡N) / pull (⇣N) vs upstream. Behind count reflects the last fetch.
+[custom.git_ahead_behind]
+when = "git rev-parse --abbrev-ref '@{upstream}' && ! jj root --ignore-working-copy"
+command = '''git rev-list --left-right --count 'HEAD...@{upstream}' | awk '{ if ($1 > 0) printf "⇡%d", $1; if ($2 > 0) printf "⇣%d", $2 }' '''
+format = '([$output]($style) )'
+style = "cyan"

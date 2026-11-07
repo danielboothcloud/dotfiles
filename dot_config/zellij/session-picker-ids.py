@@ -37,7 +37,8 @@ def numbered_sessions(listing, state_path, include_exited=False):
             key=lambda name: DIGITS.index(saved[name]),
         )
         ordered.extend(name for name in sessions if name not in saved)
-        labels = dict(zip(ordered, DIGITS, strict=False))
+        # No zip(strict=): sessions started from Ghostty may only have macOS's Python 3.9.
+        labels = dict(zip(ordered, DIGITS))  # noqa: B905
 
         # Atomic replacement plus a separate lock protects simultaneous pickers.
         if labels != saved or not state_path.exists():

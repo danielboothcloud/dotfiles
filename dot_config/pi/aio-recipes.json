@@ -2,18 +2,17 @@
 	"defaultRecipe": "home",
 	"recipes": {
 		"home": {
-			"description": "Personal: Codex Sol daily driver; Claude + Synthetic GLM cycling",
-			"model": "openai-codex/gpt-6.1-sol",
+			"description": "Personal: Claude + Synthetic GLM cycling",
+			"model": "synthetic/hf:zai-org/GLM-5.3-Flash",
 			"thinkingLevel": "high",
 			"models": [
 				"openai-codex/gpt-6.1-sol",
-				"openai-codex/gpt-6-luna",
+				"synthetic/hf:zai-org/GLM-5.3-Flash",
 				"anthropic/claude-opus-5-5",
 				"anthropic/claude-haiku-5-5"
 			],
 			"extensions": [
 				"npm:@upstash/context7-pi",
-				"npm:pi-lens",
 				"npm:@gotgenes/pi-anthropic-auth"
 			]
 		},
@@ -29,6 +28,23 @@
 				"npm:@upstash/context7-pi",
 				"npm:@rahularya01/pi-cursor"
 			]
+		},
+		"bmad": {
+			"description": "Recipe for BMAD",
+			"model": "anthropic/claude-opus-5-5",
+			"thinkingLevel": "high",
+			"permissionMode": "auto",
+			"style": "ste",
+			"models": [
+				"anthropic/claude-opus-5-5"
+			],
+			"mcpServers": {},
+			"extensions": [
+				"npm:@upstash/context7-pi",
+				"npm:pi-lens",
+				"npm:@gotgenes/pi-anthropic-auth"
+			],
+			"blocklist": {}
 		}
 	}
 }

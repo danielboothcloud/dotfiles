@@ -6,7 +6,7 @@ alias ls="eza --color=always --long --git --no-filesize --icons=always --no-time
 alias cat="bat --paging never --style=changes --theme base16"
 alias less="bat --paging always --style=changes --theme base16"
 alias top="btop"
-alias todo="togo"
+alias todo="tuxedo"
 
 alias assume="source (brew --prefix)/bin/assume.fish"
 
@@ -18,3 +18,4 @@ abbr -a tf "terraform"
 abbr -a mk "minikube"
 abbr -a tpe "telepresence"
 abbr -a px "pnpm dlx"
+abbr -a zj "zellij"

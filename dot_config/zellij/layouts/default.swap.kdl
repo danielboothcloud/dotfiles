@@ -1,8 +1,8 @@
-// Built-in swap layouts (zellij setup --dump-swap-layout default), with the
-// tab-bar replaced by zjstatus to match default.kdl.
+// Built-in swap layouts (zellij setup --dump-swap-layout default).
+// "tab-bar" is aliased to zjstatus in config.kdl.
 tab_template name="ui" {
    pane size=1 borderless=true {
-       plugin location="zjstatus"
+       plugin location="tab-bar"
    }
    children
    pane size=1 borderless=true {

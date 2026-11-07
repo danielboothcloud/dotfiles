@@ -3,8 +3,8 @@ keybinds clear-defaults=true {
     // Super is the window layer and still works while locked.
     shared {
         bind "Super c" { Copy; SwitchToMode "locked"; }
-        bind "Super Alt Left" { MoveFocusOrTab "left"; SwitchToMode "locked"; }
-        bind "Super Alt Right" { MoveFocusOrTab "right"; SwitchToMode "locked"; }
+        bind "Super Alt Left" { MoveFocus "left"; SwitchToMode "locked"; }
+        bind "Super Alt Right" { MoveFocus "right"; SwitchToMode "locked"; }
         bind "Super Alt Up" { MoveFocus "up"; SwitchToMode "locked"; }
         bind "Super Alt Down" { MoveFocus "down"; SwitchToMode "locked"; }
         bind "Super w" { CloseFocus; SwitchToMode "locked"; }
@@ -300,27 +300,30 @@ plugins {
     session-manager location="zellij:session-manager"
     status-bar location="zellij:status-bar"
     strider location="zellij:strider"
-    tab-bar location="zellij:tab-bar"
     welcome-screen location="zellij:session-manager" {
         welcome_screen true
     }
-    // Top bar in layouts/default.kdl: mode, session, tabs, and a rotating tip
-    // from ~/.config/fish/tips.txt. wasm is fetched by .chezmoiexternal.toml.
-    zjstatus location="file:~/.config/zellij/plugins/zjstatus.wasm" {
-        // Rose Pine (matches themes/rose-pine.kdl)
-        color_bg     "#21202e"
-        color_muted  "#6e6a86"
-        color_subtle "#908caa"
-        color_love   "#eb6f92"
-        color_gold   "#f6c177"
-        color_rose   "#ebbcba"
-        color_pine   "#31748f"
-        color_foam   "#9ccfd8"
-        color_iris   "#c4a7e7"
+    // "tab-bar" is remapped from zellij:tab-bar to zjstatus, so every layout that
+    // asks for a tab bar gets this one - including the built-in default layout the
+    // session manager's New Session screen uses, which ignores layouts/default.kdl.
+    // Styled as a clone of the built-in tab-bar (same prefix, powerline ribbons,
+    // theme colours) plus tab numbers and a rotating tip from ~/.config/fish/tips.txt.
+    // wasm is fetched by .chezmoiexternal.toml.
+    tab-bar location="file:~/.config/zellij/plugins/zjstatus.wasm" {
+        // Rose Pine, taken from themes/rose-pine.kdl so it matches the built-in tab-bar.
+        color_bg        "#21202e" // text_unselected.background
+        color_fg        "#e0def4" // text_unselected.base
+        // Matches themes/rose-pine.kdl: active tab pine, others white.
+        color_tab_bg    "#e0def4" // ribbon_unselected.background
+        color_tab_fg    "#191724" // ribbon_unselected.base
+        color_active_bg "#31748f" // ribbon_selected.background
+        color_active_fg "#21202e" // ribbon_selected.base
+        color_muted     "#6e6a86"
+        color_love      "#eb6f92"
 
-        format_left   "{mode}#[fg=$iris,bg=$bg,bold] {session} {tabs}"
+        format_left   "#[fg=$fg,bg=$bg,bold] Zellij ({session}) {tabs}"
         format_center ""
-        format_right  "{command_tip}"
+        format_right  "{command_tip}{swap_layout}"
         format_space  "#[bg=$bg]"
         // Drop the tip (right) rather than the tabs when they collide.
         format_hide_on_overlength "true"
@@ -329,22 +332,20 @@ plugins {
         border_enabled             "false"
         hide_frame_for_single_pane "false"
 
-        mode_locked          "#[fg=$muted,bg=$bg] 󰌾 "
-        mode_normal          "#[fg=$bg,bg=$pine,bold] {name} "
-        mode_pane            "#[fg=$bg,bg=$foam,bold] {name} "
-        mode_tab             "#[fg=$bg,bg=$gold,bold] {name} "
-        mode_resize          "#[fg=$bg,bg=$rose,bold] {name} "
-        mode_scroll          "#[fg=$bg,bg=$iris,bold] {name} "
-        mode_session         "#[fg=$bg,bg=$love,bold] {name} "
-        mode_default_to_mode "normal"
+        // Ribbons like the built-in tab-bar: a U+E0B0 powerline arrow on each side,
+        // the left one in the bar colour (notch), the right one in the tab colour (point).
+        // The glyph must sit after the #[...] style, not inside it.
+        tab_normal            "#[fg=$bg,bg=$tab_bg]#[fg=$tab_fg,bg=$tab_bg,bold] {index}:{name} #[fg=$tab_bg,bg=$bg]"
+        tab_normal_fullscreen "#[fg=$bg,bg=$tab_bg]#[fg=$tab_fg,bg=$tab_bg,bold] {index}:{name} (FULLSCREEN) #[fg=$tab_bg,bg=$bg]"
+        tab_normal_sync       "#[fg=$bg,bg=$tab_bg]#[fg=$tab_fg,bg=$tab_bg,bold] {index}:{name} (SYNC) #[fg=$tab_bg,bg=$bg]"
+        tab_active            "#[fg=$bg,bg=$active_bg]#[fg=$active_fg,bg=$active_bg,bold] {index}:{name} #[fg=$active_bg,bg=$bg]"
+        tab_active_fullscreen "#[fg=$bg,bg=$active_bg]#[fg=$active_fg,bg=$active_bg,bold] {index}:{name} (FULLSCREEN) #[fg=$active_bg,bg=$bg]"
+        tab_active_sync       "#[fg=$bg,bg=$active_bg]#[fg=$active_fg,bg=$active_bg,bold] {index}:{name} (SYNC) #[fg=$active_bg,bg=$bg]"
+        tab_rename            "#[fg=$bg,bg=$love]#[fg=$active_fg,bg=$love,bold] {index}:{name} #[fg=$love,bg=$bg]"
 
-        tab_normal               "#[fg=$subtle,bg=$bg] {index}:{name} "
-        tab_normal_fullscreen    "#[fg=$subtle,bg=$bg] {index}:{name} {fullscreen_indicator}"
-        tab_active               "#[fg=$bg,bg=$pine,bold] {index}:{name} "
-        tab_active_fullscreen    "#[fg=$bg,bg=$pine,bold] {index}:{name} {fullscreen_indicator}"
-        tab_rename               "#[fg=$bg,bg=$love,bold] {index}:{name} "
-        tab_separator            "#[bg=$bg] "
-        tab_fullscreen_indicator "□ "
+        // Swap layout name on the far right, same ribbon shape.
+        swap_layout_format        "#[fg=$bg,bg=$tab_bg]#[fg=$tab_fg,bg=$tab_bg,bold] {name} #[fg=$tab_bg,bg=$bg]"
+        swap_layout_hide_if_empty "true"
 
         // New random tip every 5 minutes.
         command_tip_command    "bash -c ~/.config/zellij/tip"
@@ -359,7 +360,8 @@ plugins {
 // eg. "https://example.com/my-plugin.wasm"
 load_plugins {
     zellij:link
-    "https://github.com/bezbac/zellij-tabula/releases/download/v0.6.0/zellij-tabula.wasm" {
+    // LOCAL ONLY (not in chezmoi): v0.6.0 + TabUpdate re-organize fix; chezmoi apply reverts this.
+    "file:~/.config/zellij/plugins/zellij-tabula-patched.wasm" {
         home_dir "/Users/danielbooth"
         worktree_name_display "repo_and_worktree"
         worktree_name_preview_length "10"
@@ -447,7 +449,7 @@ default_shell "fish"
 //   - true (default, enabled)
 //   - false
 // 
-pane_frames false
+pane_frames true
  
 // Set the pane frame style when pane_frames is enabled
 // Options:

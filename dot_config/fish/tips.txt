@@ -16,6 +16,7 @@ Neovim: press Space mr to toggle rendered Markdown.
 Neovim: press Tab / Shift-Tab to cycle buffers.
 Zellij: press Ctrl-G, then P, then E to switch the current pane between tiled and floating.
 Zellij: press Ctrl-G, then T, then B to move the current pane into its own tab.
+Zellij: press Ctrl-G, then T, then S to sync input to all panes in the tab; repeat to turn it off.
 Ghostty: Cmd-click a URL to open it from terminal output.
 Clones: run clones to browse remote and local repositories.
 Fish: px expands to pnpm dlx.

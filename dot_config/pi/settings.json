@@ -7,11 +7,11 @@
     "npm:@upstash/context7-pi",
     "npm:pi-lens",
     "npm:@gotgenes/pi-anthropic-auth",
-    "git:github.com/danielboothcloud/pi-aio@feature/mcp"
+    "git:github.com/danielboothcloud/pi-aio@fix/goals"
   ],
   "enabledModels": [
     "openai-codex/gpt-6.1-sol",
-    "openai-codex/gpt-6-luna",
+    "synthetic/hf:zai-org/GLM-5.3-Flash",
     "anthropic/claude-opus-5-5",
     "anthropic/claude-haiku-5-5"
   ],
@@ -69,17 +69,11 @@
               "Authorization": "Bearer ${SYNTHETIC_API_KEY}"
             },
             "windows": {
-              "fivehour": {
-                "label": "5h",
-                "mapping": {
-                  "remaining": "rollingFiveHourLimit.remaining",
-                  "limit": "rollingFiveHourLimit.max"
-                }
-              },
               "weekly": {
                 "label": "wk",
                 "mapping": {
-                  "text": "weeklyTokenLimit.remainingCredits"
+                  "remainingPercent": "planWeeklyLimit.percentRemaining",
+                  "renewsAt": "planWeeklyLimit.nextRegenAt"
                 }
               }
             }
@@ -89,12 +83,12 @@
     }
   },
   "theme": "dark",
-  "hideThinkingBlock": false,
+  "hideThinkingBlock": true,
   "warnings": {
     "anthropicExtraUsage": false
   },
   "extensionChangelogVersions": {
-    "{\"source\":\"npm:pi-lens\",\"scope\":\"user\"}": "4.4.8",
+    "{\"source\":\"npm:pi-lens\",\"scope\":\"user\"}": "4.4.9",
     "{\"source\":\"npm:@gotgenes/pi-anthropic-auth\",\"scope\":\"user\"}": "3.4.4"
   }
 }

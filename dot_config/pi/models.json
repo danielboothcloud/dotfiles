@@ -39,6 +39,21 @@
           }
         }
       ]
+    },
+    "synthetic": {
+      "baseUrl": "https://api.synthetic.new/openai/v1",
+      "api": "openai-completions",
+      "apiKey": "$SYNTHETIC_API_KEY",
+      "models": [
+        {
+          "id": "hf:zai-org/GLM-5.3-Flash",
+          "name": "GLM 5.3 Flash (Synthetic)",
+          "reasoning": true,
+          "input": ["text"],
+          "contextWindow": 524288,
+          "maxTokens": 65536
+        }
+      ]
     }
   }
 }
