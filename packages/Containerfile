@@ -47,21 +47,10 @@ RUN sed -i 's/^session\s\+required\s\+pam_loginuid.so/session optional pam_login
       > /etc/ssh/sshd_config.d/10-container.conf
 
 # Entrypoint for host mode: sshd in the foreground, osewa server alongside it
-# once a device is enrolled (the first `osewa login` starts it itself).
-RUN cat > /usr/local/bin/osewa-serve <<'EOF' && chmod 755 /usr/local/bin/osewa-serve
-#!/bin/sh
-set -eu
-mkdir -p "$HOME/.ssh" && chmod 700 "$HOME/.ssh"
-if [ -n "${SSH_AUTHORIZED_KEYS:-}" ]; then
-  printf '%s\n' "$SSH_AUTHORIZED_KEYS" > "$HOME/.ssh/authorized_keys"
-  chmod 600 "$HOME/.ssh/authorized_keys"
-fi
-sudo ssh-keygen -A >/dev/null
-if [ -s "$HOME/.config/osewa/devices" ]; then
-  osewa server --daemon
-fi
-exec sudo /usr/sbin/sshd -D -e
-EOF
+# once a device is enrolled. Kept as a file (not a heredoc) because the buildah
+# on GitHub's Ubuntu runners doesn't support Containerfile heredocs.
+# Executable bit comes from git (100755).
+COPY packages/container/osewa-serve /usr/local/bin/osewa-serve
 
 # ── Non-secret git defaults (dot_gitconfig.tmpl is skipped: it reads 1Password)
 # Set your email at runtime: -e GIT_AUTHOR_EMAIL=... -e GIT_COMMITTER_EMAIL=...
