@@ -30,7 +30,11 @@
 #   # ~/.ssh/config on the client:  Host devbox / HostName <server> / Port 2222 / User danielbooth
 #   osewa login --no-install devbox && osewa attach devbox
 
-FROM ghcr.io/danielboothcloud/sundae-sandbox:sha-237ccd1 AS tools
+# The Sundae session sandbox image (OpenShell, git, jj, osewa, user `sandbox` 10001).
+# Bump to the newest sha-<short> tag of ghcr.io/danielboothcloud/sundae-sandbox.
+ARG SANDBOX_BASE=ghcr.io/danielboothcloud/sundae-sandbox:sha-12e090a
+
+FROM ${SANDBOX_BASE} AS tools
 
 ARG USERNAME=danielbooth
 ARG UID=1000
@@ -134,6 +138,79 @@ RUN --mount=type=secret,id=github_token,required=false \
 # Auth at runtime: -e CURSOR_API_KEY=... or `NO_OPEN_BROWSER=1 agent login`.
 RUN curl -fsS https://cursor.com/install | bash \
  && cursor-agent --version
+
+# ── Sundae session sandbox (build with --target sandbox) ─────────────────────
+# The image Sundae's OpenShell agent sessions run. OpenShell runs it as UID/GID
+# 10001 with HOME=/sandbox (a volume seeded from this image's /sandbox), clears
+# the environment except PATH, and only lets sandboxes read /usr, /bin, /lib,
+# /etc, /sandbox and /tmp. So every tool is installed under /usr (mise's data
+# dir included) and the dotfiles are applied to /sandbox as the sandbox user.
+FROM ${SANDBOX_BASE} AS sandbox
+
+USER root
+ENV PATH=/usr/local/share/mise/shims:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin
+
+RUN dnf -y install --setopt=install_weak_deps=False \
+      fish git-lfs chezmoi \
+      ripgrep fd-find bat fzf eza zoxide atuin btop jq \
+      gcc make tree-sitter-cli unzip tar gzip xz curl ca-certificates \
+      python3 procps-ng less which findutils file ncurses-term \
+      glibc-langpack-en libatomic \
+ && dnf clean all \
+ && curl -fsSL https://mise.run | MISE_INSTALL_PATH=/usr/local/bin/mise sh
+
+# mise installs system-wide: /etc/mise holds the container extras and the host
+# config (conf.d), /usr/local/share/mise the tools and shims.
+ENV MISE_DATA_DIR=/usr/local/share/mise \
+    MISE_CACHE_DIR=/usr/local/share/mise/cache \
+    MISE_YES=1 \
+    MISE_DISABLE_TOOLS="awscli,azure-cli,azure-kubelogin,gcloud,minikube,podman,pipx,pipx:podman-compose"
+COPY packages/container/mise.toml /etc/mise/config.toml
+COPY dot_config/mise/config.toml /etc/mise/conf.d/host.toml
+RUN --mount=type=secret,id=github_token,required=false \
+    export GITHUB_TOKEN="$(cat /run/secrets/github_token 2>/dev/null || true)"; \
+    mise install node \
+ && mise install \
+ && mise reshim \
+ && rm -rf /usr/local/share/mise/cache \
+ && chmod -R a+rX /usr/local/share/mise /etc/mise
+
+# Cursor CLI, under /usr (its installer writes to $HOME).
+RUN HOME=/usr/local/share/cursor bash -c 'curl -fsS https://cursor.com/install | bash' \
+ && ln -sf /usr/local/share/cursor/.local/bin/cursor-agent /usr/local/bin/cursor-agent \
+ && ln -sf /usr/local/share/cursor/.local/bin/agent /usr/local/bin/agent \
+ && chmod -R a+rX /usr/local/share/cursor \
+ && cursor-agent --version
+
+# Login shells (`bash -l`, osewa's `/bin/sh -l`) get the environment OpenShell
+# clears; mise also finds its data dir through ~/.local/share/mise below.
+RUN printf '%s\n' \
+      'export MISE_DATA_DIR=/usr/local/share/mise MISE_CACHE_DIR=/tmp/mise-cache MISE_YES=1' \
+      'export MISE_DISABLE_TOOLS="awscli,azure-cli,azure-kubelogin,gcloud,minikube,podman,pipx,pipx:podman-compose"' \
+      'export DOTFILES_CONTAINER=1 EDITOR=nvim VISUAL=nvim DISABLE_TELEMETRY=true DISABLE_AUTOUPDATER=1' \
+      'export ESSENTIAL_TRAFFIC_ONLY=1 AWS_PAGER="" PI_CACHE_RETENTION=long' \
+      'export XDG_CONFIG_HOME="$HOME/.config" PI_CODING_AGENT_DIR="$HOME/.config/pi"' \
+      > /etc/profile.d/dotfiles.sh
+
+USER 10001:10001
+ENV HOME=/sandbox \
+    DOTFILES_CONTAINER=1 \
+    XDG_CONFIG_HOME=/sandbox/.config \
+    PI_CODING_AGENT_DIR=/sandbox/.config/pi
+WORKDIR /sandbox
+RUN mkdir -p /sandbox/.local/share \
+ && ln -s /usr/local/share/mise /sandbox/.local/share/mise
+
+COPY --chown=10001:10001 . /sandbox/.local/share/chezmoi
+RUN chezmoi apply --no-tty --force --exclude=scripts
+RUN fish -c 'curl -fsSL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher update' \
+ || echo "warning: fish plugins not installed"
+RUN nvim --headless '+Lazy! sync' +qa \
+ && nvim --headless '+MasonToolsInstallSync' +qa \
+ || echo "warning: neovim plugins not installed"
+RUN pi update --extensions || echo "warning: pi package install failed; pi will retry on start"
+
+CMD ["/bin/bash", "-l"]
 
 # ── Dotfiles ──────────────────────────────────────────────────────────────────
 FROM tools AS dotfiles

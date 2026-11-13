@@ -5,6 +5,8 @@ name: container
 #   v* tag push  -> :<tag>               + :latest
 #   branch push  -> :<branch>-<short-sha> + :<branch>   (e.g. develop-480e5df, develop)
 # Branch names are sanitised for OCI tags (feature/fish -> feature-fish).
+# The `sandbox` target (Sundae agent sessions) is published alongside with a
+# -sandbox suffix: :<branch>-<short-sha>-sandbox, :<branch>-sandbox, :latest-sandbox.
 on:
   push:
     branches: ["**"]
@@ -50,7 +52,7 @@ jobs:
           echo "Image tags: $tag, $alias" >> "$GITHUB_STEP_SUMMARY"
 
   build:
-    name: build (${{ matrix.arch }})
+    name: build (${{ matrix.target }}, ${{ matrix.arch }})
     needs: meta
     permissions:
       contents: read
@@ -61,10 +63,17 @@ jobs:
         include:
           - arch: amd64
             runner: ubuntu-24.04
+            target: dotfiles
+            suffix: ""
+          - arch: amd64
+            runner: ubuntu-24.04
+            target: sandbox
+            suffix: "-sandbox"
     runs-on: ${{ matrix.runner }}
     env:
       ARCH: ${{ matrix.arch }}
-      TAG: ${{ needs.meta.outputs.tag }}
+      TARGET: ${{ matrix.target }}
+      TAG: ${{ needs.meta.outputs.tag }}${{ matrix.suffix }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -87,6 +96,7 @@ jobs:
         run: |
           buildah build \
             --file packages/container/Containerfile \
+            --target "${TARGET}" \
             --platform "linux/${ARCH}" \
             --secret id=github_token,env=GITHUB_TOKEN \
             --label org.opencontainers.image.source="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}" \
@@ -114,14 +124,17 @@ jobs:
           echo "IMAGE=${REGISTRY}/${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
           echo "$GITHUB_TOKEN" | buildah login -u "$GITHUB_ACTOR" --password-stdin "$REGISTRY"
 
-      - name: Create and push manifest
+      - name: Create and push manifests
         run: |
-          buildah manifest create dotfiles
-          for arch in amd64; do
-            buildah manifest add dotfiles "docker://${IMAGE}:${TAG}-${arch}"
+          for suffix in "" "-sandbox"; do
+            list="dotfiles${suffix}"
+            buildah manifest create "$list"
+            for arch in amd64; do
+              buildah manifest add "$list" "docker://${IMAGE}:${TAG}${suffix}-${arch}"
+            done
+            buildah manifest inspect "$list"
+            buildah manifest push --all "$list" "docker://${IMAGE}:${TAG}${suffix}"
+            if [[ -n "$ALIAS" ]]; then
+              buildah manifest push --all "$list" "docker://${IMAGE}:${ALIAS}${suffix}"
+            fi
           done
-          buildah manifest inspect dotfiles
-          buildah manifest push --all dotfiles "docker://${IMAGE}:${TAG}"
-          if [[ -n "$ALIAS" ]]; then
-            buildah manifest push --all dotfiles "docker://${IMAGE}:${ALIAS}"
-          fi
