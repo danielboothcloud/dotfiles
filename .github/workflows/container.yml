@@ -1,7 +1,7 @@
 name: container
 
-# Build packages/container/Containerfile with buildah for amd64 + arm64 (native runners)
-# and publish a multi-arch image to ghcr.io/<owner>/<repo>:
+# Build packages/container/Containerfile with buildah for amd64 and publish it
+# (as a manifest list, so arm64 can be re-added to the matrix later) to ghcr.io/<owner>/<repo>:
 #   v* tag push  -> :<tag>               + :latest
 #   branch push  -> :<branch>-<short-sha> + :<branch>   (e.g. develop-480e5df, develop)
 # Branch names are sanitised for OCI tags (feature/fish -> feature-fish).
@@ -105,17 +105,19 @@ jobs:
     runs-on: ubuntu-24.04
     env:
       TAG: ${{ needs.meta.outputs.tag }}
-      ALIAS: ${{ needs.meta.outputs.alias }} steps: - name: Log in to GHCR
+      ALIAS: ${{ needs.meta.outputs.alias }}
+    steps:
+      - name: Log in to GHCR
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "IMAGE=${REGISTRY}/${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
           echo "$GITHUB_TOKEN" | buildah login -u "$GITHUB_ACTOR" --password-stdin "$REGISTRY"
 
-      - name: Create and push multi-arch manifest
+      - name: Create and push manifest
         run: |
           buildah manifest create dotfiles
-          for arch in amd64 arm64; do
+          for arch in amd64; do
             buildah manifest add dotfiles "docker://${IMAGE}:${TAG}-${arch}"
           done
           buildah manifest inspect dotfiles

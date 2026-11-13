@@ -1,5 +1,5 @@
 # Portable, secret-free container of this dotfiles setup (fish, starship, mise,
-# neovim, pi, cursor-cli, tuicr, zellij, yazi, lazygit, kubectl/k9s/helm, podman).
+# neovim, pi, cursor-cli, tuicr, zellij, yazi, lazygit, jj, kubectl/k9s/helm, podman).
 #
 # Build from the repo root (the build context must be the whole chezmoi source):
 #   podman build -f packages/container/Containerfile -t dotfiles .

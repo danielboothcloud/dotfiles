@@ -7,6 +7,7 @@ neovim = "latest"
 starship = "latest"
 zellij = "latest"
 lazygit = "latest"
+jj = "latest"  # Jujutsu VCS (container-only)
 yazi = "latest"
 "github:agavra/tuicr" = "latest"
 kubectl = "latest"

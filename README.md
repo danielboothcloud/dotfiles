@@ -61,8 +61,8 @@ Rootless Podman works inside the container (Podman-in-Podman, no `--privileged`)
 it needs `--device /dev/fuse --security-opt label=disable` on `podman run`
 (`task container:run` passes them).
 
-`.github/workflows/container.yml` builds amd64 and arm64 with buildah on native
-runners and publishes a multi-arch image to GHCR:
+`.github/workflows/container.yml` builds amd64 with buildah and publishes the
+image to GHCR:
 
 - `v*` tag push → `:v1.3.0` and `:latest`
 - branch push → `:<branch>-<short-sha>` and `:<branch>` (e.g. `develop-480e5df`, `develop`;
