@@ -3,6 +3,7 @@ function kube
     if test -n "$KUBECONFIG"
       atuin dotfiles var delete KUBECONFIG &>/dev/null
       set -e KUBECONFIG
+      set -e STARSHIP_KUBE
       echo "KUBECONFIG unset"
     else
       set -gx KUBECONFIG "$HOME/.kube/config"

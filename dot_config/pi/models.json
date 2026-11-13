@@ -53,6 +53,9 @@
       ]
     },
     "synthetic": {
+      "compat": {
+        "sendSessionAffinityHeaders": true
+      },
       "baseUrl": "https://api.synthetic.new/openai/v1",
       "api": "openai-completions",
       "apiKey": "$SYNTHETIC_API_KEY",

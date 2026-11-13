@@ -41,3 +41,6 @@ Pi: !command runs a command and shares its output; !!command keeps it out of the
 Pi: Option-S opens the subagent interface to observe subagents.
 Pi: Ctrl-P lets you copy output from quote and code blocks.
 Pi: /review opens tuicr to review agent changes.
+Pi: /advisor shows the advisor; /advisor on|off overrides the recipe for this session.
+Pi: /handoff <goal> starts a new focused session from an editable summary instead of compaction.
+Fish: run ded to fuzzy-find a dotfile, edit it, and apply it with chezmoi.

@@ -14,7 +14,7 @@ alias assume="source (brew --prefix)/bin/assume.fish"
 status is-interactive; or exit 0
 
 abbr -e gup
-abbr -a kb "kubectl"
+# kb → kubectl lives in kube_prompt.fish (also reveals the starship k8s segment)
 abbr -a tf "terraform"
 abbr -a mk "minikube"
 abbr -a tpe "telepresence"

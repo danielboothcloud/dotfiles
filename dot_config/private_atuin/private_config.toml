@@ -38,7 +38,9 @@ sync_frequency = "60m"
 
 ## which search mode to use
 ## possible values: prefix, fulltext, fuzzy, skim
-search_mode = "prefix"
+## fuzzy: words in any order, anywhere in the command. Narrow inline when needed:
+## 'exact  ^prefix  suffix$  !exclude
+search_mode = "fuzzy"
 
 ## which filter mode to use by default
 ## possible values: "global", "host", "session", "session-preload", "directory", "workspace"
@@ -113,10 +115,11 @@ invert = false
 ## For details on the supported regular expression syntax, see
 ## https://docs.rs/regex/latest/regex/#syntax
 history_filter = [
-  "codex",
-  "cursor",
-  "pi",
-  "exit",
+  # Anchored to the command name; unanchored "pi" also dropped ping/pip/api/…
+  "^codex( |$)",
+  "^cursor(-agent)?( |$)",
+  "^pi( |$)",
+  "^exit( |$)",
   # Filter common secret-setting patterns
   "^export.*KEY",
   # "^export.*SECRET",
@@ -302,9 +305,6 @@ autostart = true
 # debug = true
 
 [search]
-
-[ai]
-enabled = true
 ## The list of enabled filter modes, in order of priority.
 ## The "workspace" mode is skipped when not in a workspace or workspaces = false.
 ## Default filter mode can be overridden with the filter_mode setting.

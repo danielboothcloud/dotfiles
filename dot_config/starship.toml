@@ -74,7 +74,8 @@ style = "yellow"
 
 [kubernetes]
 disabled = false
-detect_env_vars = ['KUBECONFIG']
+# STARSHIP_KUBE is set by fish (conf.d/kube_prompt.fish) once a kube tool is typed/run
+detect_env_vars = ['KUBECONFIG', 'STARSHIP_KUBE']
 format = '\[[$symbol$context(\($namespace\))]($style)\]'
 symbol = '󱃾 '
 style = "blue"
