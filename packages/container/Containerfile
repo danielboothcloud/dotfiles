@@ -169,7 +169,13 @@ RUN --mount=type=secret,id=github_token,required=false \
 
 # Login shells (`bash -l`, osewa's `/bin/sh -l`) get the environment OpenShell
 # clears; mise also finds its data dir through ~/.local/share/mise below.
+# osewa starts a session's program with a base PATH (no image ENV), so the
+# mise shims and /usr/local/bin are added here; each login shell reads this
+# file, so the lines add each directory only once.
 RUN printf '%s\n' \
+      'case ":$PATH:" in *:/usr/local/bin:*) ;; *) PATH=/usr/local/bin:$PATH ;; esac' \
+      'case ":$PATH:" in *:/usr/local/share/mise/shims:*) ;; *) PATH=/usr/local/share/mise/shims:$PATH ;; esac' \
+      'export PATH' \
       'export MISE_DATA_DIR=/usr/local/share/mise MISE_CACHE_DIR=/tmp/mise-cache MISE_YES=1' \
       'export DOTFILES_CONTAINER=1 EDITOR=nvim VISUAL=nvim DISABLE_TELEMETRY=true DISABLE_AUTOUPDATER=1' \
       'export ESSENTIAL_TRAFFIC_ONLY=1 AWS_PAGER="" PI_CACHE_RETENTION=long' \
