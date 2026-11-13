@@ -202,9 +202,6 @@ keymap_cursor = { emacs = "blink-block", vim_insert = "blink-block", vim_normal 
 ## Alternatively, set env NO_MOTION=true
 # prefers_reduced_motion = false
 
-[dotfiles]
-enabled = true
-
 [stats]
 ## Set commands where we should consider the subcommand for statistics. Eg, kubectl get vs just kubectl
 # common_subcommands = [
@@ -313,5 +310,23 @@ enabled = true
 ## Default filter mode can be overridden with the filter_mode setting.
 # filters = [ "global", "host", "session", "session-preload", "workspace", "directory" ]
 
+[ai]
+enabled = true
+model = "fast"
+tips = true
+
+[ai.opening]
+send_cwd = true
+send_last_command = true
+
+[ai.capabilities]
+enable_history_search = true
+enable_history_output = true
+enable_file_tools = true
+enable_command_execution = true
+
 [threads]
 capture = true
+filter_mode = "directory"
+inline_height = 40
+resume_chooser = true

@@ -5,6 +5,7 @@ CLAUDE.md
 .gitattributes
 todo.txt
 init
+.containerignore
 
 # Ignore git directory
 .git/
@@ -20,3 +21,15 @@ packages/
 
 # Lazy.nvim plugin lockfile — regenerated per machine
 .config/nvim/lazy-lock.json
+
+{{- if env "DOTFILES_CONTAINER" }}
+# Container build (packages/Containerfile): skip 1Password-backed templates and host-only files
+.gitconfig
+.gitconfig-github
+.ssh
+.config/fish/conf.d/env.fish
+.config/clones/clones.yml
+.config/clones/jira.yml
+bin/ente
+.config/ghostty
+{{- end }}

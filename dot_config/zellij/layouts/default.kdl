@@ -1,0 +1,13 @@
+// Built-in default layout. "tab-bar" is aliased to zjstatus in config.kdl
+// (numbered tabs + rotating tip). Swap layouts live in default.swap.kdl.
+layout {
+    default_tab_template {
+        pane size=1 borderless=true {
+            plugin location="tab-bar"
+        }
+        children
+        pane size=1 borderless=true {
+            plugin location="status-bar"
+        }
+    }
+}

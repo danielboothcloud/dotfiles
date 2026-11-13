@@ -43,6 +43,32 @@ chezmoi init --apply danielboothcloud/dotfiles
 ```
 
 
+## Container
+
+`packages/Containerfile` builds a portable Fedora image of the shell/editor/agent
+workflow (fish + plugins, starship, mise, neovim with plugins/LSPs/parsers, pi,
+tuicr, zellij, yazi, lazygit, atuin, kubectl/k9s/helm). 1Password-backed templates
+(`env.fish`, gitconfigs, ssh, clones) are skipped via the `DOTFILES_CONTAINER`
+block in `.chezmoiignore`, so no secrets are baked in.
+
+```bash
+cd packages
+task container:build   # podman build -f packages/Containerfile -t dotfiles .
+task container:run     # $PWD mounted at ~/work
+```
+
+Pushing a `v*` tag runs `.github/workflows/container.yml`, which builds amd64 and
+arm64 with buildah on native runners and publishes a multi-arch image:
+
+```bash
+git tag v1.3.0 && git push origin v1.3.0
+podman run --rm -it --userns=keep-id -v "$PWD:/home/danielbooth/work" ghcr.io/danielboothcloud/dotfiles:v1.3.0
+```
+
+Secrets and identity are supplied at runtime, e.g.
+`podman run ... -e GIT_AUTHOR_EMAIL -e GIT_COMMITTER_EMAIL -e ANTHROPIC_API_KEY dotfiles`
+(or `/login` inside pi; add `-v pi-auth:/home/danielbooth/.config/pi` to persist it).
+
 ## Daily Usage
 
 ```bash

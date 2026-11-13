@@ -4,12 +4,16 @@ set -uo pipefail
 picker_dir=$(cd -- "$(dirname -- "$0")" && pwd)
 
 list_sessions() {
-    python3 "$picker_dir/session-picker-ids.py"
+    python3 "$picker_dir/session-picker-ids.py" "$@"
 }
 
 preview_session() {
-    local session="$1" tab pane own_pane=""
+    local session="$1" status="${2:-}" tab pane own_pane=""
     printf 'Session: %s\n\n' "$session"
+    if [[ "$status" == "(exited)" ]]; then
+        printf 'Session has exited. Press Enter to resurrect it.\n'
+        return
+    fi
     if [[ "$session" == "${ZELLIJ_SESSION_NAME:-}" ]]; then
         own_pane="${ZELLIJ_PANE_ID:-}"
     fi
@@ -32,7 +36,7 @@ preview_session() {
 }
 
 if [[ "${1:-}" == --preview ]]; then
-    preview_session "$2"
+    preview_session "${2:-}" "${3:-}"
     exit
 fi
 
@@ -43,7 +47,11 @@ for dependency in zellij fzf jq python3; do
     }
 done
 
-sessions=$(list_sessions) || exit 1
+# Outside Zellij also offer exited sessions: after a reboot every session is
+# exited, and attaching resurrects it instead of starting a fresh one.
+list_options=()
+[[ -n "${ZELLIJ:-}" ]] || list_options=(--all)
+sessions=$(list_sessions ${list_options[@]+"${list_options[@]}"}) || exit 1
 if [[ "${1:-}" == --list ]]; then
     [[ -z "$sessions" ]] || printf '%s\n' "$sessions"
     exit 0
@@ -67,7 +75,7 @@ if [[ -z "${ZELLIJ:-}" ]]; then
     printf -v script_path '%q' "$0"
     picker_options=(
         --header='Type a number or name | Enter: attach | Esc: cancel | Ctrl-R: refresh preview'
-        --preview="/bin/bash $script_path --preview {2..}"
+        --preview="/bin/bash $script_path --preview {2} {3}"
         --preview-window='right:65%:nowrap'
         --bind='ctrl-r:refresh-preview'
     )
@@ -75,7 +83,7 @@ fi
 selection=$(printf '%s\n' "$sessions" |
     FZF_DEFAULT_OPTS= FZF_DEFAULT_OPTS_FILE= fzf \
         --height=100% --layout=reverse --border --no-multi \
-        --prompt='Session > ' --delimiter=$'\t' --nth=1,2.. --accept-nth=2.. \
+        --prompt='Session > ' --delimiter=$'\t' --nth=1,2.. --accept-nth=2 \
         --with-shell='/bin/bash -c' \
         --bind='change:transform:case "$FZF_QUERY" in [0-9]) echo "change-nth(1)";; *) echo "change-nth(1,2..)";; esac' \
         "${picker_options[@]}") || exit 0

@@ -11,7 +11,7 @@ from pathlib import Path
 DIGITS = (1, 2, 3, 4, 5, 6, 7, 8, 9, 0)
 
 
-def numbered_sessions(listing, state_path):
+def numbered_sessions(listing, state_path, include_exited=False):
     """Keep exited sessions in order; close numbering gaps after deletion."""
     sessions = {}
     for line in listing.splitlines():
@@ -37,7 +37,8 @@ def numbered_sessions(listing, state_path):
             key=lambda name: DIGITS.index(saved[name]),
         )
         ordered.extend(name for name in sessions if name not in saved)
-        labels = dict(zip(ordered, DIGITS, strict=False))
+        # No zip(strict=): sessions started from Ghostty may only have macOS's Python 3.9.
+        labels = dict(zip(ordered, DIGITS))  # noqa: B905
 
         # Atomic replacement plus a separate lock protects simultaneous pickers.
         if labels != saved or not state_path.exists():
@@ -54,9 +55,13 @@ def numbered_sessions(listing, state_path):
                 if temporary and os.path.exists(temporary):
                     os.unlink(temporary)
 
-    active = [name for name, alive in sessions.items() if alive]
-    active.sort(key=lambda name: DIGITS.index(labels[name]) if name in labels else 10)
-    return [f"{labels.get(name, '-')}\t{name}" for name in active]
+    # Exited sessions (e.g. after a reboot) can be resurrected by attaching.
+    shown = [name for name, alive in sessions.items() if alive or include_exited]
+    shown.sort(key=lambda name: DIGITS.index(labels[name]) if name in labels else 10)
+    return [
+        f"{labels.get(name, '-')}\t{name}" + ("" if sessions[name] else "\t(exited)")
+        for name in shown
+    ]
 
 
 def main():
@@ -68,7 +73,8 @@ def main():
         raise RuntimeError(result.stderr.strip() or result.stdout.strip() or "Cannot list sessions")
     root = Path(os.environ.get("XDG_STATE_HOME") or Path.home() / ".local/state")
     state_path = root / "zellij/session-picker-ids.json"
-    for row in numbered_sessions(result.stdout, state_path):
+    include_exited = "--all" in sys.argv[1:]
+    for row in numbered_sessions(result.stdout, state_path, include_exited):
         print(row)
 
 

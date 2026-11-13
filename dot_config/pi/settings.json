@@ -1,23 +1,24 @@
 {
-  "lastChangelogVersion": "1.4.0",
+  "lastChangelogVersion": "1.5.2",
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-6.1-sol",
   "defaultThinkingLevel": "high",
   "packages": [
     "npm:@upstash/context7-pi",
-    "npm:pi-lens",
     "npm:@gotgenes/pi-anthropic-auth",
-    "git:github.com/danielboothcloud/pi-aio@feature/fixes"
+    "git:github.com/danielboothcloud/pi-aio@fix/goals"
   ],
   "enabledModels": [
     "openai-codex/gpt-6.1-sol",
-    "openai-codex/gpt-6-luna",
+    "synthetic/hf:zai-org/GLM-5.3-Flash",
+    "anthropic/claude-fable-5-2",
     "anthropic/claude-opus-5-5",
     "anthropic/claude-haiku-5-5"
   ],
   "aio": {
     "browserSearch": {
       "provider": "exa",
+      "fetchProvider": "exa",
       "exa": {
         "apiKeyEnv": "EXA_API_KEY",
         "searchType": "auto"
@@ -69,17 +70,11 @@
               "Authorization": "Bearer ${SYNTHETIC_API_KEY}"
             },
             "windows": {
-              "fivehour": {
-                "label": "5h",
-                "mapping": {
-                  "remaining": "rollingFiveHourLimit.remaining",
-                  "limit": "rollingFiveHourLimit.max"
-                }
-              },
               "weekly": {
                 "label": "wk",
                 "mapping": {
-                  "text": "weeklyTokenLimit.remainingCredits"
+                  "remainingPercent": "planWeeklyLimit.percentRemaining",
+                  "renewsAt": "planWeeklyLimit.nextRegenAt"
                 }
               }
             }
@@ -92,5 +87,9 @@
   "hideThinkingBlock": true,
   "warnings": {
     "anthropicExtraUsage": false
+  },
+  "extensionChangelogVersions": {
+    "{\"source\":\"npm:pi-lens\",\"scope\":\"user\"}": "4.4.9",
+    "{\"source\":\"npm:@gotgenes/pi-anthropic-auth\",\"scope\":\"user\"}": "3.4.4"
   }
 }

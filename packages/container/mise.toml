@@ -1,0 +1,13 @@
+# Container-only tools, installed as /etc/mise/config.toml by packages/Containerfile.
+# These are layered on top of ~/.config/mise/config.toml (the host config), minus
+# the heavy cloud tooling listed in MISE_DISABLE_TOOLS in the Containerfile.
+[tools]
+# Fedora's neovim lags; nvim-treesitter (main) needs >= 0.12
+neovim = "latest"
+starship = "latest"
+zellij = "latest"
+lazygit = "latest"
+yazi = "latest"
+"github:agavra/tuicr" = "latest"
+kubectl = "latest"
+k9s = "latest"
