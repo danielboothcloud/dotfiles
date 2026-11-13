@@ -16,7 +16,7 @@ fish_add_path $HOME/.krew/bin
 # Environment variables
 set -gx GOBIN $HOME/go/bin
 set -gx PNPM_HOME $HOME/.local/share/pnpm
-set -gx UV_PYTHON (mise which python)
+set -gx UV_PYTHON $HOME/.local/share/mise/installs/python/3.14.8/bin/python3
 {{ if eq .chezmoi.os "linux" -}}
 # Headless: route BROWSER to OSC 8 hyperlink printer (Ghostty makes it clickable)
 set -gx BROWSER $HOME/bin/clickable
