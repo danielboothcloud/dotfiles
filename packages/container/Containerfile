@@ -35,6 +35,12 @@ FROM ghcr.io/danielboothcloud/sundae-sandbox:sha-237ccd1 AS tools
 ARG USERNAME=danielbooth
 ARG UID=1000
 
+# sundae-sandbox ends as USER 10001 (sandbox) with a PATH lacking sbin; switch
+# back to root for system setup. USER ${USERNAME} below drops privileges again.
+# The base image already ships osewa (/usr/local/bin) and jj (/usr/bin).
+USER root
+ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin
+
 # ── System packages (Fedora repos) ────────────────────────────────────────────
 RUN dnf -y install --setopt=install_weak_deps=False \
       fish git git-lfs chezmoi \
@@ -46,8 +52,7 @@ RUN dnf -y install --setopt=install_weak_deps=False \
       podman podman-compose crun fuse-overlayfs \
       --exclude container-selinux \
  && dnf clean all \
- && curl -fsSL https://mise.run | MISE_INSTALL_PATH=/usr/local/bin/mise sh \
- && curl -fsSL https://osewa.dev/install.sh | OSEWA_INSTALL_DIR=/usr/local/bin sh
+ && curl -fsSL https://mise.run | MISE_INSTALL_PATH=/usr/local/bin/mise sh
 
 # ── sshd (key-only, for `osewa login` enrollment) ─────────────────────────────
 # pam_loginuid fails in containers; host keys are generated at container start.
