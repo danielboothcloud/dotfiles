@@ -1,5 +1,6 @@
 # Portable, secret-free container of this dotfiles setup (fish, starship, mise,
-# neovim, pi, cursor-cli, tuicr, zellij, yazi, lazygit, jj, kubectl/k9s/helm, podman).
+# neovim, pi, tuicr, yazi, lazygit, jj, podman). The mise tools are listed in
+# packages/container/mise.toml.
 #
 # Build from the repo root (the build context must be the whole chezmoi source):
 #   podman build -f packages/container/Containerfile -t dotfiles .
@@ -99,8 +100,8 @@ RUN rpm --setcaps shadow-utils 2>/dev/null \
     done
 COPY packages/container/containers.conf /etc/containers/containers.conf
 COPY --chown=${USERNAME} packages/container/podman-containers.conf /home/${USERNAME}/.config/containers/containers.conf
-# podman/podman-compose come from Fedora above (mise's podman is disabled below:
-# it's podman-remote only). chroot isolation lets `podman build` run nested.
+# podman/podman-compose come from Fedora above (mise's podman is
+# podman-remote only). chroot isolation lets `podman build` run nested.
 ENV _CONTAINERS_USERNS_CONFIGURED="" \
     BUILDAH_ISOLATION=chroot
 
@@ -114,8 +115,7 @@ ENV LANG=en_US.UTF-8 \
     ESSENTIAL_TRAFFIC_ONLY=1 \
     AWS_PAGER="" \
     PI_CACHE_RETENTION=long \
-    MISE_YES=1 \
-    MISE_DISABLE_TOOLS="awscli,azure-cli,azure-kubelogin,gcloud,minikube,podman,pipx,pipx:podman-compose"
+    MISE_YES=1
 
 USER ${USERNAME}
 ENV HOME=/home/${USERNAME}
@@ -124,20 +124,14 @@ ENV XDG_CONFIG_HOME=${HOME}/.config \
     PATH=${HOME}/.local/share/mise/shims:${HOME}/.local/bin:${HOME}/bin:${PATH}
 WORKDIR ${HOME}
 
-# ── mise tools: host config (minus disabled cloud tools) + container extras ───
+# ── mise tools: packages/container/mise.toml ─────────────────────────────────
 # Copied ahead of the full repo so editing other dotfiles doesn't bust this layer.
 COPY packages/container/mise.toml /etc/mise/config.toml
-COPY --chown=${USERNAME} dot_config/mise/config.toml ${HOME}/.config/mise/config.toml
 RUN --mount=type=secret,id=github_token,required=false \
     export GITHUB_TOKEN="$(cat /run/secrets/github_token 2>/dev/null || true)"; \
     mise install node \
  && mise install \
  && mise reshim
-
-# ── Cursor CLI (`agent` / `cursor-agent` in ~/.local/bin) ──────────────────────────────
-# Auth at runtime: -e CURSOR_API_KEY=... or `NO_OPEN_BROWSER=1 agent login`.
-RUN curl -fsS https://cursor.com/install | bash \
- && cursor-agent --version
 
 # ── Sundae session sandbox (build with --target sandbox) ─────────────────────
 # The image Sundae's OpenShell agent sessions run. OpenShell runs it as UID/GID
@@ -159,14 +153,12 @@ RUN dnf -y install --setopt=install_weak_deps=False \
  && dnf clean all \
  && curl -fsSL https://mise.run | MISE_INSTALL_PATH=/usr/local/bin/mise sh
 
-# mise installs system-wide: /etc/mise holds the container extras and the host
-# config (conf.d), /usr/local/share/mise the tools and shims.
+# mise installs system-wide: /etc/mise/config.toml holds the tools
+# (packages/container/mise.toml), /usr/local/share/mise the tools and shims.
 ENV MISE_DATA_DIR=/usr/local/share/mise \
     MISE_CACHE_DIR=/usr/local/share/mise/cache \
-    MISE_YES=1 \
-    MISE_DISABLE_TOOLS="awscli,azure-cli,azure-kubelogin,gcloud,minikube,podman,pipx,pipx:podman-compose"
+    MISE_YES=1
 COPY packages/container/mise.toml /etc/mise/config.toml
-COPY dot_config/mise/config.toml /etc/mise/conf.d/host.toml
 RUN --mount=type=secret,id=github_token,required=false \
     export GITHUB_TOKEN="$(cat /run/secrets/github_token 2>/dev/null || true)"; \
     mise install node \
@@ -175,18 +167,10 @@ RUN --mount=type=secret,id=github_token,required=false \
  && rm -rf /usr/local/share/mise/cache \
  && chmod -R a+rX /usr/local/share/mise /etc/mise
 
-# Cursor CLI, under /usr (its installer writes to $HOME).
-RUN HOME=/usr/local/share/cursor bash -c 'curl -fsS https://cursor.com/install | bash' \
- && ln -sf /usr/local/share/cursor/.local/bin/cursor-agent /usr/local/bin/cursor-agent \
- && ln -sf /usr/local/share/cursor/.local/bin/agent /usr/local/bin/agent \
- && chmod -R a+rX /usr/local/share/cursor \
- && cursor-agent --version
-
 # Login shells (`bash -l`, osewa's `/bin/sh -l`) get the environment OpenShell
 # clears; mise also finds its data dir through ~/.local/share/mise below.
 RUN printf '%s\n' \
       'export MISE_DATA_DIR=/usr/local/share/mise MISE_CACHE_DIR=/tmp/mise-cache MISE_YES=1' \
-      'export MISE_DISABLE_TOOLS="awscli,azure-cli,azure-kubelogin,gcloud,minikube,podman,pipx,pipx:podman-compose"' \
       'export DOTFILES_CONTAINER=1 EDITOR=nvim VISUAL=nvim DISABLE_TELEMETRY=true DISABLE_AUTOUPDATER=1' \
       'export ESSENTIAL_TRAFFIC_ONLY=1 AWS_PAGER="" PI_CACHE_RETENTION=long' \
       'export XDG_CONFIG_HOME="$HOME/.config" PI_CODING_AGENT_DIR="$HOME/.config/pi"' \
@@ -209,6 +193,30 @@ RUN nvim --headless '+Lazy! sync' +qa \
  && nvim --headless '+MasonToolsInstallSync' +qa \
  || echo "warning: neovim plugins not installed"
 RUN pi update --extensions || echo "warning: pi package install failed; pi will retry on start"
+
+# Keep /sandbox small. OpenShell copies it into a new sandbox's workspace
+# volume on the first start, and Sundae waits for that copy
+# (openshell.ready_timeout): about 22k files took longer than 5 minutes.
+# The large trees that only the build writes move to
+# /usr/local/share/sandbox-home and are linked back, like mise's data dir
+# above: pi's git packages and Neovim's Lazy plugins and Mason packages
+# (their runtime state, registries and bin links stay in /sandbox). They are
+# read-only in a sandbox: rebuild the image to update them, because
+# `pi update`, `:Lazy update` and `:MasonInstall` cannot write there.
+# The npm and chezmoi caches are only for the build.
+USER root
+RUN set -e; dest=/usr/local/share/sandbox-home; \
+    for p in .config/pi/git .local/share/nvim/lazy .local/share/nvim/mason/packages; do \
+      if [ -d "/sandbox/$p" ]; then \
+        mkdir -p "$dest/$(dirname "$p")"; \
+        mv "/sandbox/$p" "$dest/$p"; \
+        ln -s "$dest/$p" "/sandbox/$p"; \
+        chown -h 10001:10001 "/sandbox/$p"; \
+      fi; \
+    done; \
+    chmod -R a+rX "$dest"; \
+    rm -rf /sandbox/.npm /sandbox/.cache/chezmoi
+USER 10001:10001
 
 CMD ["/bin/bash", "-l"]
 

@@ -1,16 +1,18 @@
-# Container-only tools, installed as /etc/mise/config.toml by packages/container/Containerfile.
-# These are layered on top of ~/.config/mise/config.toml (the host config), minus
-# the heavy cloud tooling listed in MISE_DISABLE_TOOLS in the Containerfile.
+# The tools of the container images, installed as /etc/mise/config.toml by
+# packages/container/Containerfile (the dotfiles and sandbox targets). This is
+# the only tool list of the images: the host config
+# (~/.config/mise/config.toml) is not copied or applied in a container.
 [tools]
+node = "latest"
+pi = "latest"
+pnpm = "latest"
+uv = "latest"
 # Fedora's neovim lags; nvim-treesitter (main) needs >= 0.12
 neovim = "latest"
 starship = "latest"
-zellij = "latest"
 lazygit = "latest"
-jj = "latest"    # Jujutsu VCS (container-only)
+jj = "latest"    # Jujutsu VCS; dot_config/starship.toml calls the mise binary
 gh = "latest"    # GitHub CLI
 glab = "latest"  # GitLab CLI (gitlab:gitlab-org/cli — releases live on gitlab.com)
 yazi = "latest"
 "github:agavra/tuicr" = "latest"
-kubectl = "latest"
-k9s = "latest"

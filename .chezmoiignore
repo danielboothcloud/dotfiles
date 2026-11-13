@@ -32,4 +32,6 @@ packages/
 .config/clones/jira.yml
 bin/ente
 .config/ghostty
+# The container's tools come from packages/container/mise.toml only
+.config/mise/config.toml
 {{- end }}
