@@ -202,9 +202,6 @@ keymap_cursor = { emacs = "blink-block", vim_insert = "blink-block", vim_normal 
 ## Alternatively, set env NO_MOTION=true
 # prefers_reduced_motion = false
 
-[dotfiles]
-enabled = true
-
 [stats]
 ## Set commands where we should consider the subcommand for statistics. Eg, kubectl get vs just kubectl
 # common_subcommands = [

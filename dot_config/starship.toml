@@ -3,6 +3,15 @@ right_format = """${env_var.aws_profile}$kubernetes"""
 command_timeout = 5000
 palette = "oxocarbon"
 
+# NOTE: jj is invoked via the real mise-installed binary, NOT the `jj` shim.
+# Starship spawns non-interactive shells where `jj` resolves to the mise shim,
+# which costs ~1s+ per call (and errors when no default version is set).
+# Real binary: 0.02s per call. The `latest` symlink is managed by mise.
+# If you install a jj version with a different layout, update this path.
+# Cheap jj-repo detection: walk up for `.jj` (every jj repo has it at root).
+# Every custom module sets shell = ["sh"]: the `when`/`command` snippets are POSIX sh,
+# and starship otherwise runs them in $STARSHIP_SHELL (fish), which rejects `p=$PWD`.
+
 [palettes.oxocarbon]
 grey = "#525252"
 red = "#ff7eb6"
@@ -70,22 +79,24 @@ format = '\[[$symbol$context(\($namespace\))]($style)\]'
 symbol = '󱃾 '
 style = "blue"
 
-# --- Jujutsu (jj): takes over from git when a .jj directory is present ---
+# --- Jujutsu (jj): takes over from git when inside a jj repo (.jj up the tree) ---
 [custom.jj]
-when = "jj root --ignore-working-copy"
-command = '''jj log -r@ --no-graph --color never -T 'separate(" ", change_id.shortest(4), local_bookmarks.map(|b| b.name()).join(","), if(conflict, "!"), if(empty, "∅", if(!remote_bookmarks.filter(|b| b.remote() != "git"), "*")))' '''
+shell = ["sh"]
+when = 'p=$PWD; while [ -n "$p" ]; do [ -e "$p/.jj" ] && exit 0; p=${p%/*}; done; exit 1'
+command = '''~/.local/share/mise/installs/jj/latest/jj log -r@ --no-graph --color never -T 'separate(" ", change_id.shortest(4), local_bookmarks.map(|b| b.name()).join(","), if(conflict, "!"), if(empty, "∅", if(!remote_bookmarks.filter(|b| b.remote() != "git"), "*")))' '''
 format = '[$output]($style) '
 style = "magenta"
 
 # Commits to push (⇡N) / pull (⇣N) for bookmarks on @ vs their tracked remotes (largest count wins).
 # Behind count reflects the last `jj git fetch`.
 [custom.jj_ahead_behind]
-when = "jj root --ignore-working-copy"
+when = 'p=$PWD; while [ -n "$p" ]; do [ -e "$p/.jj" ] && exit 0; p=${p%/*}; done; exit 1'
 shell = ["sh"]
 command = '''
-jj log -r@ --ignore-working-copy --no-graph --color never -T 'local_bookmarks.map(|b| b.name() ++ "\n").join("")' |
+jj=~/.local/share/mise/installs/jj/latest/jj
+"$jj" log -r@ --ignore-working-copy --no-graph --color never -T 'local_bookmarks.map(|b| b.name() ++ "\n").join("")' |
 while read -r name; do
-  jj log -r "remote_bookmarks(exact:\"$name\")" --ignore-working-copy --no-graph --color never \
+  "$jj" log -r "remote_bookmarks(exact:\"$name\")" --ignore-working-copy --no-graph --color never \
     -T "remote_bookmarks.filter(|b| b.name() == \"$name\" && b.remote() != \"git\" && b.tracked()).map(|b| b.tracking_behind_count().lower() ++ \" \" ++ b.tracking_ahead_count().lower() ++ \"\n\").join(\"\")"
 done |
 awk '$1 > a { a = $1 } $2 > b { b = $2 } END { if (a > 0) printf "⇡%d", a; if (b > 0) printf "⇣%d", b }'
@@ -93,22 +104,25 @@ awk '$1 > a { a = $1 } $2 > b { b = $2 } END { if (a > 0) printf "⇡%d", a; if 
 format = '([$output]($style) )'
 style = "cyan"
 
-# --- Git defaults: only when NOT inside a jj repo ---
+# --- Git defaults: only when NOT inside a jj repo (no `jj` process spawned at all) ---
 [custom.git_branch]
-when = "git rev-parse --is-inside-work-tree && ! jj root --ignore-working-copy"
+shell = ["sh"]
+when = '''p=$PWD; while [ -n "$p" ]; do [ -e "$p/.jj" ] && exit 1; p=${p%/*}; done; git rev-parse --is-inside-work-tree'''
 command = "git branch --show-current || git rev-parse --short HEAD"
 format = '[󰘬 $output]($style) '
 style = "magenta"
 
 [custom.git_status]
-when = "git rev-parse --is-inside-work-tree && ! jj root --ignore-working-copy"
+shell = ["sh"]
+when = '''p=$PWD; while [ -n "$p" ]; do [ -e "$p/.jj" ] && exit 1; p=${p%/*}; done; git rev-parse --is-inside-work-tree'''
 command = "git diff --quiet HEAD 2>/dev/null && echo ✓ || echo '*'"
 format = '[$output]($style) '
 style = "magenta"
 
 # Commits to push (⇡N) / pull (⇣N) vs upstream. Behind count reflects the last fetch.
 [custom.git_ahead_behind]
-when = "git rev-parse --abbrev-ref '@{upstream}' && ! jj root --ignore-working-copy"
+shell = ["sh"]
+when = '''p=$PWD; while [ -n "$p" ]; do [ -e "$p/.jj" ] && exit 1; p=${p%/*}; done; git rev-parse --abbrev-ref '@{upstream}' '''
 command = '''git rev-list --left-right --count 'HEAD...@{upstream}' | awk '{ if ($1 > 0) printf "⇡%d", $1; if ($2 > 0) printf "⇣%d", $2 }' '''
 format = '([$output]($style) )'
 style = "cyan"

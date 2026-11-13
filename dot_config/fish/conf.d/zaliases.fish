@@ -1,6 +1,7 @@
 alias vi="nvim"
 alias pm="pnpm"
 alias dotfiles="chezmoi"
+alias cursor="cursor-agent"
 alias ll="eza --color=always --long --git --icons=always --no-user"
 alias ls="eza --color=always --long --git --no-filesize --icons=always --no-time --no-user --no-permissions"
 alias cat="bat --paging never --style=changes --theme base16"

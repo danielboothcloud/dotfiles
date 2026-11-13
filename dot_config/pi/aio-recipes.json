@@ -8,6 +8,7 @@
 			"models": [
 				"openai-codex/gpt-6.1-sol",
 				"synthetic/hf:zai-org/GLM-5.3-Flash",
+				"synthetic/hf:deepseek-ai/DeepSeek-V4.1-Flash-1017",
 				"anthropic/claude-opus-5-5",
 				"anthropic/claude-haiku-5-5"
 			],
@@ -36,6 +37,7 @@
 			"permissionMode": "auto",
 			"style": "ste",
 			"models": [
+				"anthropic/claude-fable-5-2",
 				"anthropic/claude-opus-5-5"
 			],
 			"mcpServers": {},

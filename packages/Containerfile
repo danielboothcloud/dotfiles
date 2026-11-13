@@ -12,6 +12,15 @@
 #
 # Secret-bearing chezmoi templates (1Password) are skipped via the
 # DOTFILES_CONTAINER block in .chezmoiignore; no secrets are baked in.
+#
+# Run as an osewa host (https://osewa.dev) — sshd is only used once to enroll:
+#   podman run -d --name devbox --userns=keep-id \
+#     -p 2222:22 -p 7322:7322/tcp -p 7322:7322/udp \
+#     -e SSH_AUTHORIZED_KEYS="$(cat ~/.ssh/id_ed25519.pub)" \
+#     -v osewa:/home/danielbooth/.config/osewa \
+#     -v "$PWD:/home/danielbooth/work" dotfiles osewa-serve
+#   # ~/.ssh/config on the client:  Host devbox / HostName <server> / Port 2222 / User danielbooth
+#   osewa login --no-install devbox && osewa attach devbox
 
 ARG FEDORA_VERSION=43
 FROM registry.fedoraproject.org/fedora:${FEDORA_VERSION} AS tools
@@ -26,8 +35,33 @@ RUN dnf -y install --setopt=install_weak_deps=False \
       gcc make tree-sitter-cli unzip tar gzip xz curl ca-certificates \
       python3 procps-ng less which findutils file ncurses-term \
       glibc-langpack-en libatomic sudo \
+      openssh-server \
  && dnf clean all \
- && curl -fsSL https://mise.run | MISE_INSTALL_PATH=/usr/local/bin/mise sh
+ && curl -fsSL https://mise.run | MISE_INSTALL_PATH=/usr/local/bin/mise sh \
+ && curl -fsSL https://osewa.dev/install.sh | OSEWA_INSTALL_DIR=/usr/local/bin sh
+
+# ── sshd (key-only, for `osewa login` enrollment) ─────────────────────────────
+# pam_loginuid fails in containers; host keys are generated at container start.
+RUN sed -i 's/^session\s\+required\s\+pam_loginuid.so/session optional pam_loginuid.so/' /etc/pam.d/sshd \
+ && printf '%s\n' 'PasswordAuthentication no' 'KbdInteractiveAuthentication no' 'PermitRootLogin no' \
+      > /etc/ssh/sshd_config.d/10-container.conf
+
+# Entrypoint for host mode: sshd in the foreground, osewa server alongside it
+# once a device is enrolled (the first `osewa login` starts it itself).
+RUN cat > /usr/local/bin/osewa-serve <<'EOF' && chmod 755 /usr/local/bin/osewa-serve
+#!/bin/sh
+set -eu
+mkdir -p "$HOME/.ssh" && chmod 700 "$HOME/.ssh"
+if [ -n "${SSH_AUTHORIZED_KEYS:-}" ]; then
+  printf '%s\n' "$SSH_AUTHORIZED_KEYS" > "$HOME/.ssh/authorized_keys"
+  chmod 600 "$HOME/.ssh/authorized_keys"
+fi
+sudo ssh-keygen -A >/dev/null
+if [ -s "$HOME/.config/osewa/devices" ]; then
+  osewa server --daemon
+fi
+exec sudo /usr/sbin/sshd -D -e
+EOF
 
 # ── Non-secret git defaults (dot_gitconfig.tmpl is skipped: it reads 1Password)
 # Set your email at runtime: -e GIT_AUTHOR_EMAIL=... -e GIT_COMMITTER_EMAIL=...
@@ -38,6 +72,8 @@ RUN git config --system user.name "Daniel Booth" \
  && git lfs install --system
 
 RUN useradd --create-home --uid "${UID}" --shell /usr/bin/fish "${USERNAME}" \
+ && usermod -p '*' "${USERNAME}" \
+ && install -d -m 700 -o "${USERNAME}" -g "${USERNAME}" "/home/${USERNAME}/.config" "/home/${USERNAME}/.config/osewa" \
  && echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" > "/etc/sudoers.d/${USERNAME}"
 
 # Static (non-secret) env normally set by conf.d/env.fish, which is skipped.
@@ -89,4 +125,5 @@ RUN pi update --extensions || echo "warning: pi package install failed; pi will 
 RUN ya pkg install || echo "warning: yazi package install failed"
 
 WORKDIR ${HOME}/work
+EXPOSE 22/tcp 7322/tcp 7322/udp
 CMD ["fish", "-l"]

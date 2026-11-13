@@ -11,6 +11,8 @@ set -gx SYNTHETIC_API_KEY "{{ onepasswordRead "op://Homelab/6q6iaqagdxm7p3c6blp7
 # Static environment variables
 set -gx EDITOR nvim
 set -gx VISUAL nvim
+set -gx AWS_DEFAULT_REGION eu-west-2
+set -gx VAULT_ADDR https://vault.production.ops.novatiq.com
 set -gx XDG_CONFIG_HOME $HOME/.config
 set -gx DISABLE_TELEMETRY true
 set -gx DISABLE_AUTOUPDATER 1
@@ -21,7 +23,8 @@ set -gx AWS_PAGER ""
 set -Ux PI_CODING_AGENT_DIR "$HOME/.config/pi"
 set -Ux PI_CACHE_RETENTION long
 {{ if eq .chezmoi.os "darwin" -}}
-set -gx DOCKER_HOST unix:///tmp/podman.sock
+set -gx CONTAINER_HOST unix:///var/run/docker.sock
+set -gx DOCKER_HOST unix:///var/run/docker.sock
 set -gx CONTAINERS_MACHINE_PROVIDER applehv
 set -gx CONTAINERS_MACHINE_ROSETTA true
 {{ end -}}
