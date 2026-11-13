@@ -30,8 +30,7 @@
 #   # ~/.ssh/config on the client:  Host devbox / HostName <server> / Port 2222 / User danielbooth
 #   osewa login --no-install devbox && osewa attach devbox
 
-ARG FEDORA_VERSION=43
-FROM registry.fedoraproject.org/fedora:${FEDORA_VERSION} AS tools
+FROM ghcr.io/danielboothcloud/sundae-sandbox:sha-237ccd1 AS tools
 
 ARG USERNAME=danielbooth
 ARG UID=1000
