@@ -116,20 +116,20 @@ tasks:
         fi
 
   container:build:
-    desc: Build the portable, secret-free dotfiles image (packages/Containerfile)
+    desc: Build the portable, secret-free dotfiles image (packages/container/Containerfile)
     dir: '{{.TASKFILE_DIR}}/..'
     cmds:
       - |
         set -e
         # Pass a GitHub token (if gh is logged in) so mise avoids API rate limits
         export GITHUB_TOKEN="${GITHUB_TOKEN:-$(gh auth token 2>/dev/null || true)}"
-        podman build -f packages/Containerfile --secret id=github_token,env=GITHUB_TOKEN -t dotfiles {{.CLI_ARGS}} .
+        podman build -f packages/container/Containerfile --secret id=github_token,env=GITHUB_TOKEN -t dotfiles {{.CLI_ARGS}} .
 
   container:run:
     desc: Run the dotfiles image with the current directory mounted at ~/work
     dir: '{{.USER_WORKING_DIR}}'
     cmds:
-      - podman run --rm -it --userns=keep-id -e COLORTERM=truecolor -v "$PWD:/home/danielbooth/work" dotfiles {{.CLI_ARGS}}
+      - podman run --rm -it --userns=keep-id -e COLORTERM=truecolor --device /dev/fuse --security-opt label=disable -v "$PWD:/home/danielbooth/work" dotfiles {{.CLI_ARGS}}
     interactive: true
 
   reconcile:

@@ -23,7 +23,7 @@ packages/
 .config/nvim/lazy-lock.json
 
 {{- if env "DOTFILES_CONTAINER" }}
-# Container build (packages/Containerfile): skip 1Password-backed templates and host-only files
+# Container build (packages/container/Containerfile): skip 1Password-backed templates and host-only files
 .gitconfig
 .gitconfig-github
 .ssh

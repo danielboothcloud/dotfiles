@@ -1,4 +1,4 @@
-# Build context for packages/Containerfile (context = repo root)
+# Build context for packages/container/Containerfile (context = repo root)
 .git
 .ruff_cache
 .claude

@@ -1,5 +1,5 @@
 #!/bin/sh
-# Entrypoint for osewa host mode (packages/Containerfile): sshd in the foreground,
+# Entrypoint for osewa host mode (packages/container/Containerfile): sshd in the foreground,
 # osewa server alongside it once a device is enrolled (the first `osewa login`
 # starts it itself).
 set -eu

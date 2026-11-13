@@ -8,9 +8,14 @@
       "reason": "use mise install or mise x for one-off commands"
     },
     {
-      "pattern": "^git\\s+((-C|-c)\\s+\\S+\\s+)*(commit|push)(?![\\w-])",
+      "pattern": "^git\\s+(?:(?:(?:-C|-c|--git-dir|--work-tree|--namespace|--config-env)(?:=|\\s+)\\S+|--[\\w-]+(?:=\\S+)?)\\s+)*commit(?![\\w-])",
       "regex": true,
-      "reason": "commits and pushes are done manually"
+      "reason": "commits are done manually; agents use jj new and jj describe"
+    },
+    {
+      "pattern": "^git\\s+(?:(?:(?:-C|-c|--git-dir|--work-tree|--namespace|--config-env)(?:=|\\s+)\\S+|--[\\w-]+(?:=\\S+)?)\\s+)*push(?![\\w-])(?!(?:\\s+(?:-u|--set-upstream|--force-with-lease(?:=\\S+)?|-v|--verbose|-q|--quiet|-n|--dry-run|--no-verify|--progress))*\\s+(?!-)\\S+(?:\\s+(?:-u|--set-upstream|--force-with-lease(?:=\\S+)?|-v|--verbose|-q|--quiet|-n|--dry-run|--no-verify|--progress))*\\s+(?:[^\\s:+-][^\\s:]*:)?(?:refs/heads/)?develop(?:\\s+(?:-u|--set-upstream|--force-with-lease(?:=\\S+)?|-v|--verbose|-q|--quiet|-n|--dry-run|--no-verify|--progress))*\\s*$)",
+      "regex": true,
+      "reason": "agents may only push to develop: git push [-u|--force-with-lease] <remote> [<src>:]develop (no --force, no other refs)"
     },
     {
       "pattern": "^terraform\\s+(-chdir=\\S+\\s+)?(init|validate|plan|apply)\\b",
@@ -33,9 +38,14 @@
       "reason": "1Password handles sensitive data; this cannot be accessed by agents"
     },
     {
-      "pattern": "^jj\\s+((-R|--repository)\\s+\\S+\\s+|--\\S+\\s+)*(bookmark|b)\\s+(create|set|move|delete|forget)\\b",
+      "pattern": "^jj\\s+(?:(?:(?:-R|--repository|--config|--config-file|--at-operation|--at-op|--color)(?:=|\\s+)\\S+|--[\\w-]+(?:=\\S+)?)\\s+)*(?:bookmark|b)\\s+(?:(?:(?:-R|--repository|--config|--config-file|--at-operation|--at-op|--color)(?:=|\\s+)\\S+|--[\\w-]+(?:=\\S+)?)\\s+)*(?:(?:delete|d|forget|f|rename|r)(?![\\w-])|(?:advance|a|create|c|move|m|set|s)(?![\\w-])(?!(?:\\s+(?:(?:-r|--revision|--to)(?:=|\\s+)(?!-)\\S+|-B|--allow-backwards))*\\s+develop(?:\\s+(?:(?:-r|--revision|--to)(?:=|\\s+)(?!-)\\S+|-B|--allow-backwards))*\\s*$))",
       "regex": true,
-      "reason": "bookmark changes are managed manually; agents may use jj new and jj describe only"
+      "reason": "agents may only create/set/move/advance the develop bookmark (jj bookmark set develop -r <rev> [-B])"
+    },
+    {
+      "pattern": "^jj\\s+(?:(?:(?:-R|--repository|--config|--config-file|--at-operation|--at-op|--color)(?:=|\\s+)\\S+|--[\\w-]+(?:=\\S+)?)\\s+)*git\\s+(?:(?:(?:-R|--repository|--config|--config-file|--at-operation|--at-op|--color)(?:=|\\s+)\\S+|--[\\w-]+(?:=\\S+)?)\\s+)*push(?![\\w-])(?!(?:\\s+(?:--remote(?:=|\\s+)(?!-)\\S+|--dry-run))*\\s+(?:-b|--bookmark)(?:=|\\s+)develop(?:\\s+(?:--remote(?:=|\\s+)(?!-)\\S+|--dry-run))*\\s*$)",
+      "regex": true,
+      "reason": "agents may only push develop: jj git push [--remote <r>] -b develop"
     }
   ]
 }

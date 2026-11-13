@@ -1,4 +1,4 @@
-# Container-only tools, installed as /etc/mise/config.toml by packages/Containerfile.
+# Container-only tools, installed as /etc/mise/config.toml by packages/container/Containerfile.
 # These are layered on top of ~/.config/mise/config.toml (the host config), minus
 # the heavy cloud tooling listed in MISE_DISABLE_TOOLS in the Containerfile.
 [tools]

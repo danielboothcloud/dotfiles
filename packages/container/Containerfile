@@ -1,20 +1,28 @@
 # Portable, secret-free container of this dotfiles setup (fish, starship, mise,
-# neovim, pi, tuicr, zellij, yazi, lazygit, kubectl/k9s/helm).
+# neovim, pi, cursor-cli, tuicr, zellij, yazi, lazygit, kubectl/k9s/helm, podman).
 #
 # Build from the repo root (the build context must be the whole chezmoi source):
-#   podman build -f packages/Containerfile -t dotfiles .
+#   podman build -f packages/container/Containerfile -t dotfiles .
 #   # optional: avoid GitHub API rate limits while mise resolves "latest"
-#   podman build -f packages/Containerfile --secret id=github_token,env=GITHUB_TOKEN -t dotfiles .
+#   podman build -f packages/container/Containerfile --secret id=github_token,env=GITHUB_TOKEN -t dotfiles .
 #
 # Run:
 #   podman run --rm -it --userns=keep-id -e COLORTERM=truecolor \
+#     --device /dev/fuse --security-opt label=disable \
 #     -v "$PWD:/home/danielbooth/work" -w /home/danielbooth/work dotfiles
+#
+# Rootless Podman works inside the container (Podman-in-Podman, no --privileged;
+# see https://www.redhat.com/en/blog/podman-inside-container). It needs
+# /dev/fuse (fuse-overlayfs storage) and SELinux separation disabled, as shown above.
+# Inner storage lives in an anonymous volume at ~/.local/share/containers; mount a
+# named one to keep pulled images between runs: -v podman-storage:/home/danielbooth/.local/share/containers
 #
 # Secret-bearing chezmoi templates (1Password) are skipped via the
 # DOTFILES_CONTAINER block in .chezmoiignore; no secrets are baked in.
 #
 # Run as an osewa host (https://osewa.dev) — sshd is only used once to enroll:
 #   podman run -d --name devbox --userns=keep-id \
+#     --device /dev/fuse --security-opt label=disable \
 #     -p 2222:22 -p 7322:7322/tcp -p 7322:7322/udp \
 #     -e SSH_AUTHORIZED_KEYS="$(cat ~/.ssh/id_ed25519.pub)" \
 #     -v osewa:/home/danielbooth/.config/osewa \
@@ -36,6 +44,8 @@ RUN dnf -y install --setopt=install_weak_deps=False \
       python3 procps-ng less which findutils file ncurses-term \
       glibc-langpack-en libatomic sudo \
       openssh-server \
+      podman podman-compose crun fuse-overlayfs \
+      --exclude container-selinux \
  && dnf clean all \
  && curl -fsSL https://mise.run | MISE_INSTALL_PATH=/usr/local/bin/mise sh \
  && curl -fsSL https://osewa.dev/install.sh | OSEWA_INSTALL_DIR=/usr/local/bin sh
@@ -64,6 +74,27 @@ RUN useradd --create-home --uid "${UID}" --shell /usr/bin/fish "${USERNAME}" \
  && usermod -p '*' "${USERNAME}" \
  && install -d -m 700 -o "${USERNAME}" -g "${USERNAME}" "/home/${USERNAME}/.config" "/home/${USERNAME}/.config/osewa" \
  && echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" > "/etc/sudoers.d/${USERNAME}"
+
+# ── Podman-in-Podman (rootless), modelled on quay.io/podman/stable ────────────
+# - newuidmap/newgidmap lose their file caps in Fedora base images; restore them.
+# - subuid/subgid ranges cover every UID except ${UID} inside the 65536 IDs the
+#   outer rootless container gets with --userns=keep-id.
+# - fuse-overlayfs storage: kernel overlay-on-overlay is usually refused.
+RUN rpm --setcaps shadow-utils 2>/dev/null \
+ && printf '%s\n' "root:1:65535" "${USERNAME}:1:$((UID - 1))" "${USERNAME}:$((UID + 1)):$((65535 - UID))" \
+      | tee /etc/subuid > /etc/subgid \
+ && sed -e 's|^#mount_program|mount_program|g' \
+        -e 's|^mountopt[[:space:]]*=.*$|mountopt = "nodev,fsync=0"|g' \
+        /usr/share/containers/storage.conf > /etc/containers/storage.conf \
+ && for d in .config/containers .local .local/share .local/share/containers; do \
+      install -d -o "${USERNAME}" -g "${USERNAME}" "/home/${USERNAME}/$d"; \
+    done
+COPY packages/container/containers.conf /etc/containers/containers.conf
+COPY --chown=${USERNAME} packages/container/podman-containers.conf /home/${USERNAME}/.config/containers/containers.conf
+# podman/podman-compose come from Fedora above (mise's podman is disabled below:
+# it's podman-remote only). chroot isolation lets `podman build` run nested.
+ENV _CONTAINERS_USERNS_CONFIGURED="" \
+    BUILDAH_ISOLATION=chroot
 
 # Static (non-secret) env normally set by conf.d/env.fish, which is skipped.
 ENV LANG=en_US.UTF-8 \
@@ -95,6 +126,11 @@ RUN --mount=type=secret,id=github_token,required=false \
  && mise install \
  && mise reshim
 
+# ── Cursor CLI (`agent` / `cursor-agent` in ~/.local/bin) ──────────────────────────────
+# Auth at runtime: -e CURSOR_API_KEY=... or `NO_OPEN_BROWSER=1 agent login`.
+RUN curl -fsS https://cursor.com/install | bash \
+ && cursor-agent --version
+
 # ── Dotfiles ──────────────────────────────────────────────────────────────────
 FROM tools AS dotfiles
 ARG USERNAME=danielbooth
@@ -112,6 +148,10 @@ RUN nvim --headless '+Lazy! sync' +qa \
 # Non-fatal: pi and yazi retry missing packages on first start.
 RUN pi update --extensions || echo "warning: pi package install failed; pi will retry on start"
 RUN ya pkg install || echo "warning: yazi package install failed"
+
+# Inner Podman storage must not sit on the image's overlay filesystem.
+# Declared last: RUN steps can't modify a path once it's a VOLUME.
+VOLUME ${HOME}/.local/share/containers
 
 WORKDIR ${HOME}/work
 EXPOSE 22/tcp 7322/tcp 7322/udp

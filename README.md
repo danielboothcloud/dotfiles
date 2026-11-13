@@ -45,28 +45,37 @@ chezmoi init --apply danielboothcloud/dotfiles
 
 ## Container
 
-`packages/Containerfile` builds a portable Fedora image of the shell/editor/agent
+`packages/container/Containerfile` builds a portable Fedora image of the shell/editor/agent
 workflow (fish + plugins, starship, mise, neovim with plugins/LSPs/parsers, pi,
-tuicr, zellij, yazi, lazygit, atuin, kubectl/k9s/helm). 1Password-backed templates
+cursor-cli, tuicr, zellij, yazi, lazygit, atuin, kubectl/k9s/helm, podman). 1Password-backed templates
 (`env.fish`, gitconfigs, ssh, clones) are skipped via the `DOTFILES_CONTAINER`
 block in `.chezmoiignore`, so no secrets are baked in.
 
 ```bash
 cd packages
-task container:build   # podman build -f packages/Containerfile -t dotfiles .
+task container:build   # podman build -f packages/container/Containerfile -t dotfiles .
 task container:run     # $PWD mounted at ~/work
 ```
 
-Pushing a `v*` tag runs `.github/workflows/container.yml`, which builds amd64 and
-arm64 with buildah on native runners and publishes a multi-arch image:
+Rootless Podman works inside the container (Podman-in-Podman, no `--privileged`);
+it needs `--device /dev/fuse --security-opt label=disable` on `podman run`
+(`task container:run` passes them).
+
+`.github/workflows/container.yml` builds amd64 and arm64 with buildah on native
+runners and publishes a multi-arch image to GHCR:
+
+- `v*` tag push → `:v1.3.0` and `:latest`
+- branch push → `:<branch>-<short-sha>` and `:<branch>` (e.g. `develop-480e5df`, `develop`;
+  `/` in branch names becomes `-`)
 
 ```bash
 git tag v1.3.0 && git push origin v1.3.0
-podman run --rm -it --userns=keep-id -v "$PWD:/home/danielbooth/work" ghcr.io/danielboothcloud/dotfiles:v1.3.0
+podman run --rm -it --userns=keep-id --device /dev/fuse --security-opt label=disable \
+  -v "$PWD:/home/danielbooth/work" ghcr.io/danielboothcloud/dotfiles:v1.3.0
 ```
 
 Secrets and identity are supplied at runtime, e.g.
-`podman run ... -e GIT_AUTHOR_EMAIL -e GIT_COMMITTER_EMAIL -e ANTHROPIC_API_KEY dotfiles`
+`podman run ... -e GIT_AUTHOR_EMAIL -e GIT_COMMITTER_EMAIL -e ANTHROPIC_API_KEY -e CURSOR_API_KEY dotfiles`
 (or `/login` inside pi; add `-v pi-auth:/home/danielbooth/.config/pi` to persist it).
 
 ## Daily Usage
