@@ -8,7 +8,7 @@
 #   podman build -f packages/container/Containerfile --secret id=github_token,env=GITHUB_TOKEN -t dotfiles .
 #
 # Run:
-#   podman run --rm -it --userns=keep-id -e COLORTERM=truecolor \
+#   podman run --rm -it --userns=keep-id:uid=10001,gid=10001 -e COLORTERM=truecolor \
 #     --device /dev/fuse --security-opt label=disable \
 #     -v "$PWD:/home/danielbooth/work" -w /home/danielbooth/work dotfiles
 #
@@ -19,7 +19,7 @@
 # named one to keep pulled images between runs: -v podman-storage:/home/danielbooth/.local/share/containers
 #
 # Run as an osewa host (https://osewa.dev) — sshd is only used once to enroll:
-#   podman run -d --name devbox --userns=keep-id \
+#   podman run -d --name devbox --userns=keep-id:uid=10001,gid=10001 \
 #     --device /dev/fuse --security-opt label=disable \
 #     -p 2222:22 -p 7322:7322/tcp -p 7322:7322/udp \
 #     -e SSH_AUTHORIZED_KEYS="$(cat ~/.ssh/id_ed25519.pub)" \
@@ -35,7 +35,9 @@ ARG SANDBOX_BASE=ghcr.io/danielboothcloud/sundae-sandbox:sha-5463b2e
 FROM ${SANDBOX_BASE}
 
 ARG USERNAME=danielbooth
-ARG UID=1000
+# NOTE: Sundae pods run as the base image's `sandbox` user (10001:10001), so this user
+# shares its ids; `sandbox` stays first in /etc/passwd, keeping HOME=/sandbox for Sundae.
+ARG UID=10001
 
 # sundae-sandbox ends as USER 10001 with a PATH lacking sbin; system setup needs root.
 USER root
@@ -62,10 +64,20 @@ RUN sed -i 's/^session\s\+required\s\+pam_loginuid.so/session optional pam_login
 # Kept as a file (not a heredoc): buildah on GitHub's Ubuntu runners lacks heredoc support.
 COPY packages/container/osewa-serve /usr/local/bin/osewa-serve
 
-RUN useradd --create-home --uid "${UID}" --shell /bin/bash "${USERNAME}" \
+# sudoers matches by uid (#N): getpwuid(10001) resolves to `sandbox`, not ${USERNAME}.
+RUN useradd --non-unique --uid "${UID}" --gid "${UID}" --no-user-group \
+      --create-home --shell /bin/bash "${USERNAME}" \
  && usermod -p '*' "${USERNAME}" \
- && install -d -m 700 -o "${USERNAME}" -g "${USERNAME}" "/home/${USERNAME}/.config" "/home/${USERNAME}/.config/osewa" \
- && echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" > "/etc/sudoers.d/${USERNAME}"
+ && install -d -m 700 -o "${UID}" -g "${UID}" "/home/${USERNAME}/.config" "/home/${USERNAME}/.config/osewa" \
+ && echo "#${UID} ALL=(ALL) NOPASSWD:ALL" > "/etc/sudoers.d/${USERNAME}"
+
+# Sundae sets HOME=/sandbox, and osewa keys its state off XDG_CONFIG_HOME, so these must
+# not be image ENV; login shells (incl. osewa sessions' `sh -l`) read them from here.
+RUN printf '%s\n' \
+      "# dotfiles: configs and tools live in /home/${USERNAME}, even when HOME=/sandbox." \
+      ": \"\${XDG_CONFIG_HOME:=/home/${USERNAME}/.config}\"; export XDG_CONFIG_HOME" \
+      ": \"\${XDG_DATA_HOME:=/home/${USERNAME}/.local/share}\"; export XDG_DATA_HOME" \
+      > /etc/profile.d/dotfiles.sh
 
 # ── Podman-in-Podman (rootless), modelled on quay.io/podman/stable ────────────
 # - newuidmap/newgidmap lose their file caps in Fedora base images; restore them.
@@ -73,7 +85,7 @@ RUN useradd --create-home --uid "${UID}" --shell /bin/bash "${USERNAME}" \
 #   outer rootless container gets with --userns=keep-id.
 # - fuse-overlayfs storage: kernel overlay-on-overlay is usually refused.
 RUN rpm --setcaps shadow-utils 2>/dev/null \
- && printf '%s\n' "root:1:65535" "${USERNAME}:1:$((UID - 1))" "${USERNAME}:$((UID + 1)):$((65535 - UID))" \
+ && printf '%s\n' "root:1:65535" "${UID}:1:$((UID - 1))" "${UID}:$((UID + 1)):$((65535 - UID))" \
       | tee /etc/subuid > /etc/subgid \
  && sed -e 's|^#mount_program|mount_program|g' \
         -e 's|^mountopt[[:space:]]*=.*$|mountopt = "nodev,fsync=0"|g' \
@@ -100,8 +112,7 @@ ENV LANG=en_US.UTF-8 \
 
 USER ${USERNAME}
 ENV HOME=/home/${USERNAME}
-ENV XDG_CONFIG_HOME=${HOME}/.config \
-    PI_CODING_AGENT_DIR=${HOME}/.config/pi \
+ENV PI_CODING_AGENT_DIR=${HOME}/.config/pi \
     PATH=${HOME}/.local/share/mise/shims:${HOME}/.local/bin:${PATH}
 WORKDIR ${HOME}
 
