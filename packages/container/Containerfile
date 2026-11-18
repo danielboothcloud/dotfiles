@@ -33,7 +33,7 @@
 
 # The Sundae session sandbox image (OpenShell, git, jj, osewa, user `sandbox` 10001).
 # Bump to the newest sha-<short> tag of ghcr.io/danielboothcloud/sundae-sandbox.
-ARG SANDBOX_BASE=ghcr.io/danielboothcloud/sundae-sandbox:sha-12e090a
+ARG SANDBOX_BASE=ghcr.io/danielboothcloud/sundae-sandbox:sha-5463b2e
 
 FROM ${SANDBOX_BASE} AS tools
 
