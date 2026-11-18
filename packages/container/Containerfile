@@ -1,4 +1,4 @@
-# Slim, secret-free dev container: fd, ripgrep, pi + neovim (with this repo's
+# Slim, secret-free dev container: fd, ripgrep, tuicr, pi + neovim (with this repo's
 # configs), rootless podman, and mise with the global config applied but its
 # tools not installed (run `mise install` inside the container to reconcile).
 #
@@ -91,10 +91,10 @@ RUN rpm --setcaps shadow-utils 2>/dev/null \
         -e 's|^mountopt[[:space:]]*=.*$|mountopt = "nodev,fsync=0"|g' \
         /usr/share/containers/storage.conf > /etc/containers/storage.conf \
  && for d in .config/containers .local .local/bin .local/share .local/share/containers; do \
-      install -d -o "${USERNAME}" -g "${USERNAME}" "/home/${USERNAME}/$d"; \
+      install -d -o "${UID}" -g "${UID}" "/home/${USERNAME}/$d"; \
     done
 COPY packages/container/containers.conf /etc/containers/containers.conf
-COPY --chown=${USERNAME} packages/container/podman-containers.conf /home/${USERNAME}/.config/containers/containers.conf
+COPY --chown=${UID}:${UID} packages/container/podman-containers.conf /home/${USERNAME}/.config/containers/containers.conf
 # chroot isolation lets `podman build` run nested.
 ENV _CONTAINERS_USERNS_CONFIGURED="" \
     BUILDAH_ISOLATION=chroot
@@ -110,26 +110,28 @@ ENV LANG=en_US.UTF-8 \
     PI_CACHE_RETENTION=long \
     MISE_YES=1
 
-USER ${USERNAME}
+# Numeric: group 10001 is named `sandbox`, and there is no `danielbooth` group.
+USER ${UID}:${UID}
 ENV HOME=/home/${USERNAME}
 ENV PI_CODING_AGENT_DIR=${HOME}/.config/pi \
     PATH=${HOME}/.local/share/mise/shims:${HOME}/.local/bin:${PATH}
 WORKDIR ${HOME}
 
-# ── pi + neovim runtime (node, pi, neovim via mise) ───────────────────────────
+# ── pi + neovim runtime (node, pi, neovim, tuicr via mise) ────────────────────
 # NOTE: exposed via ~/.local/bin links, not shims: shims fail until the global mise
 # config's tools are installed. `mise install` later recreates shims, which take precedence.
 RUN --mount=type=secret,id=github_token,required=false \
     export GITHUB_TOKEN="$(cat /run/secrets/github_token 2>/dev/null || true)"; \
-    mise install node@latest pi@latest neovim@latest \
+    mise install node@latest pi@latest neovim@latest github:agavra/tuicr@latest \
  && ln -sf "$(mise where node@latest)"/bin/* "${HOME}/.local/bin/" \
  && ln -sf "$(find "$(mise where pi@latest)" -maxdepth 2 -type f -name pi -perm -u+x | head -1)" "${HOME}/.local/bin/pi" \
  && ln -sf "$(find "$(mise where neovim@latest)" -maxdepth 3 -type f -path '*/bin/nvim' | head -1)" "${HOME}/.local/bin/nvim" \
+ && ln -sf "$(find "$(mise where github:agavra/tuicr@latest)" -maxdepth 3 -type f -name tuicr -perm -u+x | head -1)" "${HOME}/.local/bin/tuicr" \
  && rm -rf "${HOME}/.local/share/mise/shims" \
- && nvim --version >/dev/null && command -v node npm pi
+ && nvim --version >/dev/null && tuicr --version && command -v node npm pi
 
 # ── pi + neovim configs ───────────────────────────────────────────────────────
-COPY --chown=${USERNAME} . ${HOME}/.local/share/chezmoi
+COPY --chown=${UID}:${UID} . ${HOME}/.local/share/chezmoi
 RUN chezmoi apply --no-tty --force --exclude=scripts "${HOME}/.config/pi" "${HOME}/.config/nvim"
 
 RUN nvim --headless '+Lazy! sync' +qa \

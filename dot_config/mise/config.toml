@@ -9,6 +9,7 @@ awscli = { version = "latest", symlink_bins = true }
 azure-cli = "latest"
 azure-kubelogin = "latest"
 gcloud = { version = "latest", depends = ["python"] }
+gh = "latest"
 glab = "latest"
 go = "latest"
 helm = "latest"

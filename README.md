@@ -46,7 +46,7 @@ chezmoi init --apply danielboothcloud/dotfiles
 ## Container
 
 `packages/container/Containerfile` builds a slim Fedora image (on the sundae-sandbox base)
-with fd, ripgrep, pi, neovim (with plugins/LSPs/parsers), rootless podman and osewa/sshd.
+with fd, ripgrep, tuicr, pi, neovim (with plugins/LSPs/parsers), rootless podman and osewa/sshd.
 Only the pi, nvim and mise configs are applied; the global mise tools are not installed,
 so run `mise install` inside the container to reconcile them. No secrets are baked in.
 
