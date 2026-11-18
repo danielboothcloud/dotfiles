@@ -1,6 +1,6 @@
-# Portable, secret-free container of this dotfiles setup (fish, starship, mise,
-# neovim, pi, tuicr, yazi, lazygit, jj, podman). The mise tools are listed in
-# packages/container/mise.toml.
+# Slim, secret-free dev container: fd, ripgrep, pi + neovim (with this repo's
+# configs), rootless podman, and mise with the global config applied but its
+# tools not installed (run `mise install` inside the container to reconcile).
 #
 # Build from the repo root (the build context must be the whole chezmoi source):
 #   podman build -f packages/container/Containerfile -t dotfiles .
@@ -18,9 +18,6 @@
 # Inner storage lives in an anonymous volume at ~/.local/share/containers; mount a
 # named one to keep pulled images between runs: -v podman-storage:/home/danielbooth/.local/share/containers
 #
-# Secret-bearing chezmoi templates (1Password) are skipped via the
-# DOTFILES_CONTAINER block in .chezmoiignore; no secrets are baked in.
-#
 # Run as an osewa host (https://osewa.dev) — sshd is only used once to enroll:
 #   podman run -d --name devbox --userns=keep-id \
 #     --device /dev/fuse --security-opt label=disable \
@@ -35,26 +32,23 @@
 # Bump to the newest sha-<short> tag of ghcr.io/danielboothcloud/sundae-sandbox.
 ARG SANDBOX_BASE=ghcr.io/danielboothcloud/sundae-sandbox:sha-5463b2e
 
-FROM ${SANDBOX_BASE} AS tools
+FROM ${SANDBOX_BASE}
 
 ARG USERNAME=danielbooth
 ARG UID=1000
 
-# sundae-sandbox ends as USER 10001 (sandbox) with a PATH lacking sbin; switch
-# back to root for system setup. USER ${USERNAME} below drops privileges again.
-# The base image already ships osewa (/usr/local/bin) and jj (/usr/bin).
+# sundae-sandbox ends as USER 10001 with a PATH lacking sbin; system setup needs root.
 USER root
 ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin
 
 # ── System packages (Fedora repos) ────────────────────────────────────────────
+# gcc/make/tree-sitter-cli build nvim-treesitter parsers; unzip/tar/xz unpack Mason and mise downloads.
 RUN dnf -y install --setopt=install_weak_deps=False \
-      fish git git-lfs chezmoi \
-      ripgrep fd-find bat fzf eza zoxide atuin btop jq \
+      ripgrep fd-find chezmoi git \
       gcc make tree-sitter-cli unzip tar gzip xz curl ca-certificates \
-      python3 procps-ng less which findutils file ncurses-term \
-      glibc-langpack-en libatomic sudo \
+      glibc-langpack-en libatomic ncurses-term sudo \
       openssh-server \
-      podman podman-compose crun fuse-overlayfs \
+      podman crun fuse-overlayfs \
       --exclude container-selinux \
  && dnf clean all \
  && curl -fsSL https://mise.run | MISE_INSTALL_PATH=/usr/local/bin/mise sh
@@ -65,21 +59,10 @@ RUN sed -i 's/^session\s\+required\s\+pam_loginuid.so/session optional pam_login
  && printf '%s\n' 'PasswordAuthentication no' 'KbdInteractiveAuthentication no' 'PermitRootLogin no' \
       > /etc/ssh/sshd_config.d/10-container.conf
 
-# Entrypoint for host mode: sshd in the foreground, osewa server alongside it
-# once a device is enrolled. Kept as a file (not a heredoc) because the buildah
-# on GitHub's Ubuntu runners doesn't support Containerfile heredocs.
-# Executable bit comes from git (100755).
+# Kept as a file (not a heredoc): buildah on GitHub's Ubuntu runners lacks heredoc support.
 COPY packages/container/osewa-serve /usr/local/bin/osewa-serve
 
-# ── Non-secret git defaults (dot_gitconfig.tmpl is skipped: it reads 1Password)
-# Set your email at runtime: -e GIT_AUTHOR_EMAIL=... -e GIT_COMMITTER_EMAIL=...
-RUN git config --system user.name "Daniel Booth" \
- && git config --system push.autoSetupRemote true \
- && git config --system pull.rebase true \
- && git config --system core.excludesfile '~/.gitignore_global' \
- && git lfs install --system
-
-RUN useradd --create-home --uid "${UID}" --shell /usr/bin/fish "${USERNAME}" \
+RUN useradd --create-home --uid "${UID}" --shell /bin/bash "${USERNAME}" \
  && usermod -p '*' "${USERNAME}" \
  && install -d -m 700 -o "${USERNAME}" -g "${USERNAME}" "/home/${USERNAME}/.config" "/home/${USERNAME}/.config/osewa" \
  && echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" > "/etc/sudoers.d/${USERNAME}"
@@ -95,13 +78,12 @@ RUN rpm --setcaps shadow-utils 2>/dev/null \
  && sed -e 's|^#mount_program|mount_program|g' \
         -e 's|^mountopt[[:space:]]*=.*$|mountopt = "nodev,fsync=0"|g' \
         /usr/share/containers/storage.conf > /etc/containers/storage.conf \
- && for d in .config/containers .local .local/share .local/share/containers; do \
+ && for d in .config/containers .local .local/bin .local/share .local/share/containers; do \
       install -d -o "${USERNAME}" -g "${USERNAME}" "/home/${USERNAME}/$d"; \
     done
 COPY packages/container/containers.conf /etc/containers/containers.conf
 COPY --chown=${USERNAME} packages/container/podman-containers.conf /home/${USERNAME}/.config/containers/containers.conf
-# podman/podman-compose come from Fedora above (mise's podman is
-# podman-remote only). chroot isolation lets `podman build` run nested.
+# chroot isolation lets `podman build` run nested.
 ENV _CONTAINERS_USERNS_CONFIGURED="" \
     BUILDAH_ISOLATION=chroot
 
@@ -113,7 +95,6 @@ ENV LANG=en_US.UTF-8 \
     DISABLE_TELEMETRY=true \
     DISABLE_AUTOUPDATER=1 \
     ESSENTIAL_TRAFFIC_ONLY=1 \
-    AWS_PAGER="" \
     PI_CACHE_RETENTION=long \
     MISE_YES=1
 
@@ -121,129 +102,35 @@ USER ${USERNAME}
 ENV HOME=/home/${USERNAME}
 ENV XDG_CONFIG_HOME=${HOME}/.config \
     PI_CODING_AGENT_DIR=${HOME}/.config/pi \
-    PATH=${HOME}/.local/share/mise/shims:${HOME}/.local/bin:${HOME}/bin:${PATH}
+    PATH=${HOME}/.local/share/mise/shims:${HOME}/.local/bin:${PATH}
 WORKDIR ${HOME}
 
-# ── mise tools: packages/container/mise.toml ─────────────────────────────────
-# Copied ahead of the full repo so editing other dotfiles doesn't bust this layer.
-COPY packages/container/mise.toml /etc/mise/config.toml
+# ── pi + neovim runtime (node, pi, neovim via mise) ───────────────────────────
+# NOTE: exposed via ~/.local/bin links, not shims: shims fail until the global mise
+# config's tools are installed. `mise install` later recreates shims, which take precedence.
 RUN --mount=type=secret,id=github_token,required=false \
     export GITHUB_TOKEN="$(cat /run/secrets/github_token 2>/dev/null || true)"; \
-    mise install node \
- && mise install \
- && mise reshim
+    mise install node@latest pi@latest neovim@latest \
+ && ln -sf "$(mise where node@latest)"/bin/* "${HOME}/.local/bin/" \
+ && ln -sf "$(find "$(mise where pi@latest)" -maxdepth 2 -type f -name pi -perm -u+x | head -1)" "${HOME}/.local/bin/pi" \
+ && ln -sf "$(find "$(mise where neovim@latest)" -maxdepth 3 -type f -path '*/bin/nvim' | head -1)" "${HOME}/.local/bin/nvim" \
+ && rm -rf "${HOME}/.local/share/mise/shims" \
+ && nvim --version >/dev/null && command -v node npm pi
 
-# ── Sundae session sandbox (build with --target sandbox) ─────────────────────
-# The image Sundae's OpenShell agent sessions run. OpenShell runs it as UID/GID
-# 10001 with HOME=/sandbox (a volume seeded from this image's /sandbox), clears
-# the environment except PATH, and only lets sandboxes read /usr, /bin, /lib,
-# /etc, /sandbox and /tmp. So every tool is installed under /usr (mise's data
-# dir included) and the dotfiles are applied to /sandbox as the sandbox user.
-FROM ${SANDBOX_BASE} AS sandbox
-
-USER root
-ENV PATH=/usr/local/share/mise/shims:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin
-
-RUN dnf -y install --setopt=install_weak_deps=False \
-      fish git-lfs chezmoi \
-      ripgrep fd-find bat fzf eza zoxide atuin btop jq \
-      gcc make tree-sitter-cli unzip tar gzip xz curl ca-certificates \
-      python3 procps-ng less which findutils file ncurses-term \
-      glibc-langpack-en libatomic \
- && dnf clean all \
- && curl -fsSL https://mise.run | MISE_INSTALL_PATH=/usr/local/bin/mise sh
-
-# mise installs system-wide: /etc/mise/config.toml holds the tools
-# (packages/container/mise.toml), /usr/local/share/mise the tools and shims.
-ENV MISE_DATA_DIR=/usr/local/share/mise \
-    MISE_CACHE_DIR=/usr/local/share/mise/cache \
-    MISE_YES=1
-COPY packages/container/mise.toml /etc/mise/config.toml
-RUN --mount=type=secret,id=github_token,required=false \
-    export GITHUB_TOKEN="$(cat /run/secrets/github_token 2>/dev/null || true)"; \
-    mise install node \
- && mise install \
- && mise reshim \
- && rm -rf /usr/local/share/mise/cache \
- && chmod -R a+rX /usr/local/share/mise /etc/mise
-
-# Login shells (`bash -l`, osewa's `/bin/sh -l`) get the environment OpenShell
-# clears; mise also finds its data dir through ~/.local/share/mise below.
-# osewa starts a session's program with a base PATH (no image ENV), so the
-# mise shims and /usr/local/bin are added here; each login shell reads this
-# file, so the lines add each directory only once.
-RUN printf '%s\n' \
-      'case ":$PATH:" in *:/usr/local/bin:*) ;; *) PATH=/usr/local/bin:$PATH ;; esac' \
-      'case ":$PATH:" in *:/usr/local/share/mise/shims:*) ;; *) PATH=/usr/local/share/mise/shims:$PATH ;; esac' \
-      'export PATH' \
-      'export MISE_DATA_DIR=/usr/local/share/mise MISE_CACHE_DIR=/tmp/mise-cache MISE_YES=1' \
-      'export DOTFILES_CONTAINER=1 EDITOR=nvim VISUAL=nvim DISABLE_TELEMETRY=true DISABLE_AUTOUPDATER=1' \
-      'export ESSENTIAL_TRAFFIC_ONLY=1 AWS_PAGER="" PI_CACHE_RETENTION=long' \
-      'export XDG_CONFIG_HOME="$HOME/.config" PI_CODING_AGENT_DIR="$HOME/.config/pi"' \
-      > /etc/profile.d/dotfiles.sh
-
-USER 10001:10001
-ENV HOME=/sandbox \
-    DOTFILES_CONTAINER=1 \
-    XDG_CONFIG_HOME=/sandbox/.config \
-    PI_CODING_AGENT_DIR=/sandbox/.config/pi
-WORKDIR /sandbox
-RUN mkdir -p /sandbox/.local/share \
- && ln -s /usr/local/share/mise /sandbox/.local/share/mise
-
-COPY --chown=10001:10001 . /sandbox/.local/share/chezmoi
-RUN chezmoi apply --no-tty --force --exclude=scripts
-RUN fish -c 'curl -fsSL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher update' \
- || echo "warning: fish plugins not installed"
-RUN nvim --headless '+Lazy! sync' +qa \
- && nvim --headless '+MasonToolsInstallSync' +qa \
- || echo "warning: neovim plugins not installed"
-# pi packages are not installed here: pi installs them in /sandbox on the
-# first start, where `pi update` can write to them.
-
-# Keep /sandbox small. OpenShell copies it into a new sandbox's workspace
-# volume on the first start, and Sundae waits for that copy
-# (openshell.ready_timeout): about 22k files took longer than 5 minutes.
-# The large trees that only the build writes move to
-# /usr/local/share/sandbox-home and are linked back, like mise's data dir
-# above: Neovim's Lazy plugins and Mason packages (their runtime state,
-# registries and bin links stay in /sandbox). They are read-only in a
-# sandbox: rebuild the image to update them, because `:Lazy update` and
-# `:MasonInstall` cannot write there.
-# The npm and chezmoi caches are only for the build.
-USER root
-RUN set -e; dest=/usr/local/share/sandbox-home; \
-    for p in .local/share/nvim/lazy .local/share/nvim/mason/packages; do \
-      if [ -d "/sandbox/$p" ]; then \
-        mkdir -p "$dest/$(dirname "$p")"; \
-        mv "/sandbox/$p" "$dest/$p"; \
-        ln -s "$dest/$p" "/sandbox/$p"; \
-        chown -h 10001:10001 "/sandbox/$p"; \
-      fi; \
-    done; \
-    chmod -R a+rX "$dest"; \
-    rm -rf /sandbox/.npm /sandbox/.cache/chezmoi
-USER 10001:10001
-
-CMD ["/bin/bash", "-l"]
-
-# ── Dotfiles ──────────────────────────────────────────────────────────────────
-FROM tools AS dotfiles
-ARG USERNAME=danielbooth
-
+# ── pi + neovim configs ───────────────────────────────────────────────────────
 COPY --chown=${USERNAME} . ${HOME}/.local/share/chezmoi
-RUN chezmoi apply --no-tty --force --exclude=scripts
+RUN chezmoi apply --no-tty --force --exclude=scripts "${HOME}/.config/pi" "${HOME}/.config/nvim"
 
-# Post-apply setup that the run_once scripts / first launch would normally do.
-RUN fish -c 'curl -fsSL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher update'
 RUN nvim --headless '+Lazy! sync' +qa \
  && nvim --headless '+MasonToolsInstallSync' +qa \
  && nvim --headless \
       -c "lua require('nvim-treesitter').install({'bash','c','diff','html','lua','luadoc','markdown','markdown_inline','query','vim','vimdoc','fish','json','yaml','toml','go','python','typescript'}):wait(600000)" \
       +qa
-# Non-fatal: pi and yazi retry missing packages on first start.
+# Non-fatal: pi retries missing packages on first start.
 RUN pi update --extensions || echo "warning: pi package install failed; pi will retry on start"
-RUN ya pkg install || echo "warning: yazi package install failed"
+
+# Global mise config last, so the build never resolves its (uninstalled) tools.
+RUN chezmoi apply --no-tty --force --exclude=scripts "${HOME}/.config/mise"
 
 # Inner Podman storage must not sit on the image's overlay filesystem.
 # Declared last: RUN steps can't modify a path once it's a VOLUME.
@@ -251,4 +138,4 @@ VOLUME ${HOME}/.local/share/containers
 
 WORKDIR ${HOME}/work
 EXPOSE 22/tcp 7322/tcp 7322/udp
-CMD ["fish", "-l"]
+CMD ["bash", "-l"]

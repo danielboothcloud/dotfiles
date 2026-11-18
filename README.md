@@ -45,11 +45,10 @@ chezmoi init --apply danielboothcloud/dotfiles
 
 ## Container
 
-`packages/container/Containerfile` builds a portable Fedora image of the shell/editor/agent
-workflow (fish + plugins, starship, mise, neovim with plugins/LSPs/parsers, pi,
-cursor-cli, tuicr, zellij, yazi, lazygit, atuin, kubectl/k9s/helm, podman). 1Password-backed templates
-(`env.fish`, gitconfigs, ssh, clones) are skipped via the `DOTFILES_CONTAINER`
-block in `.chezmoiignore`, so no secrets are baked in.
+`packages/container/Containerfile` builds a slim Fedora image (on the sundae-sandbox base)
+with fd, ripgrep, pi, neovim (with plugins/LSPs/parsers), rootless podman and osewa/sshd.
+Only the pi, nvim and mise configs are applied; the global mise tools are not installed,
+so run `mise install` inside the container to reconcile them. No secrets are baked in.
 
 ```bash
 cd packages
