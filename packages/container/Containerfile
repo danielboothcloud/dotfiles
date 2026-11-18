@@ -198,21 +198,22 @@ RUN fish -c 'curl -fsSL https://raw.githubusercontent.com/jorgebucaran/fisher/ma
 RUN nvim --headless '+Lazy! sync' +qa \
  && nvim --headless '+MasonToolsInstallSync' +qa \
  || echo "warning: neovim plugins not installed"
-RUN pi update --extensions || echo "warning: pi package install failed; pi will retry on start"
+# pi packages are not installed here: pi installs them in /sandbox on the
+# first start, where `pi update` can write to them.
 
 # Keep /sandbox small. OpenShell copies it into a new sandbox's workspace
 # volume on the first start, and Sundae waits for that copy
 # (openshell.ready_timeout): about 22k files took longer than 5 minutes.
 # The large trees that only the build writes move to
 # /usr/local/share/sandbox-home and are linked back, like mise's data dir
-# above: pi's git packages and Neovim's Lazy plugins and Mason packages
-# (their runtime state, registries and bin links stay in /sandbox). They are
-# read-only in a sandbox: rebuild the image to update them, because
-# `pi update`, `:Lazy update` and `:MasonInstall` cannot write there.
+# above: Neovim's Lazy plugins and Mason packages (their runtime state,
+# registries and bin links stay in /sandbox). They are read-only in a
+# sandbox: rebuild the image to update them, because `:Lazy update` and
+# `:MasonInstall` cannot write there.
 # The npm and chezmoi caches are only for the build.
 USER root
 RUN set -e; dest=/usr/local/share/sandbox-home; \
-    for p in .config/pi/git .local/share/nvim/lazy .local/share/nvim/mason/packages; do \
+    for p in .local/share/nvim/lazy .local/share/nvim/mason/packages; do \
       if [ -d "/sandbox/$p" ]; then \
         mkdir -p "$dest/$(dirname "$p")"; \
         mv "/sandbox/$p" "$dest/$p"; \

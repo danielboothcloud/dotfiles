@@ -91,7 +91,7 @@
   },
   "extensionChangelogVersions": {
     "{\"source\":\"npm:pi-lens\",\"scope\":\"user\"}": "4.4.9",
-    "{\"source\":\"npm:@gotgenes/pi-anthropic-auth\",\"scope\":\"user\"}": "3.5.0",
+    "{\"source\":\"npm:@gotgenes/pi-anthropic-auth\",\"scope\":\"user\"}": "3.6.0",
     "{\"source\":\"npm:pi-cache-optimizer\",\"scope\":\"user\"}": "2.10.6"
   }
 }

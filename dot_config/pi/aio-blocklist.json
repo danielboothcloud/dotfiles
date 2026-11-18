@@ -43,9 +43,9 @@
       "reason": "agents may only create/set/move/advance the develop bookmark (jj bookmark set develop -r <rev> [-B])"
     },
     {
-      "pattern": "^jj\\s+(?:(?:(?:-R|--repository|--config|--config-file|--at-operation|--at-op|--color)(?:=|\\s+)\\S+|--[\\w-]+(?:=\\S+)?)\\s+)*git\\s+(?:(?:(?:-R|--repository|--config|--config-file|--at-operation|--at-op|--color)(?:=|\\s+)\\S+|--[\\w-]+(?:=\\S+)?)\\s+)*push(?![\\w-])(?!(?:\\s+(?:--remote(?:=|\\s+)(?!-)\\S+|--dry-run))*\\s+(?:-b|--bookmark)(?:=|\\s+)develop(?:\\s+(?:--remote(?:=|\\s+)(?!-)\\S+|--dry-run))*\\s*$)",
+      "pattern": "^jj\\s+(?:(?:(?:-R|--repository|--config|--config-file|--at-operation|--at-op|--color)(?:=|\\s+)\\S+|--[\\w-]+(?:=\\S+)?)\\s+)*git\\s+(?:(?:(?:-R|--repository|--config|--config-file|--at-operation|--at-op|--color)(?:=|\\s+)\\S+|--[\\w-]+(?:=\\S+)?)\\s+)*push(?![\\w-])(?!(?:\\s+(?:--remote(?:=|\\s+)(?!-)\\S+|--dry-run|-h|--help|-b|--bookmark(?:=develop(?![\\w-]))?|-c|--change(?:=(?:@-?|develop(?![\\w-])))?|-r|--revision(?:=(?:@-?|develop(?![\\w-])))?|develop(?![\\w-])|@-?))*\\s*$)",
       "regex": true,
-      "reason": "agents may only push develop: jj git push [--remote <r>] -b develop"
+      "reason": "agents may only push: jj git push [--remote <r>] (-b develop | -c @ | -r @-)"
     }
   ]
 }

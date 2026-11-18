@@ -44,3 +44,4 @@ Pi: /review opens tuicr to review agent changes.
 Pi: /advisor shows the advisor; /advisor on|off overrides the recipe for this session.
 Pi: /handoff <goal> starts a new focused session from an editable summary instead of compaction.
 Fish: run ded to fuzzy-find a dotfile, edit it, and apply it with chezmoi.
+jj: run jj bookmark advance (jj b a) to move the closest bookmark to @.
