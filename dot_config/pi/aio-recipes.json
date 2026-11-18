@@ -14,7 +14,8 @@
 			],
 			"extensions": [
 				"npm:@upstash/context7-pi",
-				"npm:@gotgenes/pi-anthropic-auth"
+				"npm:@gotgenes/pi-anthropic-auth",
+				"npm:pi-cache-optimizer"
 			]
 		},
 		"work": {
@@ -27,7 +28,8 @@
 			],
 			"extensions": [
 				"npm:@upstash/context7-pi",
-				"npm:@rahularya01/pi-cursor"
+				"npm:@rahularya01/pi-cursor",
+				"npm:pi-cache-optimizer"
 			]
 		},
 		"bmad": {
@@ -45,7 +47,8 @@
 			"extensions": [
 				"npm:@upstash/context7-pi",
 				"npm:pi-lens",
-				"npm:@gotgenes/pi-anthropic-auth"
+				"npm:@gotgenes/pi-anthropic-auth",
+				"npm:pi-cache-optimizer"
 			],
 			"blocklist": {}
 		}
