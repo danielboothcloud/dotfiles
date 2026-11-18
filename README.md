@@ -51,14 +51,15 @@ Only the pi, nvim and mise configs are applied; the global mise tools are not in
 so run `mise install` inside the container to reconcile them. No secrets are baked in.
 
 ```bash
-cd packages
-task container:build   # podman build -f packages/container/Containerfile -t dotfiles .
-task container:run     # $PWD mounted at ~/work
+# From the repo root; the token only avoids GitHub API rate limits while mise resolves "latest".
+GITHUB_TOKEN="$(gh auth token)" podman build -f packages/container/Containerfile \
+  --secret id=github_token,env=GITHUB_TOKEN -t dotfiles .
+podman run --rm -it --userns=keep-id:uid=10001,gid=10001 -e COLORTERM=truecolor \
+  --device /dev/fuse --security-opt label=disable -v "$PWD:/home/danielbooth/work" dotfiles
 ```
 
 Rootless Podman works inside the container (Podman-in-Podman, no `--privileged`);
-it needs `--device /dev/fuse --security-opt label=disable` on `podman run`
-(`task container:run` passes them).
+it needs `--device /dev/fuse --security-opt label=disable` on `podman run`.
 
 `.github/workflows/container.yml` builds amd64 with buildah and publishes the
 image to GHCR:
@@ -69,7 +70,7 @@ image to GHCR:
 
 ```bash
 git tag v1.3.0 && git push origin v1.3.0
-podman run --rm -it --userns=keep-id --device /dev/fuse --security-opt label=disable \
+podman run --rm -it --userns=keep-id:uid=10001,gid=10001 --device /dev/fuse --security-opt label=disable \
   -v "$PWD:/home/danielbooth/work" ghcr.io/danielboothcloud/dotfiles:v1.3.0
 ```
 
