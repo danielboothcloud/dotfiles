@@ -78,6 +78,7 @@ RUN printf '%s\n' \
       ": \"\${XDG_CONFIG_HOME:=/home/${USERNAME}/.config}\"; export XDG_CONFIG_HOME" \
       ": \"\${XDG_DATA_HOME:=/home/${USERNAME}/.local/share}\"; export XDG_DATA_HOME" \
       > /etc/profile.d/dotfiles.sh
+COPY packages/container/mise-volume.sh /etc/profile.d/mise-volume.sh
 
 # ── Podman-in-Podman (rootless), modelled on quay.io/podman/stable ────────────
 # - newuidmap/newgidmap lose their file caps in Fedora base images; restore them.
@@ -143,7 +144,11 @@ RUN nvim --headless '+Lazy! sync' +qa \
 RUN pi update --extensions || echo "warning: pi package install failed; pi will retry on start"
 
 # Global mise config last, so the build never resolves its (uninstalled) tools.
-RUN chezmoi apply --no-tty --force --exclude=scripts "${HOME}/.config/mise"
+# The dry run fails the build when mise.lock names a dependency sidecar (locks/) that is missing.
+RUN --mount=type=secret,id=github_token,required=false \
+    export GITHUB_TOKEN="$(cat /run/secrets/github_token 2>/dev/null || true)"; \
+    chezmoi apply --no-tty --force --exclude=scripts "${HOME}/.config/mise" \
+ && mise install --dry-run
 
 # Inner Podman storage must not sit on the image's overlay filesystem.
 # Declared last: RUN steps can't modify a path once it's a VOLUME.
