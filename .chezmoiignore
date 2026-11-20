@@ -22,6 +22,10 @@ packages/
 # Lazy.nvim plugin lockfile — regenerated per machine
 .config/nvim/lazy-lock.json
 
+# mise lockfile and uv sidecars — regenerated per machine; tools track "latest"
+.config/mise/mise.lock
+.config/mise/locks
+
 {{- if env "DOTFILES_CONTAINER" }}
 # Container build (packages/container/Containerfile): skip 1Password-backed templates and host-only files
 .gitconfig

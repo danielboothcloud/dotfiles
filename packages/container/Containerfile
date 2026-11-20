@@ -1,4 +1,4 @@
-# Slim, secret-free dev container: fd, ripgrep, tuicr, pi + neovim (with this repo's
+# Slim, secret-free dev container: fd, ripgrep, kubectl, tuicr, pi + neovim (with this repo's
 # configs), rootless podman, and mise with the global config applied but its
 # tools not installed (run `mise install` inside the container to reconcile).
 #
@@ -54,6 +54,15 @@ RUN dnf -y install --setopt=install_weak_deps=False \
       --exclude container-selinux \
  && dnf clean all \
  && curl -fsSL https://mise.run | MISE_INSTALL_PATH=/usr/local/bin/mise sh
+
+# Upstream kubectl: Fedora's package name is versioned (kubernetes1.xx-client).
+ARG TARGETARCH
+RUN v="$(curl -fsSL https://dl.k8s.io/release/stable.txt)" \
+ && url="https://dl.k8s.io/release/${v}/bin/linux/${TARGETARCH:-amd64}/kubectl" \
+ && curl -fsSLo /usr/local/bin/kubectl "${url}" \
+ && echo "$(curl -fsSL "${url}.sha256")  /usr/local/bin/kubectl" | sha256sum -c - \
+ && chmod 755 /usr/local/bin/kubectl \
+ && kubectl version --client
 
 # ── sshd (key-only, for `osewa login` enrollment) ─────────────────────────────
 # pam_loginuid fails in containers; host keys are generated at container start.
@@ -144,7 +153,7 @@ RUN nvim --headless '+Lazy! sync' +qa \
 RUN pi update --extensions || echo "warning: pi package install failed; pi will retry on start"
 
 # Global mise config last, so the build never resolves its (uninstalled) tools.
-# The dry run fails the build when mise.lock names a dependency sidecar (locks/) that is missing.
+# mise.lock isn't tracked, so the dry run resolves "latest" and fails the build on an invalid config.
 RUN --mount=type=secret,id=github_token,required=false \
     export GITHUB_TOKEN="$(cat /run/secrets/github_token 2>/dev/null || true)"; \
     chezmoi apply --no-tty --force --exclude=scripts "${HOME}/.config/mise" \

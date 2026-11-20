@@ -1,6 +1,10 @@
 # Chezmoi runtime data
 .chezmoi.state
 
+# mise lockfile and uv sidecars (regenerated per machine)
+dot_config/mise/mise.lock
+dot_config/mise/locks/
+
 # Temporary files
 .tmp/
 *.bak
