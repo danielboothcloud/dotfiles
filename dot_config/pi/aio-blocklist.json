@@ -15,7 +15,7 @@
     {
       "pattern": "^git\\s+(?:(?:(?:-C|-c|--git-dir|--work-tree|--namespace|--config-env)(?:=|\\s+)\\S+|--[\\w-]+(?:=\\S+)?)\\s+)*push(?![\\w-])(?!(?:\\s+(?:-u|--set-upstream|--force-with-lease(?:=\\S+)?|-v|--verbose|-q|--quiet|-n|--dry-run|--no-verify|--progress))*\\s+(?!-)\\S+(?:\\s+(?:-u|--set-upstream|--force-with-lease(?:=\\S+)?|-v|--verbose|-q|--quiet|-n|--dry-run|--no-verify|--progress))*\\s+(?:[^\\s:+-][^\\s:]*:)?(?:refs/heads/)?develop(?:\\s+(?:-u|--set-upstream|--force-with-lease(?:=\\S+)?|-v|--verbose|-q|--quiet|-n|--dry-run|--no-verify|--progress))*\\s*$)",
       "regex": true,
-      "reason": "agents may only push to develop: git push [-u|--force-with-lease] <remote> [<src>:]develop (no --force, no other refs)"
+      "reason": "agents may only push to develop (git push [-u|--force-with-lease] <remote> [<src>:]develop); for any other branch, stop and hand the push over to the user"
     },
     {
       "pattern": "^terraform\\s+(-chdir=\\S+\\s+)?(init|validate|plan|apply)\\b",
@@ -38,14 +38,24 @@
       "reason": "1Password handles sensitive data; this cannot be accessed by agents"
     },
     {
-      "pattern": "^jj\\s+(?:(?:(?:-R|--repository|--config|--config-file|--at-operation|--at-op|--color)(?:=|\\s+)\\S+|--[\\w-]+(?:=\\S+)?)\\s+)*(?:bookmark|b)\\s+(?:(?:(?:-R|--repository|--config|--config-file|--at-operation|--at-op|--color)(?:=|\\s+)\\S+|--[\\w-]+(?:=\\S+)?)\\s+)*(?:(?:delete|d|forget|f|rename|r)(?![\\w-])|(?:advance|a|create|c|move|m|set|s)(?![\\w-])(?!(?:\\s+(?:(?:-r|--revision|--to)(?:=|\\s+)(?!-)\\S+|-B|--allow-backwards))*\\s+develop(?:\\s+(?:(?:-r|--revision|--to)(?:=|\\s+)(?!-)\\S+|-B|--allow-backwards))*\\s*$))",
+      "pattern": "^jj\\s+(?:(?:(?:-R|--repository|--config|--config-file|--at-operation|--at-op|--color)(?:=|\\s+)\\S+|--[\\w-]+(?:=\\S+)?)\\s+)*(?:git\\s+(?:(?:(?:-R|--repository|--config|--config-file|--at-operation|--at-op|--color)(?:=|\\s+)\\S+|--[\\w-]+(?:=\\S+)?)\\s+)*)?push(?![\\w-]).*?(?:^|[\\s=:])(?:main|master|trunk\\(\\))(?:@\\S*)?(?=[\\s=]|$)",
       "regex": true,
-      "reason": "agents may only create/set/move/advance the develop bookmark (jj bookmark set develop -r <rev> [-B])"
+      "reason": "agents may not push main/master with jj; hand that push over to the user"
     },
     {
-      "pattern": "^jj\\s+(?:(?:(?:-R|--repository|--config|--config-file|--at-operation|--at-op|--color)(?:=|\\s+)\\S+|--[\\w-]+(?:=\\S+)?)\\s+)*git\\s+(?:(?:(?:-R|--repository|--config|--config-file|--at-operation|--at-op|--color)(?:=|\\s+)\\S+|--[\\w-]+(?:=\\S+)?)\\s+)*push(?![\\w-])(?!(?:\\s+(?:--remote(?:=|\\s+)(?!-)\\S+|--dry-run|-h|--help|-b|--bookmark(?:=develop(?![\\w-]))?|-c|--change(?:=(?:@-?|develop(?![\\w-])))?|-r|--revision(?:=(?:@-?|develop(?![\\w-])))?|develop(?![\\w-])|@-?))*\\s*$)",
+      "pattern": "^jj\\s+(?:(?:(?:-R|--repository|--config|--config-file|--at-operation|--at-op|--color)(?:=|\\s+)\\S+|--[\\w-]+(?:=\\S+)?)\\s+)*(?:bookmark|b)\\s+(?:(?:(?:-R|--repository|--config|--config-file|--at-operation|--at-op|--color)(?:=|\\s+)\\S+|--[\\w-]+(?:=\\S+)?)\\s+)*(?:advance|a|create|c|delete|d|forget|f|move|m|rename|r|set|s)(?![\\w-]).*?(?:^|[\\s=:])(?:main|master|trunk\\(\\))(?:@\\S*)?(?=[\\s=]|$)",
       "regex": true,
-      "reason": "agents may only push: jj git push [--remote <r>] (-b develop | -c @ | -r @-)"
+      "reason": "agents may not create, move, rename or delete the main/master bookmark; hand that over to the user"
+    },
+    {
+      "pattern": "^jj\\b.*(?:--ignore-immutable|immutable_heads|trunk\\(\\)\\s*=)",
+      "regex": true,
+      "reason": "main/master is immutable for agents; do not bypass or redefine immutable_heads/trunk()"
+    },
+    {
+      "pattern": "^jj\\s+(?:(?:(?:-R|--repository|--config|--config-file|--at-operation|--at-op|--color)(?:=|\\s+)\\S+|--[\\w-]+(?:=\\S+)?)\\s+)*(?:undo|(?:op|operation)\\s+(?:(?:(?:-R|--repository|--config|--config-file|--at-operation|--at-op|--color)(?:=|\\s+)\\S+|--[\\w-]+(?:=\\S+)?)\\s+)*(?:restore|revert))(?![\\w-])",
+      "regex": true,
+      "reason": "jj undo / jj op restore / jj op revert are destructive; ask the user to run it if necessary"
     }
   ]
 }
