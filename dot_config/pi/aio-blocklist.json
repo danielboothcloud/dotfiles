@@ -18,6 +18,21 @@
       "reason": "agents may only push to develop (git push [-u|--force-with-lease] <remote> [<src>:]develop); for any other branch, stop and hand the push over to the user"
     },
     {
+      "pattern": "^git\\s+(?:(?:(?:-C|-c|--git-dir|--work-tree|--namespace|--config-env)(?:=|\\s+)\\S+|--[\\w-]+(?:=\\S+)?)\\s+)*tag(?![\\w-])",
+      "regex": true,
+      "reason": "git tag operations are done by the user; releases are manual"
+    },
+    {
+      "pattern": "^git\\s+(?:(?:(?:-C|-c|--git-dir|--work-tree|--namespace|--config-env)(?:=|\\s+)\\S+|--[\\w-]+(?:=\\S+)?)\\s+)*push(?![\\w-]).*?(?:--tags|--follow-tags|refs/tags/|\\s+tag(?:\\s|$))",
+      "regex": true,
+      "reason": "tag pushes are done by the user; releases are manual"
+    },
+    {
+      "pattern": "^(?:gh|glab)\\s+(?:(?:-R|--repo)(?:=|\\s+)\\S+\\s+)*release(?![\\w-])",
+      "regex": true,
+      "reason": "gh/glab release operations are done by the user; releases are manual"
+    },
+    {
       "pattern": "^terraform\\s+(-chdir=\\S+\\s+)?(init|validate|plan|apply)\\b",
       "regex": true,
       "reason": "terraform init, validate, plan and apply run in CI only"
@@ -41,6 +56,16 @@
       "pattern": "^jj\\s+(?:(?:(?:-R|--repository|--config|--config-file|--at-operation|--at-op|--color)(?:=|\\s+)\\S+|--[\\w-]+(?:=\\S+)?)\\s+)*(?:git\\s+(?:(?:(?:-R|--repository|--config|--config-file|--at-operation|--at-op|--color)(?:=|\\s+)\\S+|--[\\w-]+(?:=\\S+)?)\\s+)*)?push(?![\\w-]).*?(?:^|[\\s=:])(?:main|master|trunk\\(\\))(?:@\\S*)?(?=[\\s=]|$)",
       "regex": true,
       "reason": "agents may not push main/master with jj; hand that push over to the user"
+    },
+    {
+      "pattern": "^jj\\s+(?:(?:(?:-R|--repository|--config|--config-file|--at-operation|--at-op|--color)(?:=|\\s+)\\S+|--[\\w-]+(?:=\\S+)?)\\s+)*(?:git\\s+(?:(?:(?:-R|--repository|--config|--config-file|--at-operation|--at-op|--color)(?:=|\\s+)\\S+|--[\\w-]+(?:=\\S+)?)\\s+)*)?tag(?![\\w-])",
+      "regex": true,
+      "reason": "jj tag operations are done by the user; releases are manual"
+    },
+    {
+      "pattern": "^jj\\s+(?:(?:(?:-R|--repository|--config|--config-file|--at-operation|--at-op|--color)(?:=|\\s+)\\S+|--[\\w-]+(?:=\\S+)?)\\s+)*(?:git\\s+(?:(?:(?:-R|--repository|--config|--config-file|--at-operation|--at-op|--color)(?:=|\\s+)\\S+|--[\\w-]+(?:=\\S+)?)\\s+)*)?push(?![\\w-]).*?(?:--tags|refs/tags/)",
+      "regex": true,
+      "reason": "tag pushes are done by the user; releases are manual"
     },
     {
       "pattern": "^jj\\s+(?:(?:(?:-R|--repository|--config|--config-file|--at-operation|--at-op|--color)(?:=|\\s+)\\S+|--[\\w-]+(?:=\\S+)?)\\s+)*(?:bookmark|b)\\s+(?:(?:(?:-R|--repository|--config|--config-file|--at-operation|--at-op|--color)(?:=|\\s+)\\S+|--[\\w-]+(?:=\\S+)?)\\s+)*(?:advance|a|create|c|delete|d|forget|f|move|m|rename|r|set|s)(?![\\w-]).*?(?:^|[\\s=:])(?:main|master|trunk\\(\\))(?:@\\S*)?(?=[\\s=]|$)",
