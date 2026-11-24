@@ -91,10 +91,12 @@ COPY packages/container/mise-volume.sh /etc/profile.d/mise-volume.sh
 
 # ── Podman-in-Podman (rootless), modelled on quay.io/podman/stable ────────────
 # - newuidmap/newgidmap lose their file caps in Fedora base images; restore them.
+#   Kata's virtio-fs drops security.* xattrs, so also set setuid (mode bits survive).
 # - subuid/subgid ranges cover every UID except ${UID} inside the 65536 IDs the
 #   outer rootless container gets with --userns=keep-id.
 # - fuse-overlayfs storage: kernel overlay-on-overlay is usually refused.
 RUN rpm --setcaps shadow-utils 2>/dev/null \
+ && chmod 4755 /usr/bin/newuidmap /usr/bin/newgidmap \
  && printf '%s\n' "root:1:65535" "${UID}:1:$((UID - 1))" "${UID}:$((UID + 1)):$((65535 - UID))" \
       | tee /etc/subuid > /etc/subgid \
  && sed -e 's|^#mount_program|mount_program|g' \
@@ -104,6 +106,7 @@ RUN rpm --setcaps shadow-utils 2>/dev/null \
       install -d -o "${UID}" -g "${UID}" "/home/${USERNAME}/$d"; \
     done
 COPY packages/container/containers.conf /etc/containers/containers.conf
+COPY packages/container/podman-storage.sh /etc/profile.d/podman-storage.sh
 COPY --chown=${UID}:${UID} packages/container/podman-containers.conf /home/${USERNAME}/.config/containers/containers.conf
 # chroot isolation lets `podman build` run nested.
 ENV _CONTAINERS_USERNS_CONFIGURED="" \
