@@ -102,6 +102,8 @@ RUN printf '%s\n' \
       ": \"\${XDG_CONFIG_HOME:=/home/${USERNAME}/.config}\"; export XDG_CONFIG_HOME" \
       ": \"\${XDG_DATA_HOME:=/home/${USERNAME}/.local/share}\"; export XDG_DATA_HOME" \
       ": \"\${GIT_TERMINAL_PROMPT:=0}\"; export GIT_TERMINAL_PROMPT" \
+      "# osewa sessions start without the image PATH; tuicr, nvim and node are linked here." \
+      "case \":\${PATH}:\" in *\":/home/${USERNAME}/.local/bin:\"*) ;; *) PATH=\"/home/${USERNAME}/.local/bin:\${PATH}\"; export PATH ;; esac" \
       > /etc/profile.d/dotfiles.sh
 COPY packages/container/mise-volume.sh /etc/profile.d/mise-volume.sh
 
