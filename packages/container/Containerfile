@@ -101,6 +101,7 @@ RUN printf '%s\n' \
       "# dotfiles: configs and tools live in /home/${USERNAME}, even when HOME=/sandbox." \
       ": \"\${XDG_CONFIG_HOME:=/home/${USERNAME}/.config}\"; export XDG_CONFIG_HOME" \
       ": \"\${XDG_DATA_HOME:=/home/${USERNAME}/.local/share}\"; export XDG_DATA_HOME" \
+      ": \"\${GIT_TERMINAL_PROMPT:=0}\"; export GIT_TERMINAL_PROMPT" \
       > /etc/profile.d/dotfiles.sh
 COPY packages/container/mise-volume.sh /etc/profile.d/mise-volume.sh
 
@@ -129,6 +130,7 @@ ENV _CONTAINERS_USERNS_CONFIGURED="" \
     BUILDAH_ISOLATION=chroot
 
 # Static (non-secret) env normally set by conf.d/env.fish, which is skipped.
+# GIT_TERMINAL_PROMPT=0: no agent can answer a git credential prompt; fail at once, not hang.
 ENV LANG=en_US.UTF-8 \
     DOTFILES_CONTAINER=1 \
     EDITOR=nvim \
@@ -137,7 +139,8 @@ ENV LANG=en_US.UTF-8 \
     DISABLE_AUTOUPDATER=1 \
     ESSENTIAL_TRAFFIC_ONLY=1 \
     PI_CACHE_RETENTION=long \
-    MISE_YES=1
+    MISE_YES=1 \
+    GIT_TERMINAL_PROMPT=0
 
 # Numeric: group 10001 is named `sandbox`, and there is no `danielbooth` group.
 USER ${UID}:${UID}
