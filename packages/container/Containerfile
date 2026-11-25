@@ -174,6 +174,11 @@ RUN nvim --headless '+Lazy! sync' +qa \
       +qa
 # Non-fatal: pi retries missing packages on first start.
 RUN pi update --extensions || echo "warning: pi package install failed; pi will retry on start"
+# `hypa` on PATH for shells and older pi-aio builds (before 8d532ff only the first `hypa` of a
+# rewritten command got the full path). Its .so files resolve via the real path.
+RUN h="$(ls "${PI_CODING_AGENT_DIR}"/git/github.com/danielboothcloud/pi-aio/node_modules/@hypabolic/hypa-linux-*/bin/hypa 2>/dev/null | head -1)" \
+ && if [ -n "${h}" ]; then ln -sf "${h}" "${HOME}/.local/bin/hypa" && hypa --version; \
+    else echo "warning: pi-aio's hypa binary not found; hypa is not on PATH"; fi
 
 # Global mise config last, so the build never resolves its (uninstalled) tools.
 # mise.lock isn't tracked, so the dry run resolves "latest" and fails the build on an invalid config.
