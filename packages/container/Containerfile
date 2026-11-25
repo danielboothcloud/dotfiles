@@ -146,6 +146,10 @@ RUN --mount=type=secret,id=github_token,required=false \
 # ── pi + neovim configs ───────────────────────────────────────────────────────
 COPY --chown=${UID}:${UID} . ${HOME}/.local/share/chezmoi
 RUN chezmoi apply --no-tty --force --exclude=scripts "${HOME}/.config/pi" "${HOME}/.config/nvim"
+# Default jj identity in sessions; Sundae's per-repo config (e.g. a GitLab email) still wins.
+RUN install -d -m 700 "${HOME}/.config/jj" \
+ && printf '%s\n' '[user]' 'name = "Daniel Booth"' 'email = "user@danielbooth.cloud"' \
+      > "${HOME}/.config/jj/config.toml"
 
 RUN nvim --headless '+Lazy! sync' +qa \
  && nvim --headless '+MasonToolsInstallSync' +qa \
