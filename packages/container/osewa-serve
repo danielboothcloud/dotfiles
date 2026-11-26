@@ -1,7 +1,5 @@
 #!/bin/sh
 # Entrypoint for osewa host mode (packages/container/Containerfile): sshd in the foreground,
-# osewa server alongside it once a device is enrolled (the first `osewa login`
-# starts it itself).
 set -eu
 mkdir -p "$HOME/.ssh" && chmod 700 "$HOME/.ssh"
 if [ -n "${SSH_AUTHORIZED_KEYS:-}" ]; then
