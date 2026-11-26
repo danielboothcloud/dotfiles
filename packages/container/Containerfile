@@ -32,6 +32,10 @@
 # Bump to the newest sha-<short> tag of ghcr.io/danielboothcloud/sundae-sandbox.
 ARG SANDBOX_BASE=ghcr.io/danielboothcloud/sundae-sandbox:sha-5463b2e
 
+# dojo (jj helper) from its develop branch; only the binary goes into the image.
+FROM docker.io/library/rust:1-slim-trixie AS dojo
+RUN cargo install --locked --git https://github.com/danielboothcloud/dojo --branch develop dojo --root /out
+
 FROM ${SANDBOX_BASE}
 
 ARG USERNAME=danielbooth
@@ -78,6 +82,9 @@ RUN case "${TARGETARCH:-amd64}" in \
  && chmod 755 /usr/local/bin/rtk \
  && rm -f /tmp/rtk.tgz \
  && rtk --version
+
+COPY --from=dojo /out/bin/dojo /usr/local/bin/dojo
+RUN dojo --version
 
 # ── sshd (key-only, for `osewa login` enrollment) ─────────────────────────────
 # pam_loginuid fails in containers; host keys are generated at container start.
