@@ -161,9 +161,13 @@ WORKDIR ${HOME}
 # ── pi + neovim runtime (node, pi, neovim, tuicr via mise) ────────────────────
 # NOTE: exposed via ~/.local/bin links, not shims: shims fail until the global mise
 # config's tools are installed. `mise install` later recreates shims, which take precedence.
+# Up to 3 attempts: GitHub release fetches sometimes fail with HTTP 403 in CI (rate limit).
 RUN --mount=type=secret,id=github_token,required=false \
-    export GITHUB_TOKEN="$(cat /run/secrets/github_token 2>/dev/null || true)"; \
-    mise install node@latest pi@latest neovim@latest github:agavra/tuicr@latest \
+    export GITHUB_TOKEN="$(cat /run/secrets/github_token 2>/dev/null || true)" MISE_HTTP_RETRIES=5; \
+    for i in 1 2 3; do \
+      mise install node@latest pi@latest neovim@latest github:agavra/tuicr@latest && break; \
+      [ "$i" = 3 ] && exit 1; echo "mise install failed (attempt $i); retrying in 30s"; sleep 30; \
+    done \
  && ln -sf "$(mise where node@latest)"/bin/* "${HOME}/.local/bin/" \
  && ln -sf "$(find "$(mise where pi@latest)" -maxdepth 2 -type f -name pi -perm -u+x | head -1)" "${HOME}/.local/bin/pi" \
  && ln -sf "$(find "$(mise where neovim@latest)" -maxdepth 3 -type f -path '*/bin/nvim' | head -1)" "${HOME}/.local/bin/nvim" \
